@@ -17,14 +17,14 @@
             {% if assessment.paediatric_neurologist_input_achieved %}
                 {% url 'paediatric_neurologist_input_date' assessment_id=assessment.pk as hx_post %}
                 {% include 'epilepsy12/partials/page_elements/date_field.html' with hx_post=hx_post hx_swap="innerHTML" hx_target="#paediatric_neurology" hx_trigger="change delay:1s" label=assessment.get_paediatric_neurologist_input_date_help_label_text reference=assessment.get_paediatric_neurologist_input_date_help_reference_text date_value=assessment.paediatric_neurologist_input_date input_date_field_name="paediatric_neurologist_input_date" error_message=error_message enabled=perms.epilepsy12.change_assessment has_permission=perms.epilepsy12.change_assessment %}
+                {% if error_message %}
+                    <div class='ui rcpch_warning message'>
+                        {{ error_message }}
+                    </div>
+                {% endif %}
                 <div class="inline field">
                         <label class='toggle_button_label'>Time to Review</label>
                         <input class="ui input" type="text" value="{% wait_days_and_weeks assessment.paediatric_neurologist_wait %}" disabled/>
-                </div>
-            {% endif %}
-            {% if error_message %}
-                <div class='ui rcpch_warning message'>
-                    {{ error_message }}
                 </div>
             {% endif %}
             
@@ -104,7 +104,6 @@
 
         </div>
 
-        </div>
     {% endif %}
 
 </div>

@@ -1644,6 +1644,7 @@ def epilepsy_specialist_nurse_referral_made(request, assessment_id):
         ).update(
             epilepsy_specialist_nurse_referral_date=None,
             epilepsy_specialist_nurse_input_date=None,
+            epilepsy_specialist_nurse_input_achieved=None,
             updated_at=timezone.now(),
             updated_by=request.user,
         )
@@ -1711,6 +1712,44 @@ def epilepsy_specialist_nurse_referral_date(request, assessment_id):
 @login_and_otp_required()
 @permission_required("epilepsy12.change_assessment", raise_exception=True)
 @user_may_view_this_child()
+def epilepsy_specialist_nurse_input_achieved(request, assessment_id):
+    """
+    This is an HTMX callback from the epilepsy_nurse partial template
+    It is triggered by a change in the input achieved toggle in the partial, generating a post request.
+    This persists the epilepsy nurse specialist input achieved value, and returns the same partial.
+    """
+    try:
+        error_message = None
+        validate_and_update_model(
+            request,
+            assessment_id,
+            Assessment,
+            field_name="epilepsy_specialist_nurse_input_achieved",
+            page_element="toggle_button",
+        )
+    except ValueError as error:
+        error_message = error
+
+    assessment = Assessment.objects.get(pk=assessment_id)
+
+    context = {"assessment": assessment}
+
+    template_name = "epilepsy12/partials/assessment/epilepsy_nurse.html"
+
+    response = recalculate_form_generate_response(
+        model_instance=assessment,
+        request=request,
+        template=template_name,
+        context=context,
+        error_message=error_message,
+    )
+
+    return response
+
+
+@login_and_otp_required()
+@permission_required("epilepsy12.change_assessment", raise_exception=True)
+@user_may_view_this_child()
 def epilepsy_specialist_nurse_input_date(request, assessment_id):
     """
     This is an HTMX callback from the epilepsy_nurse partial template
@@ -1729,7 +1768,7 @@ def epilepsy_specialist_nurse_input_date(request, assessment_id):
             page_element="date_field",
             comparison_date_field_name="epilepsy_specialist_nurse_referral_date",
             is_earliest_date=False,
-            earliest_allowable_date=assessment.registration.assessment.epilepsy_specialist_nurse_referral_date,
+            earliest_allowable_date=assessment.epilepsy_specialist_nurse_referral_date,
         )
     except ValueError as error:
         error_message = error

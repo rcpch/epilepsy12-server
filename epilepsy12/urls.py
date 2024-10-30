@@ -513,6 +513,11 @@ assessment_patterns = [
         epilepsy_specialist_nurse_input_date,
         name="epilepsy_specialist_nurse_input_date",
     ),
+    path(
+        "assessment/<int:assessment_id>/epilepsy_specialist_nurse_input_achieved",
+        epilepsy_specialist_nurse_input_achieved,
+        name="epilepsy_specialist_nurse_input_achieved,",
+    ),
     #     Children's epilepsy surgery fields
     path(
         "assessment/<int:assessment_id>/childrens_epilepsy_surgical_service_referral_criteria_met",
