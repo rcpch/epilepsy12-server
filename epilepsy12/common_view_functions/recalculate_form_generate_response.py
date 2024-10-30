@@ -230,17 +230,23 @@ def total_fields_expected(model_instance):
 
     elif model_class_name == "Assessment":
         if model_instance.consultant_paediatrician_referral_made:
-            # add essential fields: date referred, date seen, centre
+            # add essential fields: date referred, input achieved, centre (input_date is only scored if input achieved)
             cumulative_score += 3
+            if model_instance.consultant_paediatrician_input_achieved:
+                cumulative_score += 1  # consultant_paediatrician_input_date
         if model_instance.paediatric_neurologist_referral_made:
-            # add essential fields: date referred, date seen, centre
+            # add essential fields: date referred, input achieved, centre (input_date is only scored if input achieved)
             cumulative_score += 3
+            if model_instance.paediatric_neurologist_input_achieved:
+                cumulative_score += 1  # paediatric_neurologist_input_date
         if model_instance.childrens_epilepsy_surgical_service_referral_made:
             # add essential fields: date referred, centre
             cumulative_score += 2
         if model_instance.epilepsy_specialist_nurse_referral_made:
-            # add essential fields: date referred, date seen
+            # add essential fields: date referred, input_achieved (input_date is only scored if input achieved)
             cumulative_score += 2
+            if model_instance.epilepsy_specialist_nurse_input_achieved:
+                cumulative_score += 1  # epilepsy_specialist_nurse_input_date
 
     elif model_class_name == "Investigations":
         if model_instance.eeg_indicated:

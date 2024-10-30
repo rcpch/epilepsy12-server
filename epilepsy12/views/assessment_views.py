@@ -598,6 +598,7 @@ def paediatric_neurologist_referral_made(request, assessment_id):
         Assessment.objects.filter(pk=assessment_id).update(
             paediatric_neurologist_referral_date=None,
             paediatric_neurologist_input_date=None,
+            paediatric_neurologist_input_achieved=None,
             updated_at=timezone.now(),
             updated_by=request.user,
         )
@@ -740,8 +741,63 @@ def paediatric_neurologist_input_date(request, assessment_id):
 
     assessment = Assessment.objects.get(pk=assessment_id)
 
+    # an input date has been made so set the not achieved flag to False
+    assessment.paediatric_neurologist_input_not_achieved = False
+    assessment.save(update_fields=["paediatric_neurologist_input_not_achieved"])
+
     # filter list to include only NHS organisations
     organisation_list = Organisation.objects.order_by("name")
+
+    context = {
+        "assessment": assessment,
+        "neurology_edit_active": False,
+        "organisation_list": organisation_list,
+    }
+
+    # add previous and current sites to context
+    sites_context = add_sites_and_site_history_to_context(assessment.registration.case)
+
+    context.update(sites_context)
+
+    template_name = "epilepsy12/partials/assessment/paediatric_neurology.html"
+
+    response = recalculate_form_generate_response(
+        model_instance=assessment,
+        request=request,
+        template=template_name,
+        context=context,
+        error_message=error_message,
+    )
+
+    return response
+
+
+@login_and_otp_required()
+@permission_required("epilepsy12.change_assessment", raise_exception=True)
+@user_may_view_this_child()
+def paediatric_neurologist_input_achieved(request, assessment_id):
+    """
+    This is an HTMX callback from the paediatric_neurologist partial template
+    It is triggered by a change in custom date input in the partial, generating a post request.
+    This persists the paediatric neurologist referral date value, and returns the same partial.
+    """
+
+    try:
+        error_message = None
+        validate_and_update_model(
+            request,
+            assessment_id,
+            Assessment,
+            field_name="paediatric_neurologist_input_achieved",
+            page_element="toggle_button",
+        )
+    except ValueError as error:
+        error_message = error
+
+    # filter list to include only NHS organisations
+    organisation_list = Organisation.objects.order_by("name")
+
+    assessment = Assessment.objects.get(pk=assessment_id)
 
     context = {
         "assessment": assessment,

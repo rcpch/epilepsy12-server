@@ -56,6 +56,15 @@ class Assessment(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTex
         default=None,
         null=True,
     )
+    consultant_paediatrician_input_achieved = models.BooleanField(
+        help_text={
+            "label": "Has the child been seen by a paediatrician with expertise in epilepsy by the end of the audit year?",
+            "reference": "Children with epilepsy should be seen by a paediatrician with expertise in epilepsy. If the child has been seen by a paediatrician with expertise in epilepsy by the end of the audit year, please select this option to enter the date seen.",
+        },
+        blank=True,
+        default=None,
+        null=True,
+    )
     paediatric_neurologist_referral_made = models.BooleanField(
         help_text={
             "label": "Has a referral to a consultant paediatric neurologist been made?",
@@ -82,6 +91,15 @@ class Assessment(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTex
         blank=True,
         null=True,
         default=None,
+    )
+    paediatric_neurologist_input_achieved = models.BooleanField(
+        help_text={
+            "label": "Has the child been seen by a paediatric neurologist by the end of the audit year?",
+            "reference": "Children with epilepsy should be seen by a paediatric neurologist. If the child has been seen by a paediatric neurologist by the end of the audit year, please select this option to enter the date seen.",
+        },
+        blank=True,
+        default=None,
+        null=True,
     )
     childrens_epilepsy_surgical_service_referral_made = models.BooleanField(
         help_text={
@@ -132,6 +150,15 @@ class Assessment(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTex
         help_text={
             "label": "Date seen by an epilepsy nurse specialist",
             "reference": "Date seen by an epilepsy nurse specialist",
+        },
+        blank=True,
+        default=None,
+        null=True,
+    )
+    epilepsy_specialist_nurse_input_achieved = models.BooleanField(
+        help_text={
+            "label": "Has the child been seen by an epilepsy nurse specialist by the end of the audit year?",
+            "reference": "Children with epilepsy should be seen by an epilepsy nurse specialist. If the child has been seen by an epilepsy nurse specialist by the end of the audit year, please select this option to enter the date seen.",
         },
         blank=True,
         default=None,
