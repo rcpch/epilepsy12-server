@@ -429,6 +429,11 @@ assessment_patterns = [
         consultant_paediatrician_input_date,
         name="consultant_paediatrician_input_date",
     ),
+    path(
+        "assessment/<int:assessment_id>/consultant_paediatrician_input_achieved",
+        consultant_paediatrician_input_achieved,
+        name="consultant_paediatrician_input_achieved",
+    ),
     # general paediatric centre fields
     path(
         "assessment/<int:assessment_id>/general_paediatric_centre",

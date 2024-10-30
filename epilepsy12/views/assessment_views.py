@@ -293,6 +293,57 @@ def consultant_paediatrician_referral_date(request, assessment_id):
 @login_and_otp_required()
 @permission_required("epilepsy12.change_assessment", raise_exception=True)
 @user_may_view_this_child()
+def consultant_paediatrician_input_achieved(request, assessment_id):
+    """
+    This is an HTMX callback from the consultant_paediatrician partial template
+    It is triggered by a change in input achieved toggle in the partial, generating a post request.
+    This shows or hides the consultant paediatrician input date value, and returns the same partial.
+    It updates the model with the input achieved value
+    """
+    try:
+        error_message = None
+        validate_and_update_model(
+            request,
+            assessment_id,
+            Assessment,
+            field_name="consultant_paediatrician_input_achieved",
+            page_element="toggle_button",
+        )
+    except ValueError as error:
+        error_message = error
+
+    # filter list to include only NHS organisations
+    organisation_list = Organisation.objects.order_by("name")
+
+    assessment = Assessment.objects.get(pk=assessment_id)
+
+    context = {
+        "assessment": assessment,
+        "general_paediatric_edit_active": False,
+        "organisation_list": organisation_list,
+    }
+
+    # add previous and current sites to context
+    sites_context = add_sites_and_site_history_to_context(assessment.registration.case)
+
+    context.update(sites_context)
+
+    template_name = "epilepsy12/partials/assessment/consultant_paediatrician.html"
+
+    response = recalculate_form_generate_response(
+        model_instance=assessment,
+        request=request,
+        template=template_name,
+        context=context,
+        error_message=error_message,
+    )
+
+    return response
+
+
+@login_and_otp_required()
+@permission_required("epilepsy12.change_assessment", raise_exception=True)
+@user_may_view_this_child()
 def consultant_paediatrician_input_date(request, assessment_id):
     """
     This is an HTMX callback from the consultant_paediatrician partial template
@@ -778,8 +829,9 @@ def paediatric_neurologist_input_date(request, assessment_id):
 def paediatric_neurologist_input_achieved(request, assessment_id):
     """
     This is an HTMX callback from the paediatric_neurologist partial template
-    It is triggered by a change in custom date input in the partial, generating a post request.
-    This persists the paediatric neurologist referral date value, and returns the same partial.
+    It is triggered by a change in input achieved toggle in the partial, generating a post request.
+    This shows or hides the paediatric neurologist input date value, and returns the same partial.
+    It updates the model with the input achieved value
     """
 
     try:
