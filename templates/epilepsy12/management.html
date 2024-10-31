@@ -3,7 +3,7 @@
 Treatment and care planning
 {% endblock %} 
 {% block audit_section_form %} 
-{% include './forms/management_form.html' with investigations=investigations %} 
+{% include './forms/management_form.html' with management=management  rescue_medicines=rescue_medicines antiepilepsy_medicines=antiepilepsy_medicines %} 
 {% endblock %} 
 {% block audit_section_instructions %} 
 These are the milestones for medications and care plans.
