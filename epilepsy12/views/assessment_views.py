@@ -317,6 +317,14 @@ def consultant_paediatrician_input_achieved(request, assessment_id):
 
     assessment = Assessment.objects.get(pk=assessment_id)
 
+    # if the input is not achieved, set the input date to None
+    if assessment.consultant_paediatrician_input_achieved == False:
+        Assessment.objects.filter(pk=assessment_id).update(
+            consultant_paediatrician_input_date=None,
+            updated_at=timezone.now(),
+            updated_by=request.user,
+        )
+
     context = {
         "assessment": assessment,
         "general_paediatric_edit_active": False,
@@ -850,6 +858,14 @@ def paediatric_neurologist_input_achieved(request, assessment_id):
     organisation_list = Organisation.objects.order_by("name")
 
     assessment = Assessment.objects.get(pk=assessment_id)
+
+    # if the input is not achieved, set the input date to None
+    if assessment.paediatric_neurologist_input_achieved == False:
+        Assessment.objects.filter(pk=assessment_id).update(
+            paediatric_neurologist_input_date=None,
+            updated_at=timezone.now(),
+            updated_by=request.user,
+        )
 
     context = {
         "assessment": assessment,
@@ -1731,6 +1747,14 @@ def epilepsy_specialist_nurse_input_achieved(request, assessment_id):
         error_message = error
 
     assessment = Assessment.objects.get(pk=assessment_id)
+
+    # if the input is not achieved, set the input date to None
+    if assessment.epilepsy_specialist_nurse_input_achieved == False:
+        Assessment.objects.filter(pk=assessment_id).update(
+            epilepsy_specialist_nurse_input_date=None,
+            updated_at=timezone.now(),
+            updated_by=request.user,
+        )
 
     context = {"assessment": assessment}
 
