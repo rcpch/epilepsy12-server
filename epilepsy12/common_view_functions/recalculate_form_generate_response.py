@@ -361,6 +361,9 @@ def avoid_fields(model_instance):
         return META_VARIABLES + [
             "registration",
             "childrens_epilepsy_surgical_service_input_date",
+            # "consultant_paediatrician_input_date",
+            # "paediatric_neurologist_input_date",
+            # "epilepsy_specialist_nurse_input_date",
         ]
 
     elif model_class_name == "MultiaxialDiagnosis":

@@ -177,39 +177,40 @@ def consultant_paediatrician_referral_made(request, assessment_id):
     if assessment.consultant_paediatrician_referral_made == False:
         Assessment.objects.filter(pk=assessment_id).update(
             consultant_paediatrician_referral_date=None,
+            consultant_paediatrician_input_achieved=None,
             consultant_paediatrician_input_date=None,
             updated_at=timezone.now(),
             updated_by=request.user,
         )
 
-        # refresh all objects and return
-        assessment = Assessment.objects.get(pk=assessment_id)
+    # refresh all objects and return
+    assessment = Assessment.objects.get(pk=assessment_id)
 
-        # if any allocated sites remove them
-        if Site.objects.filter(
+    # if any allocated sites remove them
+    if Site.objects.filter(
+        case=assessment.registration.case,
+        site_is_general_paediatric_centre=True,
+    ).exists():
+        # loop through these and delete any site where the organisation
+        # is not used elsewhere for this child actively for any other attribute (surgery or neurology)
+        # or is not a historical or active lead site. If it is, set site_is_general_paediatric_centre to False
+        updated_general_paediatric_status_sites = Site.objects.filter(
             case=assessment.registration.case,
             site_is_general_paediatric_centre=True,
-        ).exists():
-            # loop through these and delete any site where the organisation
-            # is not used elsewhere for this child actively for any other attribute (surgery or neurology)
-            # or is not a historical or active lead site. If it is, set site_is_general_paediatric_centre to False
-            updated_general_paediatric_status_sites = Site.objects.filter(
-                case=assessment.registration.case,
-                site_is_general_paediatric_centre=True,
-            )
-            for site in updated_general_paediatric_status_sites:
-                if (
-                    site.site_is_primary_centre_of_epilepsy_care == True
-                    or (
-                        site.site_is_paediatric_neurology_centre
-                        or site.site_is_childrens_epilepsy_surgery_centre
-                    )
-                    and site.site_is_general_paediatric_centre
-                ):
-                    site.site_is_general_paediatric_centre = False
-                    site.save(update_fields=["site_is_general_paediatric_centre"])
-                else:
-                    site.delete()
+        )
+        for site in updated_general_paediatric_status_sites:
+            if (
+                site.site_is_primary_centre_of_epilepsy_care == True
+                or (
+                    site.site_is_paediatric_neurology_centre
+                    or site.site_is_childrens_epilepsy_surgery_centre
+                )
+                and site.site_is_general_paediatric_centre
+            ):
+                site.site_is_general_paediatric_centre = False
+                site.save(update_fields=["site_is_general_paediatric_centre"])
+            else:
+                site.delete()
 
     # filter list to include only NHS organisations
     organisation_list = Organisation.objects.order_by("name")
@@ -324,6 +325,8 @@ def consultant_paediatrician_input_achieved(request, assessment_id):
             updated_at=timezone.now(),
             updated_by=request.user,
         )
+
+    assessment = Assessment.objects.get(pk=assessment_id)
 
     context = {
         "assessment": assessment,
@@ -802,7 +805,7 @@ def paediatric_neurologist_input_date(request, assessment_id):
 
     # an input date has been made so set the not achieved flag to False
     assessment.paediatric_neurologist_input_not_achieved = False
-    assessment.save(update_fields=["paediatric_neurologist_input_not_achieved"])
+    assessment.save(update_fields=["paediatric_neurologist_input_achieved"])
 
     # filter list to include only NHS organisations
     organisation_list = Organisation.objects.order_by("name")
@@ -866,6 +869,8 @@ def paediatric_neurologist_input_achieved(request, assessment_id):
             updated_at=timezone.now(),
             updated_by=request.user,
         )
+
+    assessment = Assessment.objects.get(pk=assessment_id)
 
     context = {
         "assessment": assessment,
@@ -1756,9 +1761,13 @@ def epilepsy_specialist_nurse_input_achieved(request, assessment_id):
             updated_by=request.user,
         )
 
-    context = {"assessment": assessment}
+    assessment = Assessment.objects.get(pk=assessment_id)
 
     template_name = "epilepsy12/partials/assessment/epilepsy_nurse.html"
+
+    context = {
+        "assessment": assessment,
+    }
 
     response = recalculate_form_generate_response(
         model_instance=assessment,
