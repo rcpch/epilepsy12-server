@@ -100,6 +100,8 @@ def seed_epilepsy_causes(apps, schema_editor):
     # Usmani-Riazuddin syndrome  - NOTE THIS NEEDS ADDING TO THE DATABASE MANUALLY AS THERE IS NO SNOMED CODE
     #  Craniopharyngioma SCTID: 189179009
     # 15q 13.3 microdeletion syndrome SCTID: 699254009
+    # ReNU syndrome (Neurodevelopmental disorder with hypotonia, brain anomalies, distinctive facies, and absent language (NEDHAFA)) - THIS NEEDS ADDING TO THE DATABASE MANUALLY AS THERE IS NO SNOMED CODE
+    # GNB1-related disorder - NOTE THIS NEEDS ADDING TO THE DATABASE MANUALLY AS THERE IS NO SNOMED CODE
 
     extra_concept_ids = [
         764946008,
