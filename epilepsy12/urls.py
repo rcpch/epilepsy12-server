@@ -177,9 +177,7 @@ redirect_patterns = [
     path("403", redirect_403, name="redirect_403"),
 ]
 
-home_page_patterns = [
-    path("", index, name="index")
-]
+home_page_patterns = [path("", index, name="index")]
 
 case_patterns = [
     path("organisation/<int:organisation_id>/cases/", view=case_list, name="cases"),
@@ -431,6 +429,11 @@ assessment_patterns = [
         consultant_paediatrician_input_date,
         name="consultant_paediatrician_input_date",
     ),
+    path(
+        "assessment/<int:assessment_id>/consultant_paediatrician_input_achieved",
+        consultant_paediatrician_input_achieved,
+        name="consultant_paediatrician_input_achieved",
+    ),
     # general paediatric centre fields
     path(
         "assessment/<int:assessment_id>/general_paediatric_centre",
@@ -468,6 +471,11 @@ assessment_patterns = [
         paediatric_neurologist_input_date,
         name="paediatric_neurologist_input_date",
     ),
+    path(
+        "assessment/<int:assessment_id>/paediatric_neurologist_input_achieved",
+        paediatric_neurologist_input_achieved,
+        name="paediatric_neurologist_input_achieved",
+    ),
     #     paediatric neurology centre selection
     path(
         "assessment/<int:assessment_id>/paediatric_neurology_centre",
@@ -499,6 +507,11 @@ assessment_patterns = [
         "assessment/<int:assessment_id>/epilepsy_specialist_nurse_referral_date",
         epilepsy_specialist_nurse_referral_date,
         name="epilepsy_specialist_nurse_referral_date",
+    ),
+    path(
+        "assessment/<int:assessment_id>/epilepsy_specialist_nurse_input_achieved",
+        epilepsy_specialist_nurse_input_achieved,
+        name="epilepsy_specialist_nurse_input_achieved",
     ),
     path(
         "assessment/<int:assessment_id>/epilepsy_specialist_nurse_input_date",
@@ -1061,9 +1074,17 @@ antiepilepsy_medicine_patterns = [
 ]
 
 organisational_audit_patterns = [
-    path("trust/<int:id>/audit/", view=organisational_audit_trust, name="organisational_audit_trust"),
-    path("local_health_board/<int:id>/audit/", view=organisational_audit_local_health_board, name="organisational_audit_local_health_board"),
-    path("organisational_audit", view=organisational_audit)
+    path(
+        "trust/<int:id>/audit/",
+        view=organisational_audit_trust,
+        name="organisational_audit_trust",
+    ),
+    path(
+        "local_health_board/<int:id>/audit/",
+        view=organisational_audit_local_health_board,
+        name="organisational_audit_local_health_board",
+    ),
+    path("organisational_audit", view=organisational_audit),
 ]
 
 urlpatterns = []

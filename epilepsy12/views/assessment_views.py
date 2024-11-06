@@ -177,39 +177,40 @@ def consultant_paediatrician_referral_made(request, assessment_id):
     if assessment.consultant_paediatrician_referral_made == False:
         Assessment.objects.filter(pk=assessment_id).update(
             consultant_paediatrician_referral_date=None,
+            consultant_paediatrician_input_achieved=None,
             consultant_paediatrician_input_date=None,
             updated_at=timezone.now(),
             updated_by=request.user,
         )
 
-        # refresh all objects and return
-        assessment = Assessment.objects.get(pk=assessment_id)
+    # refresh all objects and return
+    assessment = Assessment.objects.get(pk=assessment_id)
 
-        # if any allocated sites remove them
-        if Site.objects.filter(
+    # if any allocated sites remove them
+    if Site.objects.filter(
+        case=assessment.registration.case,
+        site_is_general_paediatric_centre=True,
+    ).exists():
+        # loop through these and delete any site where the organisation
+        # is not used elsewhere for this child actively for any other attribute (surgery or neurology)
+        # or is not a historical or active lead site. If it is, set site_is_general_paediatric_centre to False
+        updated_general_paediatric_status_sites = Site.objects.filter(
             case=assessment.registration.case,
             site_is_general_paediatric_centre=True,
-        ).exists():
-            # loop through these and delete any site where the organisation
-            # is not used elsewhere for this child actively for any other attribute (surgery or neurology)
-            # or is not a historical or active lead site. If it is, set site_is_general_paediatric_centre to False
-            updated_general_paediatric_status_sites = Site.objects.filter(
-                case=assessment.registration.case,
-                site_is_general_paediatric_centre=True,
-            )
-            for site in updated_general_paediatric_status_sites:
-                if (
-                    site.site_is_primary_centre_of_epilepsy_care == True
-                    or (
-                        site.site_is_paediatric_neurology_centre
-                        or site.site_is_childrens_epilepsy_surgery_centre
-                    )
-                    and site.site_is_general_paediatric_centre
-                ):
-                    site.site_is_general_paediatric_centre = False
-                    site.save(update_fields=["site_is_general_paediatric_centre"])
-                else:
-                    site.delete()
+        )
+        for site in updated_general_paediatric_status_sites:
+            if (
+                site.site_is_primary_centre_of_epilepsy_care == True
+                or (
+                    site.site_is_paediatric_neurology_centre
+                    or site.site_is_childrens_epilepsy_surgery_centre
+                )
+                and site.site_is_general_paediatric_centre
+            ):
+                site.site_is_general_paediatric_centre = False
+                site.save(update_fields=["site_is_general_paediatric_centre"])
+            else:
+                site.delete()
 
     # filter list to include only NHS organisations
     organisation_list = Organisation.objects.order_by("name")
@@ -265,6 +266,67 @@ def consultant_paediatrician_referral_date(request, assessment_id):
 
     # filter list to include only NHS organisations
     organisation_list = Organisation.objects.order_by("name")
+
+    context = {
+        "assessment": assessment,
+        "general_paediatric_edit_active": False,
+        "organisation_list": organisation_list,
+    }
+
+    # add previous and current sites to context
+    sites_context = add_sites_and_site_history_to_context(assessment.registration.case)
+
+    context.update(sites_context)
+
+    template_name = "epilepsy12/partials/assessment/consultant_paediatrician.html"
+
+    response = recalculate_form_generate_response(
+        model_instance=assessment,
+        request=request,
+        template=template_name,
+        context=context,
+        error_message=error_message,
+    )
+
+    return response
+
+
+@login_and_otp_required()
+@permission_required("epilepsy12.change_assessment", raise_exception=True)
+@user_may_view_this_child()
+def consultant_paediatrician_input_achieved(request, assessment_id):
+    """
+    This is an HTMX callback from the consultant_paediatrician partial template
+    It is triggered by a change in input achieved toggle in the partial, generating a post request.
+    This shows or hides the consultant paediatrician input date value, and returns the same partial.
+    It updates the model with the input achieved value
+    """
+    try:
+        error_message = None
+        validate_and_update_model(
+            request,
+            assessment_id,
+            Assessment,
+            field_name="consultant_paediatrician_input_achieved",
+            page_element="toggle_button",
+        )
+    except ValueError as error:
+        error_message = error
+
+    # filter list to include only NHS organisations
+    organisation_list = Organisation.objects.order_by("name")
+
+    assessment = Assessment.objects.get(pk=assessment_id)
+
+    # if the input is not achieved, set the input date to None
+    if assessment.consultant_paediatrician_input_achieved == False:
+        Assessment.objects.filter(pk=assessment_id).update(
+            consultant_paediatrician_input_date=None,
+            updated_at=timezone.now(),
+            updated_by=request.user,
+        )
+
+    assessment = Assessment.objects.get(pk=assessment_id)
 
     context = {
         "assessment": assessment,
@@ -598,6 +660,7 @@ def paediatric_neurologist_referral_made(request, assessment_id):
         Assessment.objects.filter(pk=assessment_id).update(
             paediatric_neurologist_referral_date=None,
             paediatric_neurologist_input_date=None,
+            paediatric_neurologist_input_achieved=None,
             updated_at=timezone.now(),
             updated_by=request.user,
         )
@@ -740,8 +803,74 @@ def paediatric_neurologist_input_date(request, assessment_id):
 
     assessment = Assessment.objects.get(pk=assessment_id)
 
+    # an input date has been made so set the not achieved flag to False
+    assessment.paediatric_neurologist_input_not_achieved = False
+    assessment.save(update_fields=["paediatric_neurologist_input_achieved"])
+
     # filter list to include only NHS organisations
     organisation_list = Organisation.objects.order_by("name")
+
+    context = {
+        "assessment": assessment,
+        "neurology_edit_active": False,
+        "organisation_list": organisation_list,
+    }
+
+    # add previous and current sites to context
+    sites_context = add_sites_and_site_history_to_context(assessment.registration.case)
+
+    context.update(sites_context)
+
+    template_name = "epilepsy12/partials/assessment/paediatric_neurology.html"
+
+    response = recalculate_form_generate_response(
+        model_instance=assessment,
+        request=request,
+        template=template_name,
+        context=context,
+        error_message=error_message,
+    )
+
+    return response
+
+
+@login_and_otp_required()
+@permission_required("epilepsy12.change_assessment", raise_exception=True)
+@user_may_view_this_child()
+def paediatric_neurologist_input_achieved(request, assessment_id):
+    """
+    This is an HTMX callback from the paediatric_neurologist partial template
+    It is triggered by a change in input achieved toggle in the partial, generating a post request.
+    This shows or hides the paediatric neurologist input date value, and returns the same partial.
+    It updates the model with the input achieved value
+    """
+
+    try:
+        error_message = None
+        validate_and_update_model(
+            request,
+            assessment_id,
+            Assessment,
+            field_name="paediatric_neurologist_input_achieved",
+            page_element="toggle_button",
+        )
+    except ValueError as error:
+        error_message = error
+
+    # filter list to include only NHS organisations
+    organisation_list = Organisation.objects.order_by("name")
+
+    assessment = Assessment.objects.get(pk=assessment_id)
+
+    # if the input is not achieved, set the input date to None
+    if assessment.paediatric_neurologist_input_achieved == False:
+        Assessment.objects.filter(pk=assessment_id).update(
+            paediatric_neurologist_input_date=None,
+            updated_at=timezone.now(),
+            updated_by=request.user,
+        )
+
+    assessment = Assessment.objects.get(pk=assessment_id)
 
     context = {
         "assessment": assessment,
@@ -1536,6 +1665,7 @@ def epilepsy_specialist_nurse_referral_made(request, assessment_id):
         ).update(
             epilepsy_specialist_nurse_referral_date=None,
             epilepsy_specialist_nurse_input_date=None,
+            epilepsy_specialist_nurse_input_achieved=None,
             updated_at=timezone.now(),
             updated_by=request.user,
         )
@@ -1603,6 +1733,56 @@ def epilepsy_specialist_nurse_referral_date(request, assessment_id):
 @login_and_otp_required()
 @permission_required("epilepsy12.change_assessment", raise_exception=True)
 @user_may_view_this_child()
+def epilepsy_specialist_nurse_input_achieved(request, assessment_id):
+    """
+    This is an HTMX callback from the epilepsy_nurse partial template
+    It is triggered by a change in the input achieved toggle in the partial, generating a post request.
+    This persists the epilepsy nurse specialist input achieved value, and returns the same partial.
+    """
+    try:
+        error_message = None
+        validate_and_update_model(
+            request,
+            assessment_id,
+            Assessment,
+            field_name="epilepsy_specialist_nurse_input_achieved",
+            page_element="toggle_button",
+        )
+    except ValueError as error:
+        error_message = error
+
+    assessment = Assessment.objects.get(pk=assessment_id)
+
+    # if the input is not achieved, set the input date to None
+    if assessment.epilepsy_specialist_nurse_input_achieved == False:
+        Assessment.objects.filter(pk=assessment_id).update(
+            epilepsy_specialist_nurse_input_date=None,
+            updated_at=timezone.now(),
+            updated_by=request.user,
+        )
+
+    assessment = Assessment.objects.get(pk=assessment_id)
+
+    template_name = "epilepsy12/partials/assessment/epilepsy_nurse.html"
+
+    context = {
+        "assessment": assessment,
+    }
+
+    response = recalculate_form_generate_response(
+        model_instance=assessment,
+        request=request,
+        template=template_name,
+        context=context,
+        error_message=error_message,
+    )
+
+    return response
+
+
+@login_and_otp_required()
+@permission_required("epilepsy12.change_assessment", raise_exception=True)
+@user_may_view_this_child()
 def epilepsy_specialist_nurse_input_date(request, assessment_id):
     """
     This is an HTMX callback from the epilepsy_nurse partial template
@@ -1621,7 +1801,7 @@ def epilepsy_specialist_nurse_input_date(request, assessment_id):
             page_element="date_field",
             comparison_date_field_name="epilepsy_specialist_nurse_referral_date",
             is_earliest_date=False,
-            earliest_allowable_date=assessment.registration.assessment.epilepsy_specialist_nurse_referral_date,
+            earliest_allowable_date=assessment.epilepsy_specialist_nurse_referral_date,
         )
     except ValueError as error:
         error_message = error
