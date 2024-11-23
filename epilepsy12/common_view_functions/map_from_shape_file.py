@@ -111,6 +111,13 @@ def generate_case_count_choropleth_map(
     else:
         identifier = None
 
+    # Jersey is a special case as it is not part of the UK and does not have an NHS England region, LHB or ICB. Country is the only level of abstraction that Jersey is part of.
+    if organisation.ods_code == "RGT1W":
+        # Jersey in the model is still part of England so we need to remap here to the Jersey Model
+        if abstraction_level == EnumAbstractionLevel.COUNTRY:
+            # TODO complete this
+            pass
+
     # Highlight the region of the organisation by colouring the region boudary in a pink colour
     organisation_region = getattr(organisation, identifier)
     organisation_region_identifier = getattr(organisation_region, properties)
