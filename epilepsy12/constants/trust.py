@@ -5,6 +5,7 @@ The matching ods codes are found in the RCPCH_ORGANISATIONS constant.
 Does not include Wales - these are in the Local Health Boards file
 Some ambulance trusts are here but commented out.
 """
+
 TRUSTS = [
     {
         "ods_code": "RVV",
@@ -2184,4 +2185,13 @@ TRUSTS = [
         "postcode": "TW11 8HU",
         "country": "ENGLAND",
     },
+    {
+        "ods_code": "RGT1W",
+        "trust_name": "JERSEY GENERAL HOSPITAL",
+        "address_line_1": "THE PARADE",
+        "address_line_2": "",
+        "town": "ST HELIER",
+        "postcode": "JE1 3Q",
+        "country": "JERSEY",
+    },  # 01/04/2015 Jersey is a special case as it is both an organisation and a Trust. The ODS code is the same for both.
 ]

@@ -8477,6 +8477,31 @@ RCPCH_ORGANISATIONS = [
         "Fax": "",
         "LocalAuthority": "",
     },  # 01/04/1994 Region: Y60 MIDLANDS COMMISSIONING REGION, ICB: QOC NHS SHROPSHIRE, TELFORD AND WREKIN INTEGRATED CARE BOARD, OPENUK: BRPNF - Birmingham Regional Paediatric Neurology Form
+    {
+        "OrganisationID": "",
+        "OrganisationCode": "RGT1W",
+        "OrganisationType": "",
+        "SubType": "",
+        "Sector": "",
+        "OrganisationStatus": "",
+        "IsPimsManaged": "",
+        "OrganisationName": "JERSEY GENERAL HOSPITAL",
+        "Address1": "THE PARADE",
+        "Address2": "",
+        "Address3": "",
+        "City": "ST HELIER",
+        "County": "JERSEY",
+        "Postcode": "JE1 3Q",
+        "Latitude": "49.18841258908002",
+        "Longitude": "-2.1122213730166157",
+        "ParentODSCode": "RGT1W",  # This is a special case as it is both an organisation and a trust so the parent trust ODS code is the same as the organisation code and exists in both models.
+        "ParentName": "JERSEY GENERAL HOSPITAL",
+        "Phone": "01534 442000",
+        "Email": "",
+        "Website": "",
+        "Fax": "",
+        "LocalAuthority": "",
+    },  # 01/04/2015 - Jersey General Hospital, Jersey, Channel Islands is a special case as it is both an organisation and a trust. It is member of the South West Interest Group Paediatric Epilepsy. It has no other organisational hierarchies
 ]
 
 """

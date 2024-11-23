@@ -3,7 +3,7 @@ from ..time_and_user_abstract_base_classes import TimeStampAbstractBaseClass
 
 
 class Trust(TimeStampAbstractBaseClass):
-    ods_code = models.CharField(max_length=3, unique=True)
+    ods_code = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=100)
     address_line_1 = models.CharField(
         max_length=100, null=True, blank=True, default=None

@@ -119,8 +119,14 @@ class CaseAdmin(SimpleHistoryAdmin):
 
 
 class OrganisationalAuditSubmissionAdmin(SimpleHistoryAdmin):
-    search_fields = ["trust__name", "local_health_board__name", "trust__ods_code", "local_health_board__ods_code"]
+    search_fields = [
+        "trust__name",
+        "local_health_board__name",
+        "trust__ods_code",
+        "local_health_board__ods_code",
+    ]
     list_filter = ["submission_period"]
+
 
 class OrganisationalAuditSubmissionPeriodAdmin(SimpleHistoryAdmin):
     actions = ["download"]
@@ -128,16 +134,20 @@ class OrganisationalAuditSubmissionPeriodAdmin(SimpleHistoryAdmin):
     @admin.action(description="Download submissions as CSV")
     def download(self, request, queryset):
         if queryset.count() > 1:
-            self.message_user(request, "Please select only one submission period to download", messages.ERROR)
+            self.message_user(
+                request,
+                "Please select only one submission period to download",
+                messages.ERROR,
+            )
         else:
             submission_period = queryset.first()
-            
+
             filename = f"e12-org-audit-{submission_period.year}.csv"
-            
+
             data = export_submission_period_as_csv(submission_period)
 
             response = HttpResponse(data, content_type="text/csv")
-            response['Content-Disposition'] = f"attachment; filename={filename}"
+            response["Content-Disposition"] = f"attachment; filename={filename}"
 
             return response
 
@@ -149,7 +159,13 @@ admin.site.register(Case, CaseAdmin)
 admin.site.register(Comorbidity, SimpleHistoryAdmin)
 admin.site.register(EpilepsyContext, SimpleHistoryAdmin)
 admin.site.register(Investigations, SimpleHistoryAdmin)
-admin.site.register(Organisation, SimpleHistoryAdmin)
+
+
+class OrganisationAdmin(SimpleHistoryAdmin):
+    search_fields = ["name", "ods_code"]
+
+
+admin.site.register(Organisation, OrganisationAdmin)
 admin.site.register(FirstPaediatricAssessment, SimpleHistoryAdmin)
 admin.site.register(Management, SimpleHistoryAdmin)
 admin.site.register(Registration, SimpleHistoryAdmin)
@@ -178,6 +194,7 @@ admin.site.register(ComorbidityList)
 admin.site.register(Medicine)
 
 admin.site.register(Country)
+admin.site.register(Jersey)
 admin.site.register(LondonBorough)
 admin.site.register(IntegratedCareBoard)
 admin.site.register(NHSEnglandRegion)
@@ -186,7 +203,9 @@ admin.site.register(LocalHealthBoard)
 admin.site.register(OPENUKNetwork)
 
 admin.site.register(OrganisationalAuditSubmission, OrganisationalAuditSubmissionAdmin)
-admin.site.register(OrganisationalAuditSubmissionPeriod, OrganisationalAuditSubmissionPeriodAdmin)
+admin.site.register(
+    OrganisationalAuditSubmissionPeriod, OrganisationalAuditSubmissionPeriodAdmin
+)
 admin.site.register(Banner)
 
 admin.site.site_header = "Epilepsy12 admin"
