@@ -197,7 +197,13 @@ admin.site.register(Country)
 admin.site.register(LondonBorough)
 admin.site.register(IntegratedCareBoard)
 admin.site.register(NHSEnglandRegion)
-admin.site.register(Trust)
+
+
+class TrustAdmin(SimpleHistoryAdmin):
+    search_fields = ["name", "ods_code"]
+
+
+admin.site.register(Trust, TrustAdmin)
 admin.site.register(LocalHealthBoard)
 admin.site.register(OPENUKNetwork)
 
