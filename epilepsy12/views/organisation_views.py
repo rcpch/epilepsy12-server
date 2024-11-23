@@ -111,20 +111,11 @@ def selected_organisation_summary(request, organisation_id):
             organisation=selected_organisation,
             cohort=cohort_number,
         )
-        country_heatmap = generate_case_count_choropleth_map(
-            properties="boundary_identifier",
-            abstraction_level=EnumAbstractionLevel.COUNTRY,
-            organisation=selected_organisation,
-            cohort=cohort_number,
-        )
     else:
         # generate choropleth map of case counts for each level of abstraction
         if selected_organisation.ods_code == "RGT1W":
             # Jersey is a special case and although is mapped to England, is in the Channel Islands and has no ICB, NHS Region or LHB
             abstraction_level = "trust"
-
-            country_heatmap = None
-            pass
         else:
             abstraction_level = "trust"
             icb_heatmap = generate_case_count_choropleth_map(
@@ -140,12 +131,12 @@ def selected_organisation_summary(request, organisation_id):
                 cohort=cohort_number,
             )
 
-            country_heatmap = generate_case_count_choropleth_map(
-                properties="boundary_identifier",
-                abstraction_level=EnumAbstractionLevel.COUNTRY,
-                organisation=selected_organisation,
-                cohort=cohort_number,
-            )
+    country_heatmap = generate_case_count_choropleth_map(
+        properties="boundary_identifier",
+        abstraction_level=EnumAbstractionLevel.COUNTRY,
+        organisation=selected_organisation,
+        cohort=cohort_number,
+    )
 
     # query to return all completed E12 cases in the current cohort in this organisation
     count_of_current_cohort_registered_completed_cases_in_this_organisation = (
@@ -263,7 +254,7 @@ def selected_organisation_summary(request, organisation_id):
         "individual_kpi_choices": INDIVIDUAL_KPI_MEASURES,
         "organisation_cases_map": scatterplot_of_cases_for_selected_organisation,
         "aggregated_distances": aggregated_distances,
-        "country_heatmap": country_heatmap if country_heatmap else None,
+        "country_heatmap": country_heatmap,
     }
     if selected_organisation.country.boundary_identifier == "W92000004":
         context["lhb_heatmap"] = lhb_heatmap

@@ -38,15 +38,17 @@ def generate_case_count_choropleth_map(
     """
     px.set_mapbox_access_token(settings.MAPBOX_API_KEY)
 
-    if organisation.ods_code == "RGT1W" and (
-        abstraction_level != EnumAbstractionLevel.ORGANISATION
-        or abstraction_level != EnumAbstractionLevel.TRUST
-    ):
-        # Jersey is a special case as it is not part of the UK and does not have an NHS England region, LHB or ICB.
-        logger.warning("Jersey is only part of the country level of abstraction")
-        return None
+    # if organisation.ods_code == "RGT1W" and (
+    #     abstraction_level != EnumAbstractionLevel.ORGANISATION
+    #     or abstraction_level != EnumAbstractionLevel.TRUST
+    # ):
+    #     # Jersey is a special case as it is not part of the UK and does not have an NHS England region, LHB or ICB.
+    #     logger.warning("Jersey is only part of the country level of abstraction")
+    #     return None
 
-    region_tile = region_tile_for_abstraction_level(abstraction_level=abstraction_level)
+    region_tile = region_tile_for_abstraction_level(
+        abstraction_level=abstraction_level, organisation=organisation
+    )
 
     geojson_data = json.loads(region_tile)
     features = geojson_data["features"]
@@ -122,16 +124,10 @@ def generate_case_count_choropleth_map(
     else:
         identifier = None
 
-    # Jersey is a special case as it is not part of the UK and does not have an NHS England region, LHB or ICB. Country is the only level of abstraction that Jersey is part of.
-    if organisation.ods_code == "RGT1W":
-        # Jersey in the model is still part of England so we need to remap here to the Jersey Model
-        if abstraction_level == EnumAbstractionLevel.COUNTRY:
-            # TODO complete this
-            pass
-
-    # Highlight the region of the organisation by colouring the region boudary in a pink colour
+    # Highlight the region of the organisation by colouring the region boundary in a pink colour
     organisation_region = getattr(organisation, identifier)
     organisation_region_identifier = getattr(organisation_region, properties)
+
     highlighted_region = dataframe[
         dataframe["identifier"] == organisation_region_identifier
     ]
@@ -294,7 +290,9 @@ def all_organisations_within_a_level_of_abstraction(
     return level_abstraction_organisations
 
 
-def region_tile_for_abstraction_level(abstraction_level: EnumAbstractionLevel):
+def region_tile_for_abstraction_level(
+    abstraction_level: EnumAbstractionLevel, organisation
+):
     """
     Returns the geojson tile for a given level of abstraction
     """
@@ -308,7 +306,7 @@ def region_tile_for_abstraction_level(abstraction_level: EnumAbstractionLevel):
     elif abstraction_level == EnumAbstractionLevel.NHS_ENGLAND_REGION:
         region_tile = return_tile_for_region("nhs_england_region")
     elif abstraction_level == EnumAbstractionLevel.COUNTRY:
-        region_tile = return_tile_for_region("country")
+        region_tile = return_tile_for_region("country", organisation)
     else:  # pragma: no cover
         raise ValueError("Invalid abstraction level")
 

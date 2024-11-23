@@ -40,7 +40,7 @@ def create_jersey_general_hospital(apps, schema_editor):
         address_line_2=JERSEY_NHS_TRUST["address_line_2"],
         town=JERSEY_NHS_TRUST["town"],
         postcode=JERSEY_NHS_TRUST["postcode"],
-        country=jersey,
+        country=jersey.name,
         telephone=None,
         website=None,
         active=True,
