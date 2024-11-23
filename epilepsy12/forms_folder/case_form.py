@@ -84,13 +84,17 @@ class CaseForm(forms.ModelForm):
     locked_by = forms.CharField(help_text="User who locked the record", required=False)
 
     def __init__(self, *args, **kwargs) -> None:
-
-        super(CaseForm, self).__init__(*args, **kwargs)
-        self.fields["ethnicity"].widget.attrs.update({"class": "ui rcpch dropdown"})
         self.organisation_id = kwargs.pop(
             "organisation_id", None
         )  # This is the organisation_id
+        super(CaseForm, self).__init__(*args, **kwargs)
         self.existing_nhs_number = self.instance.nhs_number
+        self.fields["ethnicity"].widget.attrs.update({"class": "ui rcpch dropdown"})
+        if Organisation.objects.get(id=self.organisation_id).ods_code == "RGT1W":
+            # this is Jersey - hide the NHS number field
+            self.fields["nhs_number"].widget = forms.HiddenInput()
+            self.fields["nhs_number"].required = False
+            self.fields["unique_reference_number"].required = True
 
         # Check if DEBUG is True and set the initial value conditionally
         if settings.DEBUG:
@@ -102,7 +106,11 @@ class CaseForm(forms.ModelForm):
             self.fields["postcode"].initial = return_random_postcode(
                 country_boundary_identifier="E01000001"
             )
-            self.fields["nhs_number"].initial = nhs_number.generate()[0]
+            if Organisation.objects.get(id=self.organisation_id).ods_code == "RGT1W":
+                # this is Jersey
+                self.fields["unique_reference_number"].initial = randint(1000, 9999)
+            else:
+                self.fields["nhs_number"].initial = nhs_number.generate()[0]
 
     class Meta:
         model = Case
@@ -135,6 +143,11 @@ class CaseForm(forms.ModelForm):
 
     def clean_nhs_number(self):
         # remove spaces
+        organisation = Organisation.objects.get(id=self.organisation_id)
+        if organisation.ods_code == "RGT1W":
+            nhs_number = None
+            return nhs_number
+
         formatted_nhs_number = (
             str(self.cleaned_data["nhs_number"]).replace(" ", "").zfill(10)
         )
@@ -164,9 +177,6 @@ class CaseForm(forms.ModelForm):
         unique_reference_number = cleaned_data.get("unique_reference_number")
         organisation = Organisation.objects.get(id=self.organisation_id)
         if organisation.ods_code == "RGT1W":
-            # this is Jersey - NHS numbers are not used
-            if nhs_number:
-                raise ValidationError("NHS Numbers are not used in Jersey")
             if unique_reference_number is None:
                 raise ValidationError("URN is a mandatory field.")
             if self.instance.unique_reference_number:
@@ -186,8 +196,6 @@ class CaseForm(forms.ModelForm):
         else:
             # this is England or Wales - NHS numbers are used
             # validation of NHS number is done in the clean_nhs_number method
-            if unique_reference_number:
-                raise ValidationError("URN is not used in England or Wales")
             if nhs_number is None:
                 raise ValidationError("NHS Number is a mandatory field.")
 
