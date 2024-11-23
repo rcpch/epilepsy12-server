@@ -19,12 +19,12 @@ from django.contrib.gis.db import models
 class CountryBoundaries(models.Model):
     boundary_identifier = models.CharField(max_length=9)
     name = models.CharField(max_length=16)
-    welsh_name = models.CharField(max_length=17)
-    bng_e = models.BigIntegerField()
-    bng_n = models.BigIntegerField()
-    long = models.FloatField()
-    lat = models.FloatField()
-    globalid = models.CharField(max_length=38)
+    welsh_name = models.CharField(max_length=17, null=True, blank=True)
+    bng_e = models.BigIntegerField(null=True, blank=True)
+    bng_n = models.BigIntegerField(null=True, blank=True)
+    long = models.FloatField(null=True, blank=True)
+    lat = models.FloatField(null=True, blank=True)
+    globalid = models.CharField(max_length=38, null=True, blank=True)
     geom = models.MultiPolygonField(srid=27700)
 
     class Meta:

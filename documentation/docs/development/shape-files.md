@@ -9,7 +9,7 @@ GeoDjango and GIS is a package that sits ontop of Django and is accompanied by a
 
 Shape files contain the coordinates to map boundaries of regions. Epilepsy12 has boundary files for the countries of the United Kingdom from the UK [Office of National Statistics](https://geoportal.statistics.gov.uk/).
 
-In November 2024 support was added for Jersey. The shape files for this were taken from [GADM](https://gadm.org/index.html), a well-known resource of geographical data.
+In November 2024 support was added for Jersey. The shape files for this were taken from [GADM](https://gadm.org/index.html), a well-known resource of geographical data. This is a walk through of this as an example but note this is not how it is implemented actually. It is an example to show how to add a new model and boundary data to it. In reality, no new model was created for Jersey but instead the `.shp` file was mapped to existing fields in the `Country` model and then a new migration created to add the Organisation in Jersey with all its relationships.
 
 ### Adding a new .shp file
 

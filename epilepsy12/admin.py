@@ -194,7 +194,6 @@ admin.site.register(ComorbidityList)
 admin.site.register(Medicine)
 
 admin.site.register(Country)
-admin.site.register(Jersey)
 admin.site.register(LondonBorough)
 admin.site.register(IntegratedCareBoard)
 admin.site.register(NHSEnglandRegion)

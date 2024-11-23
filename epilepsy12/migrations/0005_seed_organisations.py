@@ -80,7 +80,7 @@ def seed_organisations(apps, schema_editor):
                     geocode_coordinates=new_point,
                     telephone=rcpch_organisation["Phone"],
                 )
-                # add trust or local health board
+                # add trust or local health board and country
                 if (
                     LocalHealthBoard.objects.filter(
                         ods_code=rcpch_organisation["ParentODSCode"]

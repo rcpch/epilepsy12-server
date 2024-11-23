@@ -1,6 +1,7 @@
 # python imports
 from datetime import date
 import json
+import logging
 
 # django imports
 from django.apps import apps
@@ -25,6 +26,8 @@ from ..constants import (
 )
 from .tiles_for_region import return_tile_for_region
 
+logger = logging.getLogger(__name__)
+
 
 def generate_case_count_choropleth_map(
     properties, organisation, abstraction_level, cohort
@@ -34,6 +37,14 @@ def generate_case_count_choropleth_map(
     Accepts the geojson data as a string, the properties key to use as the identifier, and the cohort.
     """
     px.set_mapbox_access_token(settings.MAPBOX_API_KEY)
+
+    if organisation.ods_code == "RGT1W" and (
+        abstraction_level != EnumAbstractionLevel.ORGANISATION
+        or abstraction_level != EnumAbstractionLevel.TRUST
+    ):
+        # Jersey is a special case as it is not part of the UK and does not have an NHS England region, LHB or ICB.
+        logger.warning("Jersey is only part of the country level of abstraction")
+        return None
 
     region_tile = region_tile_for_abstraction_level(abstraction_level=abstraction_level)
 

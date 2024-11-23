@@ -63,7 +63,6 @@ from .semiology_keyword import Keyword
 # IntegratedCareBoardEntity has a one to many relationship with NHSEnglandRegion
 
 from .entities.country import Country
-from .entities.jersey import Jersey
 from .entities.london_borough import LondonBorough
 from .entities.open_uk_network import OPENUKNetwork
 from .entities.integrated_care_board import IntegratedCareBoard

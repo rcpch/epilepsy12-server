@@ -5759,7 +5759,7 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
-                ("ods_code", models.CharField(max_length=10, unique=True)),
+                ("ods_code", models.CharField(max_length=3, unique=True)),
                 ("name", models.CharField(max_length=100)),
                 (
                     "address_line_1",

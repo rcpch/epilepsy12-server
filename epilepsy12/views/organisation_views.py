@@ -122,7 +122,8 @@ def selected_organisation_summary(request, organisation_id):
         if selected_organisation.ods_code == "RGT1W":
             # Jersey is a special case and although is mapped to England, is in the Channel Islands and has no ICB, NHS Region or LHB
             abstraction_level = "trust"
-            country_heatmap = None  # TODO: add Jersey to the country_heatmap
+
+            country_heatmap = None
             pass
         else:
             abstraction_level = "trust"
