@@ -115,7 +115,13 @@ class Epilepsy12UserAdmin(UserAdmin, SimpleHistoryAdmin):
 
 
 class CaseAdmin(SimpleHistoryAdmin):
-    search_fields = ["first_name", "surname", "nhs_number", "date_of_birth"]
+    search_fields = [
+        "first_name",
+        "surname",
+        "nhs_number",
+        "unique_reference_number",
+        "date_of_birth",
+    ]
 
 
 class OrganisationalAuditSubmissionAdmin(SimpleHistoryAdmin):

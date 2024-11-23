@@ -1,20 +1,18 @@
 from datetime import date
-from random import randint 
+from random import randint
 
 from django import forms
 from django.conf import settings
 from django.forms import ValidationError
 import nhs_number
 
-from ..models import Case
+from ..models import Case, Organisation
 from ..constants import *
 from ..general_functions import is_valid_postcode, return_random_postcode
 
 
 class CaseForm(forms.ModelForm):
-    
-    
-    
+
     unknown_postcode = forms.CharField(required=False)
 
     first_name = forms.CharField(
@@ -56,7 +54,14 @@ class CaseForm(forms.ModelForm):
                 "data-mask": "000 000 0000",
             }
         ),
-        required=True,
+        required=False,
+    )
+    unique_reference_number = forms.CharField(
+        help_text="Enter the Unique Reference Number (URN).",
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "URN", "type": "text"}
+        ),
+        required=False,
     )
 
     postcode = forms.CharField(
@@ -79,19 +84,25 @@ class CaseForm(forms.ModelForm):
     locked_by = forms.CharField(help_text="User who locked the record", required=False)
 
     def __init__(self, *args, **kwargs) -> None:
-        
+
         super(CaseForm, self).__init__(*args, **kwargs)
         self.fields["ethnicity"].widget.attrs.update({"class": "ui rcpch dropdown"})
-
+        self.organisation_id = kwargs.pop(
+            "organisation_id", None
+        )  # This is the organisation_id
         self.existing_nhs_number = self.instance.nhs_number
-        
+
         # Check if DEBUG is True and set the initial value conditionally
         if settings.DEBUG:
-            self.fields['first_name'].initial  = 'Bob'
-            self.fields['surname'].initial = 'Dylan'
-            self.fields['date_of_birth'].initial = date(randint(2005, 2021), randint(1, 12), randint(1, 28))
-            self.fields['postcode'].initial = return_random_postcode(country_boundary_identifier='E01000001')
-            self.fields['nhs_number'].initial = nhs_number.generate()[0]
+            self.fields["first_name"].initial = "Bob"
+            self.fields["surname"].initial = "Dylan"
+            self.fields["date_of_birth"].initial = date(
+                randint(2005, 2021), randint(1, 12), randint(1, 28)
+            )
+            self.fields["postcode"].initial = return_random_postcode(
+                country_boundary_identifier="E01000001"
+            )
+            self.fields["nhs_number"].initial = nhs_number.generate()[0]
 
     class Meta:
         model = Case
@@ -146,3 +157,38 @@ class CaseForm(forms.ModelForm):
             return formatted_nhs_number
         else:
             raise ValidationError(f"{formatted_nhs_number} is not a valid NHS number")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        nhs_number = cleaned_data.get("nhs_number")
+        unique_reference_number = cleaned_data.get("unique_reference_number")
+        organisation = Organisation.objects.get(id=self.organisation_id)
+        if organisation.ods_code == "RGT1W":
+            # this is Jersey - NHS numbers are not used
+            if nhs_number:
+                raise ValidationError("NHS Numbers are not used in Jersey")
+            if unique_reference_number is None:
+                raise ValidationError("URN is a mandatory field.")
+            if self.instance.unique_reference_number:
+                # there is an existing URN
+                if unique_reference_number != self.instance.unique_reference_number:
+                    # the new URN does not match the one stored
+                    if Case.objects.filter(
+                        unique_reference_number=unique_reference_number
+                    ).exists():
+                        raise ValidationError("Unique Reference Number already taken!")
+            else:
+                # this is a new form - check this number is unique in the database
+                if Case.objects.filter(
+                    unique_reference_number=self.instance.unique_reference_number
+                ).exists():
+                    raise ValidationError("Unique Reference Number already taken!")
+        else:
+            # this is England or Wales - NHS numbers are used
+            # validation of NHS number is done in the clean_nhs_number method
+            if unique_reference_number:
+                raise ValidationError("URN is not used in England or Wales")
+            if nhs_number is None:
+                raise ValidationError("NHS Number is a mandatory field.")
+
+        return cleaned_data

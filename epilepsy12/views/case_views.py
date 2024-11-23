@@ -597,7 +597,7 @@ def create_case(request, organisation_id):
         country_choice,
         ("ZZ993VZ", "No fixed abode"),
     )
-    form = CaseForm(request.POST or None)
+    form = CaseForm(request.POST or None, organisation_id=organisation_id)
 
     template_name = "epilepsy12/cases/case.html"
 

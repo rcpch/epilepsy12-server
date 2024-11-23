@@ -64,7 +64,20 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
         blank=True,
     )
     nhs_number = models.CharField(  # the NHS number for England and Wales
-        "NHS Number", unique=True, blank=True, null=True, max_length=10
+        "NHS Number",
+        unique=True,
+        blank=True,
+        null=True,
+        max_length=10,
+        help_text="This is the NHS number for England and Wales. It is used to identify the patient in the audit.",
+    )
+    unique_reference_number = models.CharField(
+        "Unique Reference Number (URN)",
+        unique=True,
+        blank=True,
+        null=True,
+        max_length=20,
+        help_text="This is a unique reference number for Jersey patients. It is used to identify the patient in the audit.",
     )
     first_name = CharField(
         "First name",
