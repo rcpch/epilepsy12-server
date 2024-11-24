@@ -4,7 +4,7 @@ from random import randint
 from django import forms
 from django.conf import settings
 from django.forms import ValidationError
-import nhs_number
+import nhs_number as nhs_number_package
 
 from ..models import Case, Organisation
 from ..constants import *
@@ -87,19 +87,31 @@ class CaseForm(forms.ModelForm):
         self.organisation_id = kwargs.pop(
             "organisation_id", None
         )  # This is the organisation_id
+
+        # set a flag to check if this is Jersey
+        is_jersey = (
+            Organisation.objects.get(
+                id=self.organisation_id
+            ).country.boundary_identifier
+            == "JEY"
+        )
         super(CaseForm, self).__init__(*args, **kwargs)
         self.existing_nhs_number = self.instance.nhs_number
         self.fields["ethnicity"].widget.attrs.update({"class": "ui rcpch dropdown"})
-        if Organisation.objects.get(id=self.organisation_id).ods_code == "RGT1W":
+        if is_jersey:
             # this is Jersey - hide the NHS number field
             self.fields["nhs_number"].widget = forms.HiddenInput()
             self.fields["nhs_number"].required = False
             self.fields["unique_reference_number"].required = True
+            self.fields["unique_reference_number"].initial = (
+                self.instance.unique_reference_number
+            )
         else:
             # this is England or Wales - hide the URN field
             self.fields["unique_reference_number"].widget = forms.HiddenInput()
             self.fields["unique_reference_number"].required = False
             self.fields["nhs_number"].required = True
+            self.fields["nhs_number"].initial = self.instance.nhs_number
 
         # Check if DEBUG is True and set the initial value conditionally
         if settings.DEBUG:
@@ -108,27 +120,38 @@ class CaseForm(forms.ModelForm):
             self.fields["date_of_birth"].initial = date(
                 randint(2005, 2021), randint(1, 12), randint(1, 28)
             )
-            self.fields["postcode"].initial = return_random_postcode(
-                country_boundary_identifier="E01000001"
-            )
             is_jersey = (
                 Organisation.objects.get(
                     id=self.organisation_id
                 ).country.boundary_identifier
                 == "JEY"
             )
+            # set a random postcode if DEBUG is True: E01000001 is the boundary identifier for England but if is_jersey is True
+            # then a Jersey postcode will be returned instead of an English/Welsh postcode
+            self.fields["postcode"].initial = return_random_postcode(
+                country_boundary_identifier=Organisation.objects.get(
+                    id=self.organisation_id
+                ).country.boundary_identifier,
+                is_jersey=is_jersey,
+            )
             if self.instance.nhs_number is None and is_jersey:
                 # this is Jersey
                 if self.instance.unique_reference_number is None:
-                    # this is a new form
-                    self.fields["unique_reference_number"].initial = randint(1000, 9999)
+                    # this is a new form - create a new URN that is unique
+                    while True:
+                        urn = f"JEY-{nhs_number_package.generate()[0]}"
+                        if not Case.objects.filter(
+                            unique_reference_number=urn
+                        ).exists():
+                            break
+                    self.fields["unique_reference_number"].initial = urn
                     self.fields["nhs_number"].initial = None
             else:
                 # this is England or Wales
                 self.fields["unique_reference_number"].initial = None
                 if self.instance.nhs_number is None:
                     # this is a new form
-                    self.fields["nhs_number"].initial = nhs_number.generate()[0]
+                    self.fields["nhs_number"].initial = nhs_number_package.generate()[0]
 
     class Meta:
         model = Case
@@ -183,7 +206,7 @@ class CaseForm(forms.ModelForm):
                 raise ValidationError("NHS Number already taken!")
 
         # check NHS number is valid
-        validity = nhs_number.is_valid(formatted_nhs_number)
+        validity = nhs_number_package.is_valid(formatted_nhs_number)
         if validity:
             return formatted_nhs_number
         else:

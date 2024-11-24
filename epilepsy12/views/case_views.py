@@ -624,7 +624,10 @@ def create_case(request, organisation_id):
                 organisation=organisation,
                 case=obj,
             )
-            messages.success(request, "You successfully created the case")
+            messages.success(
+                request,
+                f"You successfully add {obj} to Epilepsy12. They can now be registered in to the current cohort.",
+            )
             return redirect("cases", organisation_id=organisation_id)
         else:
             error_messages = []
