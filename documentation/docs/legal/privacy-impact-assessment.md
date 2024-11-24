@@ -1,7 +1,7 @@
 ---
 title: Data Protection Impact Assessment
 reviewers: Dr Marcus Baw
-dpia_path: ../../reference-documents/2023-12-PIA-2018-02-epilepsy12-pia-v2-1_Final.pdf
+dpia_path: ../reference-documents/2023-12-PIA-2018-02-epilepsy12-pia-v2-1_Final.pdf
 hide:
   - toc
 ---

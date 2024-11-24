@@ -26,7 +26,7 @@ cd rcpch-audit-engine
 ```
 
 !!! warning "Windows Setup"
-    **If you are on Windows**, after installing Docker and cloning the repository, please now skip to the [(Windows) Setup for development using Docker Compose](./docker-setup.md#windows-setup-for-development-using-docker-compose) section.
+    **If you are on Windows**, after installing Docker and cloning the repository, please now skip to the [(Windows) Setup for development using Docker Compose](./docker-setup-windows.md) section.
 
 ### Ensure you are on the default `development` branch
 
@@ -48,7 +48,6 @@ cp envs/env-template envs/.env
 
 !!! warning "Mac Users"
     If using Mac and Safari, to access the Epilepsy 12 engine in your development, you must change the `SITE_DOMAIN` name in .env to 'localhost', and type this into your browser once you have executed `s/up` in the next step. This will load the E12 engine in your Safari browser.
-
     However, for simplicity, we recommend using a different browser, such as Chrome, and leaving the .env file unaltered.
 
 ### Start the development environment for the first time using our startup script
@@ -107,7 +106,6 @@ This Docker setup is quite new so please do open an issue if there is anything t
 
 !!! warning "Terminal is now occupied"
     If you have successfully run the Docker Compose deployment, your terminal will be showing the combined and colour-coded logging output for all the containers and will no longer show an interactive prompt, which is means you can not run any more commands in that terminal. To resolve this, simply **open another Terminal window** in the same working directory, in which you can run commands.
-
     If opening another terminal is impractical or impossible, then in most Shell environments you can press `Ctrl`+`Z` to suspend the current process, and then `bg` to resume it in the background. This will return you to an interactive prompt. Once you've executed your further commands, you can then use `fg` to bring the console logging output back to the foreground again.
 
 ### Creating a superuser
@@ -117,6 +115,7 @@ You can use our convenience script to create a superuser in the context of the `
 ```console
 s/create-superuser
 ```
+
 The script will prompt you for required user attributes:
 
 ```console
@@ -208,7 +207,7 @@ For testing of the UI it is often useful to have some dummy data in the database
 s/seed
 ```
 
-See the [Seeding the Database](../manual-setup/#seeding-the-database) section for more details on the usage of this script, for example setting a non-default Cohort Number.
+See the [Seeding the Database](manual-setup.md#seeding-the-database) section for more details on the usage of this script, for example setting a non-default Cohort Number.
 
 ## Tips and Tricks, Gotchas and Caveats
 
