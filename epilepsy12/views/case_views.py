@@ -85,6 +85,7 @@ def case_list(request, organisation_id):
                         Q(first_name__icontains=filter_term)
                         | Q(surname__icontains=filter_term)
                         | Q(nhs_number__icontains=filter_term)
+                        | Q(unique_reference_number__icontains=filter_term)
                         | Q(id__icontains=filter_term)
                     )
                 )
@@ -111,6 +112,7 @@ def case_list(request, organisation_id):
                         Q(first_name__icontains=filter_term)
                         | Q(surname__icontains=filter_term)
                         | Q(nhs_number__icontains=filter_term)
+                        | Q(unique_reference_number__icontains=filter_term)
                         | Q(id__icontains=filter_term)
                     )
                 )
@@ -127,6 +129,7 @@ def case_list(request, organisation_id):
                         Q(first_name__icontains=filter_term)
                         | Q(surname__icontains=filter_term)
                         | Q(nhs_number__icontains=filter_term)
+                        | Q(unique_reference_number__icontains=filter_term)
                         | Q(id__icontains=filter_term)
                     )
                 )
@@ -140,6 +143,8 @@ def case_list(request, organisation_id):
         1 is trust level and 2 is national level
         Only RCPCH audit staff have this final option.
         """
+
+        jersey_flag = organisation.country.boundary_identifier == "JEY"
 
         if request.user.view_preference == 2:
             # this is an RCPCH audit team member requesting National level
@@ -174,12 +179,16 @@ def case_list(request, organisation_id):
             or request.GET.get("sort_flag") == "sort_by_nhs_number_up"
         ):
             all_cases = filtered_cases.order_by("nhs_number").all()
+            if jersey_flag:
+                all_cases = filtered_cases.order_by("unique_reference_number").all()
             sort_flag = "sort_by_nhs_number_up"
         elif (
             request.htmx.trigger_name == "sort_by_nhs_number_down"
             or request.GET.get("sort_flag") == "sort_by_nhs_number_down"
         ):
             all_cases = filtered_cases.order_by("-nhs_number").all()
+            if jersey_flag:
+                all_cases = filtered_cases.order_by("-unique_reference_number").all()
             sort_flag = "sort_by_nhs_number_down"
         elif (
             request.htmx.trigger_name == "sort_by_ethnicity_up"
@@ -650,13 +659,15 @@ def update_case(request, organisation_id, case_id):
     """
     Django function based view. Receives POST request to update view or delete
     """
-    case = get_object_or_404(Case, pk=case_id)
-    form = CaseForm(instance=case)
-
     organisation = Organisation.objects.filter(pk=organisation_id).get()
+    case = get_object_or_404(Case, pk=case_id)
+    form = CaseForm(instance=case, organisation_id=organisation_id)
 
     # set select boxes for situations when postcode unknown
-    country_choice = ("ZZ993CZ", "Address unspecified - England")
+    country_choice = (
+        "ZZ993CZ",
+        "Address unspecified - England",
+    )  # TODO we are using the same value for England and Jersey. is that correct?
     if organisation.country.boundary_identifier == "W92000004":
         country_choice = ("ZZ993GZ", "Address unspecified - Wales")
 
@@ -679,7 +690,7 @@ def update_case(request, organisation_id, case_id):
         return HttpResponseClientRedirect(redirect_to=url, status=200)
 
     if request.method == "POST":
-        form = CaseForm(request.POST, instance=case)
+        form = CaseForm(request.POST, instance=case, organisation_id=organisation_id)
         if form.is_valid():
             obj = form.save()
             if case.locked != obj.locked:
@@ -767,6 +778,10 @@ def opt_out(request, organisation_id, case_id):
         f"All data on {case} has been permanently removed from Epilepsy12. The Epilepsy12 unique identifier has been preserved to contribute to annual totals.",
     )
     case.nhs_number = None
+    case.unique_reference_number = None
+    case.location_wgs84 = None
+    case.location_bng = None
+    case.location_wgs = None
     case.first_name = None
     case.surname = None
     case.sex = None

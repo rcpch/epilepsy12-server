@@ -95,6 +95,11 @@ class CaseForm(forms.ModelForm):
             self.fields["nhs_number"].widget = forms.HiddenInput()
             self.fields["nhs_number"].required = False
             self.fields["unique_reference_number"].required = True
+        else:
+            # this is England or Wales - hide the URN field
+            self.fields["unique_reference_number"].widget = forms.HiddenInput()
+            self.fields["unique_reference_number"].required = False
+            self.fields["nhs_number"].required = True
 
         # Check if DEBUG is True and set the initial value conditionally
         if settings.DEBUG:
@@ -106,11 +111,24 @@ class CaseForm(forms.ModelForm):
             self.fields["postcode"].initial = return_random_postcode(
                 country_boundary_identifier="E01000001"
             )
-            if Organisation.objects.get(id=self.organisation_id).ods_code == "RGT1W":
+            is_jersey = (
+                Organisation.objects.get(
+                    id=self.organisation_id
+                ).country.boundary_identifier
+                == "JEY"
+            )
+            if self.instance.nhs_number is None and is_jersey:
                 # this is Jersey
-                self.fields["unique_reference_number"].initial = randint(1000, 9999)
+                if self.instance.unique_reference_number is None:
+                    # this is a new form
+                    self.fields["unique_reference_number"].initial = randint(1000, 9999)
+                    self.fields["nhs_number"].initial = None
             else:
-                self.fields["nhs_number"].initial = nhs_number.generate()[0]
+                # this is England or Wales
+                self.fields["unique_reference_number"].initial = None
+                if self.instance.nhs_number is None:
+                    # this is a new form
+                    self.fields["nhs_number"].initial = nhs_number.generate()[0]
 
     class Meta:
         model = Case

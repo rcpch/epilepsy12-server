@@ -181,6 +181,8 @@ def run_dummy_cases_seed(cases, organisations, noskip, verbose=True):
         )
         index_of_multiple_deprivation_quintile = randint(1, 5)
 
+        is_jersey = org.country.boundary_identifier == "JEY"
+
         E12CaseFactory.create_batch(
             num_cases_to_seed_in_org,
             locked=False,
@@ -194,6 +196,7 @@ def run_dummy_cases_seed(cases, organisations, noskip, verbose=True):
                 "seed_male": seed_male,
                 "seed_female": seed_female,
             },
+            is_jersey=is_jersey,
         )
 
 
