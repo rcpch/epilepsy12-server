@@ -37,7 +37,7 @@ def is_valid_postcode(postcode: str) -> bool:
 
 def coordinates_for_postcode(postcode: str) -> bool:
     """
-    Returns longitude and latitude for a valide postcode.
+    Returns longitude and latitude for a valid postcode.
     """
 
     # convert to upper case and remove spaces
