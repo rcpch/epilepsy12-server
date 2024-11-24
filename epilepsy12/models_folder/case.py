@@ -211,6 +211,12 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
                 Both are included here and stored in the model, as the shape files for the UK health boundaries are produced as BNG, rather than WGS84.
                 """
                 try:
+                    # If the postcode begins with JE, it is a Jersey postcode. Skip the coordinates lookup.
+                    if self.postcode.lower().startswith("je"):
+                        self.location_wgs84 = None
+                        self.location_bng = None
+                        return super().save(*args, **kwargs)
+
                     # Fetch the coordinates (WGS 84)
                     lon, lat = coordinates_for_postcode(postcode=self.postcode)
 
@@ -231,6 +237,7 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
                     logger.exception(
                         f"Cannot get longitude and latitude for {self.postcode}: {error}"
                     )
+                    pass
             else:
                 # if the IMD quintile has previously been added and postcode now unknown, set
                 # index_of_multiple_deprivation_quintile back to None

@@ -1,6 +1,7 @@
 import requests
 import logging
 from random import randint
+import re
 
 from django.conf import settings
 from ..constants import UNKNOWN_POSTCODES_NO_SPACES
@@ -9,9 +10,11 @@ from ..constants import UNKNOWN_POSTCODES_NO_SPACES
 logger = logging.getLogger(__name__)
 
 
-def is_valid_postcode(postcode: str) -> bool:
+def is_valid_postcode(postcode: str, is_jersey=False) -> bool:
     """
-    Returns True if postcode valid.
+    Returns True if postcode valid. False otherwise.
+    If is_jersey is True, the postcode is validated against the Jersey postcode format - this is less
+    rigorous than the API validation but is necessary since the API does not support Jersey postcodes.
     """
 
     # convert to upper case and remove spaces
@@ -19,6 +22,9 @@ def is_valid_postcode(postcode: str) -> bool:
     # look for unknown postcodes
     if formatted in UNKNOWN_POSTCODES_NO_SPACES:
         return True
+
+    if is_jersey:
+        return validate_jersey_postcode(value=postcode)
 
     # check against API
     url = f"{settings.POSTCODE_API_BASE_URL}/postcodes/{postcode}"
@@ -33,6 +39,19 @@ def is_valid_postcode(postcode: str) -> bool:
         f"Postcode validation failure. Could not validate postcode at {url}. {response.status_code=}"
     )
     return False
+
+
+def validate_jersey_postcode(value):
+    """
+    Validates if the given value matches the Jersey postcode format (JE# #AA or JE###AA without spaces).
+    """
+    value = value.upper().replace(" ", "")  # Convert to uppercase and remove all spaces
+    pattern = (
+        r"^JE\d{1,2}\d[ABD-HJLNP-UW-Z]{2}$"  # Regex for Jersey postcodes without spaces
+    )
+    if not re.match(pattern, value):
+        return False
+    return True
 
 
 def coordinates_for_postcode(postcode: str) -> bool:

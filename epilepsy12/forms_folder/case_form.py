@@ -89,7 +89,7 @@ class CaseForm(forms.ModelForm):
         )  # This is the organisation_id
 
         # set a flag to check if this is Jersey
-        is_jersey = (
+        self.is_jersey = (
             Organisation.objects.get(
                 id=self.organisation_id
             ).country.boundary_identifier
@@ -98,7 +98,7 @@ class CaseForm(forms.ModelForm):
         super(CaseForm, self).__init__(*args, **kwargs)
         self.existing_nhs_number = self.instance.nhs_number
         self.fields["ethnicity"].widget.attrs.update({"class": "ui rcpch dropdown"})
-        if is_jersey:
+        if self.is_jersey:
             # this is Jersey - hide the NHS number field
             self.fields["nhs_number"].widget = forms.HiddenInput()
             self.fields["nhs_number"].required = False
@@ -120,21 +120,15 @@ class CaseForm(forms.ModelForm):
             self.fields["date_of_birth"].initial = date(
                 randint(2005, 2021), randint(1, 12), randint(1, 28)
             )
-            is_jersey = (
-                Organisation.objects.get(
-                    id=self.organisation_id
-                ).country.boundary_identifier
-                == "JEY"
-            )
             # set a random postcode if DEBUG is True: E01000001 is the boundary identifier for England but if is_jersey is True
             # then a Jersey postcode will be returned instead of an English/Welsh postcode
             self.fields["postcode"].initial = return_random_postcode(
                 country_boundary_identifier=Organisation.objects.get(
                     id=self.organisation_id
                 ).country.boundary_identifier,
-                is_jersey=is_jersey,
+                is_jersey=self.is_jersey,
             )
-            if self.instance.nhs_number is None and is_jersey:
+            if self.is_jersey:
                 # this is Jersey
                 if self.instance.unique_reference_number is None:
                     # this is a new form - create a new URN that is unique
@@ -161,6 +155,7 @@ class CaseForm(forms.ModelForm):
             "date_of_birth",
             "sex",
             "nhs_number",
+            "unique_reference_number",
             "postcode",
             "ethnicity",
             "unknown_postcode",
@@ -168,8 +163,7 @@ class CaseForm(forms.ModelForm):
 
     def clean_postcode(self):
         postcode = self.cleaned_data["postcode"]
-
-        if is_valid_postcode(postcode=postcode):
+        if is_valid_postcode(postcode=postcode, is_jersey=self.is_jersey):
             return postcode
 
         raise ValidationError("Invalid postcode")
@@ -216,8 +210,7 @@ class CaseForm(forms.ModelForm):
         cleaned_data = super().clean()
         nhs_number = cleaned_data.get("nhs_number")
         unique_reference_number = cleaned_data.get("unique_reference_number")
-        organisation = Organisation.objects.get(id=self.organisation_id)
-        if organisation.ods_code == "RGT1W":
+        if self.is_jersey:
             if unique_reference_number is None:
                 raise ValidationError("URN is a mandatory field.")
             if self.instance.unique_reference_number:
@@ -231,7 +224,7 @@ class CaseForm(forms.ModelForm):
             else:
                 # this is a new form - check this number is unique in the database
                 if Case.objects.filter(
-                    unique_reference_number=self.instance.unique_reference_number
+                    unique_reference_number=unique_reference_number
                 ).exists():
                     raise ValidationError("Unique Reference Number already taken!")
         else:

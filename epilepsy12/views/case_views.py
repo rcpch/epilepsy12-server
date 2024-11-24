@@ -634,7 +634,7 @@ def create_case(request, organisation_id):
             for field, errors in form.errors.items():
                 for error in errors:
                     if field == "__all__":
-                        error_messages.append(f"General error: {error}")
+                        error_messages.append(f"{error}")
                     else:
                         error_messages.append(f"{field}: {error}")
             error_messages = ", ".join(error_messages)
@@ -642,7 +642,6 @@ def create_case(request, organisation_id):
                 request=request,
                 message=f"It was not possible to save the case: {error_messages}",
             )
-            # logger.info(f"Invalid data provided to case form: ".join(error_messages))
 
     context = {
         "organisation_id": organisation_id,

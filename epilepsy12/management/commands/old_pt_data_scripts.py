@@ -1,6 +1,7 @@
 """
 These scripts clean old patient data csv and convert into records which can be seeded into E12 db.
 """
+
 import pprint
 
 import nhs_number
@@ -188,7 +189,7 @@ def insert_old_pt_data(csv_path: str = "data.csv"):
             }
             continue
 
-        if not is_valid_postcode(record["postcode"]):
+        if not is_valid_postcode(record["postcode"], is_jersey=False):
             reason = "Invalid postcode"
             print(
                 f'Record: {record["nhs_number"]} - { reason } - Skipping insertion...'
