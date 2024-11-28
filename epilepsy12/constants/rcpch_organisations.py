@@ -6011,7 +6011,7 @@ RCPCH_ORGANISATIONS = [
         "Sector": "",
         "OrganisationStatus": "",
         "IsPimsManaged": "",
-        "OrganisationName": "SANDRINGHAM HOUSE",
+        "OrganisationName": "SALFORD CARE ORGANISATION",
         "Address1": "WINDSOR STREET",
         "Address2": "",
         "Address3": "",
