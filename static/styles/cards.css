@@ -85,6 +85,11 @@
   grid-template-columns: 48% 4% 48%;
 }
 
+.cohorts_dates_three_grid {
+  display: grid;
+  grid-template-columns: 30% 5% 30% 5% 30%;
+}
+
 .grid_line {
     height: 90%;
     width: 1px;
