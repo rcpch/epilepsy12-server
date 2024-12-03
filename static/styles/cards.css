@@ -45,41 +45,6 @@
     margin: 1em auto;
   }
 
-  /* .ui.rcpch_dark_blue.card {
-    background-color: var(--rcpch_dark_blue);
-    border-radius: 0%;
-    font-family: var(--rcpch_standard_font);
-    font-weight: 400;
-    color: white;
-    width: auto;
-  }
-  
-  .ui.rcpch_dark_blue.card .content .header {
-    background-color: var(--rcpch_dark_blue);
-    border-radius: 0%;
-    font-family: var(--rcpch_standard_font);
-    font-weight: 400;
-    color: white;
-  } */
-  
-  /* .ui.rcpch_dark_blue.card .content i {
-    color: white;
-  }
-  
-  .ui.rcpch_dark_blue.card .category {
-    background-color: var(--rcpch_dark_blue);
-    border-radius: 0%;
-    font-family: var(--rcpch_standard_font);
-    font-weight: 400;
-    color: white;
-  }
-  
-  .ui.white.card {
-    border-radius: 0%;
-    font-family: var(--rcpch_standard_font);
-    font-weight: 400;
-  } */
-
 .cohorts_dates_grid{
   display: grid;
   grid-template-columns: 48% 4% 48%;
@@ -102,16 +67,20 @@
 
 .ui.centered.header.cohort_card_header {
   margin-top: 0;
-  margin-bottom: 0;
+  border-radius: 0%;
 }
   /* cards for organisation details */
 .organisation_details {
     padding: 0.5em 0.5em;
-    margin: 0em auto;
+    margin: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+
+  .ui.card{
+    border-radius: 0%;
   }
   
   .ui.rcpch.organisation.icon {
@@ -210,53 +179,4 @@
     font-weight: 400;
     align-content: center;
   }
-  
-  /* .ui.rcpch_individual_kpi_fixed.card {
-    display: flex;
-    flex-direction: column;
-    background-color: white !important;
-    font-family: var(--rcpch_standard_font);
-    color: white;
-    text-align: center;
-    font-weight: 400;
-    align-content: center;
-  }
-  
-  .ui.rcpch_individual_kpi_fixed.card .content {
-    background-color: var(--rcpch_mid_grey);
-    width: 100%;
-    border-radius: 0% !important;
-  }
-  
-  .ui.rcpch_individual_kpi.card .content {
-    background-color: var(--rcpch_strong_blue);
-    width: 100%;
-    border-radius: 0% !important;
-  }
-  
-  .ui.rcpch_individual_kpi.card:hover .content {
-    background-color: var(--rcpch_light_blue);
-  }
-  
-  .ui.rcpch_individual_kpi.card .content.summary_kpi_pie_title h3 {
-    color: white;
-  }
-  
-  .ui.rcpch_individual_kpi_fixed.card .content.summary_kpi_pie_title h3 {
-    color: white;
-  }
-  
-  .ui.rcpch_individual_kpi.card .description {
-    padding-top: 10px;
-    color: var(--rcpch_charcoal);
-    text-align: left;
-    margin: 10px;
-  }
-  
-  .ui.rcpch_individual_kpi_fixed.card .description {
-    padding-top: 10px;
-    color: var(--rcpch_charcoal);
-    text-align: left;
-    margin: 10px;
-  } */
   
