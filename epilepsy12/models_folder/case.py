@@ -258,6 +258,7 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
     class Meta:
         verbose_name = "Patient"
         verbose_name_plural = "Patients"
+        unique_together = ["nhs_number", "unique_reference_number"]
         # custom permissions for Case class
         permissions = [
             CAN_LOCK_CHILD_CASE_DATA_FROM_EDITING,

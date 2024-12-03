@@ -38,14 +38,6 @@ def generate_case_count_choropleth_map(
     """
     px.set_mapbox_access_token(settings.MAPBOX_API_KEY)
 
-    # if organisation.ods_code == "RGT1W" and (
-    #     abstraction_level != EnumAbstractionLevel.ORGANISATION
-    #     or abstraction_level != EnumAbstractionLevel.TRUST
-    # ):
-    #     # Jersey is a special case as it is not part of the UK and does not have an NHS England region, LHB or ICB.
-    #     logger.warning("Jersey is only part of the country level of abstraction")
-    #     return None
-
     region_tile = region_tile_for_abstraction_level(
         abstraction_level=abstraction_level, organisation=organisation
     )

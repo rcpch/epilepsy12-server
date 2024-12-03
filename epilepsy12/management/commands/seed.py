@@ -40,6 +40,7 @@ ORGANISATION_SEED_LIST = [
     "7A2AJ",  # Bronglais
     "7A6BJ",  # Chepstow Community
     "7A6AV",  # Ysbyty Ystrad Fawr
+    "RGT1W",  # Jersey General Hospital
 ]
 
 
