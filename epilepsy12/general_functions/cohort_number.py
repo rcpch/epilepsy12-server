@@ -31,8 +31,8 @@ def cohort_number_from_first_paediatric_assessment_date(
 
     Cohorts are defined as follows:
     currently recruiting cohort: this is the cohort that is currently recruiting patients
-    currently submitting cohort: this is the cohort that is no longer recruiting patients but is still collecting data to complete a fully year of care
-    grace cohort: this cohort is also nolonger recruiting patients but is still collecting data to complete a fully year of care. This cohort is the cohort before the submitting cohort.
+    currently submitting cohort: this is the cohort that is no longer recruiting patients but is still collecting data to complete a full year of care
+    grace cohort: this cohort is also no longer recruiting patients but is still collecting data to complete a full year of care. This cohort is the one before the submitting cohort.
 
     * Time zone is not explicity supplied. Since this is a UK audit, time zone is assumed always to be UK.
 
