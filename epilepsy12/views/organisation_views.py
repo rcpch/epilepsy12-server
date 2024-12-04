@@ -79,7 +79,7 @@ def selected_organisation_summary(request, organisation_id):
     # get submitting_cohort number - in future will be selectable
     cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
 
-    cohort_number = cohort_data["submitting_cohort"]
+    cohort_number = cohort_data["grace_cohort"]["cohort"] if cohort_data["within_grace_period"] else cohort_data["submitting_cohort"]
 
     # thes are all registered cases for the current cohort at the selected organisation to be plotted in the map
     cases_to_plot = filter_all_registered_cases_by_active_lead_site_and_cohort_and_level_of_abstraction(
