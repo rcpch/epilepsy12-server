@@ -87,11 +87,7 @@ def group_form_fields(form):
         if field.name == "submitted":
             continue
 
-        if field.value() is not None and field.value() != "" and field.value() != [] and not field.errors:
-            completed = True
-            number_completed += 1
-        else:
-            completed = False
+        completed = field.value() is not None and field.value() != "" and field.value() != [] and not field.errors
 
         help_text = field.help_text or {}
 
@@ -129,6 +125,9 @@ def group_form_fields(form):
 
             if not hidden:
                 total_questions += 1
+            
+            if not hidden and completed:
+                number_completed += 1
 
             child = {
                 "section": section,
@@ -147,6 +146,9 @@ def group_form_fields(form):
 
         else:
             total_questions += 1
+
+            if completed:
+                number_completed += 1
 
             fields_by_question_number[question_number] = {
                 "section": section,
