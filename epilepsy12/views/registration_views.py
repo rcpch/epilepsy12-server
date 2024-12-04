@@ -604,16 +604,14 @@ def first_paediatric_assessment_date(request, case_id):
         earliest_allowable_date = case.date_of_birth
     else:
         # registering a new child in the audit by a clinical team
-        # sets the minimum allowable date to the currently submitting cohort start date
-        # earliest_allowable_date = cohorts_and_dates(
-            # first_paediatric_assessment_date=date.today()
-        # )["submitting_cohort_start_date"]
-
-        # HOTFIX - this check did not account for the submission grace period after the cohort closes
-        # 
-        # We have removed it to allow users to continue to submit.
-        # https://github.com/rcpch/rcpch-audit-engine/issues/1117 will put it back correctly.
-        earliest_allowable_date = None
+        # sets the minimum allowable date to the currently submitting cohort start date or the start of the previous cohort if it is still within its grace period
+        cohort_dates = cohorts_and_dates(first_paediatric_assessment_date=date.today())
+        if cohort_dates["within_grace_period"]:
+            earliest_allowable_date = cohort_dates["grace_cohort"]["cohort_start_date"]
+        else:
+            earliest_allowable_date = cohort_dates["submitting_cohort"][
+                "cohort_start_date"
+            ]
 
     try:
         error_message = None

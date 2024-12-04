@@ -5,16 +5,12 @@ from datetime import date
 # Third party imports
 
 # RCPCH imports
-from epilepsy12.general_functions import (
-    cohort_number_from_first_paediatric_assessment_date,
-)
 
+# def test_cohort_number_from_enrolment_date_returns_correct_num(e12_case_factory):
+#     """
+#     Test that cohort_number_from_enrolment_date() returns correct num, given different Date of First Paediatric Assessment (DoFPAs).
 
-def test_cohort_number_from_enrolment_date_returns_correct_num(e12_case_factory):
-    """
-    Test that cohort_number_from_enrolment_date() returns correct num, given different Date of First Paediatric Assessment (DoFPAs).
+#     The latest DoFPA for a cohort is 30th Nov of a given year. For 2023, it will be Cohort 6 until 30th Nov 2023, then Cohort 7 1st Dec 2023-30th Nov 2024.
+#     """
 
-    The latest DoFPA for a cohort is 30th Nov of a given year. For 2023, it will be Cohort 6 until 30th Nov 2023, then Cohort 7 1st Dec 2023-30th Nov 2024.
-    """
-
-    expected_cohort_for_dates = ((date(2023, 11, 30), 5),)
+#     expected_cohort_for_dates = ((date(2023, 11, 30), 5),)

@@ -94,6 +94,10 @@
                 {% endif %}
         </div>
 
+        <div class="fluid centered row">
+        {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort_data=cohort_data %}
+        </div>
+
         <div class='sixteen wide fluid column'>
 
 
@@ -101,9 +105,9 @@
 
                 <div class="ui card">
                     <div class="content">
-                            <div class="ui centered header">
-                                <h3>{{ selected_organisation.name }}</h3>
-                            </div>
+                        <div class="ui centered header">
+                            <h3>{{ selected_organisation.name }}</h3>
+                        </div>
                             <h4 class="ui horizontal divider">
                                 <i class="ui  rcpch  small organisation icon "></i>Address
                             </h4>
@@ -144,14 +148,42 @@
                         </div>
                 </div>
 
+                <div class="ui card">
+                    <div class="content">
+                        <div class="ui centered header">
+                            <h3>Memberships</h3>
+                        </div>
+                        <div class="organisation_details">
+                            <h4 class="ui horizontal divider">
+                                <i class="ui  rcpch  small map signs icon "></i>Open UK Network
+                            </h4>
+                            <div class="organisation_details ">
+                            {{ selected_organisation.openuk_network }}
+                            </div>
+                            {% if selected_organisation.trust %}
+                                <h4 class="ui horizontal divider">
+                                    <i class="ui  rcpch  small organisation icon "></i>Integrated Care Board
+                                </h4>
+                                <div class="organisation_details ">
+                                    {{ selected_organisation.integrated_care_board }}
+                                </div>
+                                <h4 class="ui horizontal divider">
+                                    <i class="ui  rcpch  small map outline icon "></i> NHS England Region
+                                </h4>
+                                <div class="organisation_details ">
+                                    {{ selected_organisation.nhs_england_region }}
+                                </div>
+                            {% endif %}
 
-                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort_data=cohort_data %}
 
+                        </div>
+                    </div>
+                </div>
 
                 <div class="ui  card">
                     <div class="content">
                         <div class="ui centered header">
-                            <h3>Completed Patient Records</h3>
+                            <h3>Cohort {{cohort}} Completed Patient Records</h3>
                         </div>
                         <div class="">
 
@@ -181,7 +213,7 @@
 
                         </div>
                     </div>
-                </div>
+            </div>
 
 
 
