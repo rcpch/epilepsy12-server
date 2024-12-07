@@ -197,9 +197,9 @@ def total_fields_expected(model_instance):
         # if a cause for the epilepsy is know other essential fields must be included
         if model_instance.epilepsy_cause_known:
             # essential fields include
-            # epilepsy_cause
+            # epilepsy_cause (# nolonger scored - issue #1125)
             # epilepsy_cause_categories - this is an array, length must be greater than one
-            cumulative_score += 2
+            cumulative_score += 1
 
         if model_instance.relevant_impairments_behavioural_educational:
             # there are comorbidities - add essential comorbidities
@@ -373,6 +373,7 @@ def avoid_fields(model_instance):
             "episodes",
             "syndromes",
             "comorbidities",
+            "epilepsy_cause",  # Nolonger scored - issue #1125
         ]
 
     elif model_class_name == "Management":
