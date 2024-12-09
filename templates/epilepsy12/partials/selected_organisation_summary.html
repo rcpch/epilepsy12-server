@@ -183,7 +183,7 @@
                 <div class="ui  card">
                     <div class="content">
                         <div class="ui centered header">
-                            <h3>Cohort {{cohort}} Completed Patient Records</h3>
+                            <h3>Cohort {{cohort_number}} Completed Patient Records</h3>
                         </div>
                         <div class="">
 
@@ -340,7 +340,7 @@
                                     class="info circle icon"
                                     id='organisation_cases_help'
                                     data-title='Epilepsy12 Cases Distribution'
-                                    data-content="Distribution of children with epilepsy registered within cohort {{cohort}} at {{selected_organisation}} in the Epilepsy12 audit."
+                                    data-content="Distribution of children with epilepsy registered within Cohort {{cohort_number}} at {{selected_organisation}} in the Epilepsy12 audit."
                                     data-position='top right'
                                     _="init js $('#organisation_cases_help').popup(); end"
                                 ></i>
@@ -386,7 +386,7 @@
                                     class="info circle icon"
                                     id='icb_help'
                                     data-title='Epilepsy12 Cases Distribution'
-                                    data-content="Density of children with epilepsy across ICBs, registered within cohort {{cohort}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
+                                    data-content="Density of children with epilepsy across ICBs, registered within Cohort {{cohort_number}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
                                     data-position='top right'
                                     _="init js $('#icb_help').popup(); end"
                                 ></i>
@@ -424,7 +424,7 @@
                                 class="info circle icon"
                                 id='nhsregion_help'
                                 data-title='Epilepsy12 Cases Distribution'
-                                data-content="Density of children with epilepsy across NHS England Regions, registered within cohort {{cohort}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
+                                data-content="Density of children with epilepsy across NHS England Regions, registered within Cohort {{cohort_number}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
                                 data-position='top right'
                                 _="init js $('#nhsregion_help').popup(); end"
                             ></i>
@@ -448,7 +448,7 @@
                                 class="info circle icon"
                                 id='country_help'
                                 data-title='Epilepsy12 Cases Distribution'
-                                data-content="Density of children with epilepsy across countries, registered within cohort {{cohort}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
+                                data-content="Density of children with epilepsy across countries, registered within Cohort {{cohort_number}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
                                 data-position='top right'
                                 _="init js $('#country_help').popup(); end"
                             ></i>
@@ -480,7 +480,7 @@
                 </div>
             </div>
 
-            {% include 'epilepsy12/partials/organisation/individual_metrics.html' with organisation_id=selected_organisation.pk cohort=cohort_data.submitting_cohort %}
+            {% include 'epilepsy12/partials/organisation/individual_metrics.html' with organisation_id=selected_organisation.pk cohort_number=cohort_number %}
 
         {% else %}
         
@@ -490,7 +490,7 @@
                     <div class="header">
                         No data
                     </div>
-                    <p>There is no data for cohort {{cohort_data.submitting_cohort}} at {{selected_organisation.name}}. For further information on publication dates, please check <a href="www.epilepsy12.rcpch.ac.uk">our Epilepsy12 website</a></p>
+                    <p>There is no data for Cohort {{cohort_number}} at {{selected_organisation.name}}. For further information on publication dates, please check <a href="www.epilepsy12.rcpch.ac.uk">our Epilepsy12 website</a></p>
                 </div>
             </div>
 
