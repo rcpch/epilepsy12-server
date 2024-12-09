@@ -347,8 +347,8 @@ def test_total_fields_expected_multiaxial_diagnosis_general_fields(
 
     multiaxial_diagnosis = CASE.registration.multiaxialdiagnosis
 
-    # Initial value because Multiaxial diagnosis fields minimum == 7; ++ no episodes == 5; ++ general_fields all true == 6;
-    expected_value = 23
+    # Initial value because Multiaxial diagnosis fields minimum == 6; ++ no episodes == 5; ++ general_fields all true == 6;
+    expected_value = 22  # see issue #1125: epilepsy_cause nolonger mandatory
 
     return_value = total_fields_expected(multiaxial_diagnosis)
 
