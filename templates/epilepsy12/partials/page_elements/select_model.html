@@ -62,11 +62,11 @@ endpoint posted to is specific to the choices. {% endcomment %}
       <div class="default text">{{hx_default_text}}</div>
       <div class="menu">
         {% if allow_none %}
-        <div class="item" data-value="empty">No choice made</div>
+        <div class="item" data-value="empty">Not available in the list (defaults to empty on selection)</div>
         {% endif %} {% for item in choices %}
         <div class="item" data-value="{{item.pk}}">
-          {% value_for_field_name item field_name False %} {%
-          value_for_field_name item field_name2 True %}
+          {% value_for_field_name item field_name False %} 
+          {% value_for_field_name item field_name2 True %}
         </div>
         {% endfor %}
       </div>
