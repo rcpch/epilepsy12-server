@@ -104,10 +104,10 @@ class OrganisationalAuditSubmission(TimeStampAbstractBaseClass, UserStampAbstrac
     }) #1.4i
 
     # New! https://github.com/rcpch/rcpch-audit-engine/issues/876#issuecomment-2312271287
-    S01JobPlannedHoursPerWeekLeadershipQIActivities = PositiveIntegerField() # 1.5
+    S01JobPlannedHoursPerWeekLeadershipQIActivities = DecimalField() # 1.5
 
     # New! https://github.com/rcpch/rcpch-audit-engine/issues/1082
-    S01LeadershipHours = PositiveIntegerField() # 1.6
+    S01LeadershipHours = DecimalField() # 1.6
 
 
     # 2. Epilepsy Clinic configuration
