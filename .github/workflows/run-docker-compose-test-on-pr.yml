@@ -36,7 +36,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker compose exec django pytest -v
+          s/pr-check
 
 
 
