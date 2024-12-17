@@ -86,52 +86,53 @@ def test_calculate_kpi_value_counts_queryset_all_levels(
     }
     expected_scores = {code: kpi_scores_expected for code in abstraction_codes}
 
-    # _register_kpi_scored_cases(
-    #     e12_case_factory,
-    #     ods_codes=ods_codes,
-    #     num_cases=(
-    #         5
-    #         if abstraction_level
-    #         not in [
-    #             # in these 3 abstraction levels, kids are split into half the number of organisations, so register double the nubmer of kids (10) instead of 5
-    #             EnumAbstractionLevel.ORGANISATION,
-    #             EnumAbstractionLevel.TRUST,
-    #         ]
-    #         else 10
-    #     ),
-    # )
+    _register_kpi_scored_cases(
+        e12_case_factory,
+        ods_codes=ods_codes,
+        num_cases=(
+            5
+            if abstraction_level
+            not in [
+                # in these 3 abstraction levels, kids are split into half the number of organisations, so register double the nubmer of kids (10) instead of 5
+                EnumAbstractionLevel.ORGANISATION,
+                EnumAbstractionLevel.TRUST,
+            ]
+            else 10
+        ),
+        debug_calculate_kpis=False,
+    )
 
-    # for code in ods_codes:
-    #     organisation = Organisation.objects.get(ods_code=code)
+    for code in ods_codes:
+        organisation = Organisation.objects.get(ods_code=code)
 
-    #     filtered_cases = get_filtered_cases_queryset_for(
-    #         organisation=organisation,
-    #         abstraction_level=abstraction_level,
-    #         cohort=6,
-    #     )
+        filtered_cases = get_filtered_cases_queryset_for(
+            organisation=organisation,
+            abstraction_level=abstraction_level,
+            cohort=6,
+        )
 
-    #     value_counts = calculate_kpi_value_counts_queryset(
-    #         filtered_cases=filtered_cases,
-    #         abstraction_level=abstraction_level,
-    #         kpis=[
-    #             "ecg",
-    #             "mental_health_support",
-    #         ],
-    #     )
+        value_counts = calculate_kpi_value_counts_queryset(
+            filtered_cases=filtered_cases,
+            abstraction_level=abstraction_level,
+            kpis=[
+                "ecg",
+                "mental_health_support",
+            ],
+        )
 
-    #     if abstraction_level is EnumAbstractionLevel.NATIONAL:
-    #         expected_scores = {
-    #             "ecg_passed": 20,
-    #             "ecg_total_eligible": 40,
-    #             "ecg_ineligible": 20,
-    #             "ecg_incomplete": 20,
-    #             "mental_health_support_passed": 20,
-    #             "mental_health_support_total_eligible": 40,
-    #             "mental_health_support_ineligible": 20,
-    #             "mental_health_support_incomplete": 20,
-    #         }
-    #         assert value_counts == expected_scores
-    #     else:
-    #         for vc in value_counts:
-    #             abstraction_code = vc.pop(f"organisation__{abstraction_level.value}")
-    #             assert vc == expected_scores[abstraction_code]
+        if abstraction_level is EnumAbstractionLevel.NATIONAL:
+            expected_scores = {
+                "ecg_passed": 20,
+                "ecg_total_eligible": 40,
+                "ecg_ineligible": 20,
+                "ecg_incomplete": 20,
+                "mental_health_support_passed": 20,
+                "mental_health_support_total_eligible": 40,
+                "mental_health_support_ineligible": 20,
+                "mental_health_support_incomplete": 20,
+            }
+            assert value_counts == expected_scores
+        else:
+            for vc in value_counts:
+                abstraction_code = vc.pop(f"organisation__{abstraction_level.value}")
+                assert vc == expected_scores[abstraction_code]

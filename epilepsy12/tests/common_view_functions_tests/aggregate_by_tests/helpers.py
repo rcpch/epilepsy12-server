@@ -34,7 +34,7 @@ def _register_cases_in_organisation(
 
 
 def _register_kpi_scored_cases(
-    e12_case_factory, ods_codes: "list[str]", num_cases: int = 10
+    e12_case_factory, ods_codes: "list[str]", num_cases: int = 10, debug_calculate_kpis=True
 ):
     """Helper function to return a queryset of num_cases kids with scored, known KPI scores.
 
@@ -112,7 +112,8 @@ def _register_kpi_scored_cases(
         test_case.registration.audit_progress.investigations_complete = True
         test_case.registration.audit_progress.management_complete = True
 
-        calculate_kpis(registration_instance=test_case.registration)
+        if debug_calculate_kpis:
+            calculate_kpis(registration_instance=test_case.registration)
 
 
 def _clean_cases_from_test_db() -> None:
