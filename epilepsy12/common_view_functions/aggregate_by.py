@@ -403,6 +403,10 @@ def update_kpi_aggregation_model(
 
         return
     
+    print(f"!! kpi_value_counts query !!")
+    print(f"!! {kpi_value_counts.query} !!")
+    print(f"!! {kpi_value_counts.explain()}")
+
     # update models where numbers have changed.
     for value_count in kpi_value_counts:
         ABSTRACTION_CODE = value_count.pop(f"organisation__{abstraction_level.value}")
