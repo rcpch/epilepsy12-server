@@ -3,6 +3,7 @@ import pytest
 
 # 3rd party imports
 from django.apps import apps
+from django.db import connection
 
 # E12 imports
 from epilepsy12.common_view_functions import (
@@ -19,6 +20,16 @@ from epilepsy12.constants import (
     EnumAbstractionLevel,
 )
 from .helpers import _clean_cases_from_test_db, _register_kpi_scored_cases
+
+
+@pytest.fixture
+def disable_nested_loops_in_db(db):
+    cursor = connection.cursor()
+    print("!! Disabling nested loops in DB")
+    cursor.execute("SET enable_nestloop TO off")
+    yield
+    print("!! Re-enabling nested loops in DB")
+    cursor.execute("SET enable_nestloop TO on")
 
 
 @pytest.mark.parametrize(
@@ -68,7 +79,7 @@ from .helpers import _clean_cases_from_test_db, _register_kpi_scored_cases
 )
 @pytest.mark.django_db
 def test_update_kpi_aggregation_model_all_levels(
-    abstraction_level, abstraction_codes, ods_codes, e12_case_factory
+    abstraction_level, abstraction_codes, ods_codes, e12_case_factory, disable_nested_loops_in_db
 ):
     """Testing the `update_kpi_aggregation_model` fn.
 

@@ -41,7 +41,6 @@ services:
     volumes:
       - postgis-data:/var/lib/postgresql/data
     restart: always
-    command: postgres -c geqo=off
 
   mkdocs:
     <<: *global # this will inherit config from x-global-environment
