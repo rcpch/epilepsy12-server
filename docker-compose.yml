@@ -41,6 +41,7 @@ services:
     volumes:
       - postgis-data:/var/lib/postgresql/data
     restart: always
+    command: postgres -c enable_nestloop=off
 
   mkdocs:
     <<: *global # this will inherit config from x-global-environment
