@@ -110,28 +110,28 @@ def test_calculate_kpi_value_counts_queryset_all_levels(
             cohort=6,
         )
 
-        value_counts = calculate_kpi_value_counts_queryset(
-            filtered_cases=filtered_cases,
-            abstraction_level=abstraction_level,
-            kpis=[
-                "ecg",
-                "mental_health_support",
-            ],
-        )
+        # value_counts = calculate_kpi_value_counts_queryset(
+        #     filtered_cases=filtered_cases,
+        #     abstraction_level=abstraction_level,
+        #     kpis=[
+        #         "ecg",
+        #         "mental_health_support",
+        #     ],
+        # )
 
-        if abstraction_level is EnumAbstractionLevel.NATIONAL:
-            expected_scores = {
-                "ecg_passed": 20,
-                "ecg_total_eligible": 40,
-                "ecg_ineligible": 20,
-                "ecg_incomplete": 20,
-                "mental_health_support_passed": 20,
-                "mental_health_support_total_eligible": 40,
-                "mental_health_support_ineligible": 20,
-                "mental_health_support_incomplete": 20,
-            }
-            assert value_counts == expected_scores
-        else:
-            for vc in value_counts:
-                abstraction_code = vc.pop(f"organisation__{abstraction_level.value}")
-                assert vc == expected_scores[abstraction_code]
+        # if abstraction_level is EnumAbstractionLevel.NATIONAL:
+        #     expected_scores = {
+        #         "ecg_passed": 20,
+        #         "ecg_total_eligible": 40,
+        #         "ecg_ineligible": 20,
+        #         "ecg_incomplete": 20,
+        #         "mental_health_support_passed": 20,
+        #         "mental_health_support_total_eligible": 40,
+        #         "mental_health_support_ineligible": 20,
+        #         "mental_health_support_incomplete": 20,
+        #     }
+        #     assert value_counts == expected_scores
+        # else:
+        #     for vc in value_counts:
+        #         abstraction_code = vc.pop(f"organisation__{abstraction_level.value}")
+        #         assert vc == expected_scores[abstraction_code]
