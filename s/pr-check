@@ -1,4 +1,5 @@
 #!/bin/bash -e
 
 s/test epilepsy12/tests/common_view_functions_tests/aggregate_by_tests/test_calculate_kpi_value_counts_queryset.py
+docker compose exec postgis psql -U epilepsy12user -d test_epilepsy12db -c 'analyze;'
 s/test epilepsy12/tests/common_view_functions_tests/aggregate_by_tests/test_update_kpiaggregation_model.py
