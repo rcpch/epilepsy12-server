@@ -99,7 +99,7 @@ def test_calculate_kpi_value_counts_queryset_all_levels(
             ]
             else 10
         ),
-        debug_create_cases=False,
+        debug_create_cases=True,
     )
 
     for code in ods_codes:
