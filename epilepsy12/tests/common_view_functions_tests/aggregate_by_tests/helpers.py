@@ -34,7 +34,7 @@ def _register_cases_in_organisation(
 
 
 def _register_kpi_scored_cases(
-    e12_case_factory, ods_codes: "list[str]", num_cases: int = 10, debug_calculate_kpis=True
+    e12_case_factory, ods_codes: "list[str]", num_cases: int = 10, debug_create_cases: bool = True
 ):
     """Helper function to return a queryset of num_cases kids with scored, known KPI scores.
 
@@ -89,13 +89,14 @@ def _register_kpi_scored_cases(
             ineligible_answers,
             incomplete_answers,
         ]:
-            test_cases = e12_case_factory.create_batch(
-                num_cases,
-                organisations__organisation=organisation,
-                first_name=f"temp_{organisation.name}",
-                **answer_set,
-            )
-            filled_case_objects += test_cases
+            if debug_create_cases:
+                test_cases = e12_case_factory.create_batch(
+                    num_cases,
+                    organisations__organisation=organisation,
+                    first_name=f"temp_{organisation.name}",
+                    **answer_set,
+                )
+                filled_case_objects += test_cases
 
     for test_case in filled_case_objects:
         test_case.registration.completed_first_year_of_care_date = (
@@ -112,8 +113,7 @@ def _register_kpi_scored_cases(
         test_case.registration.audit_progress.investigations_complete = True
         test_case.registration.audit_progress.management_complete = True
 
-        if debug_calculate_kpis:
-            calculate_kpis(registration_instance=test_case.registration)
+        calculate_kpis(registration_instance=test_case.registration)
 
 
 def _clean_cases_from_test_db() -> None:
