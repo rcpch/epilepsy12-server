@@ -104,11 +104,11 @@ def test_calculate_kpi_value_counts_queryset_all_levels(
     for code in ods_codes:
         organisation = Organisation.objects.get(ods_code=code)
 
-        filtered_cases = get_filtered_cases_queryset_for(
-            organisation=organisation,
-            abstraction_level=abstraction_level,
-            cohort=6,
-        )
+        # filtered_cases = get_filtered_cases_queryset_for(
+        #     organisation=organisation,
+        #     abstraction_level=abstraction_level,
+        #     cohort=6,
+        # )
 
         # value_counts = calculate_kpi_value_counts_queryset(
         #     filtered_cases=filtered_cases,
