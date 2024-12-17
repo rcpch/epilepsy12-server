@@ -23,14 +23,14 @@ from .helpers import _clean_cases_from_test_db, _register_kpi_scored_cases
 
 
 @pytest.fixture
-def disable_nested_loops_in_db(db):
-    pass
-    # cursor = connection.cursor()
-    # print("!! Disabling nested loops in DB")
-    # cursor.execute("SET enable_nestloop TO off")
-    # yield
-    # print("!! Re-enabling nested loops in DB")
-    # cursor.execute("SET enable_nestloop TO on")
+def disable_presorted_aggregate_in_db(db):
+    # pass
+    cursor = connection.cursor()
+    print("!! Disabling presorted aggregate in DB")
+    cursor.execute("SET enable_presorted_aggregate TO off")
+    yield
+    print("!! Re-enabling presorted aggregate in DB")
+    cursor.execute("SET enable_presorted_aggregate TO on")
 
 
 @pytest.mark.parametrize(
@@ -80,7 +80,7 @@ def disable_nested_loops_in_db(db):
 )
 @pytest.mark.django_db
 def test_update_kpi_aggregation_model_all_levels(
-    abstraction_level, abstraction_codes, ods_codes, e12_case_factory, disable_nested_loops_in_db
+    abstraction_level, abstraction_codes, ods_codes, e12_case_factory, disable_presorted_aggregate_in_db
 ):
     """Testing the `update_kpi_aggregation_model` fn.
 
