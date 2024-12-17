@@ -405,7 +405,7 @@ def update_kpi_aggregation_model(
     
     print(f"!! kpi_value_counts query !!")
     print(f"!! {kpi_value_counts.query} !!")
-    print(f"!! {kpi_value_counts.explain()}")
+    print(f"!! {kpi_value_counts.explain(analyze=True, buffers=True)}")
 
     # update models where numbers have changed.
     for value_count in kpi_value_counts:

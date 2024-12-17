@@ -24,12 +24,13 @@ from .helpers import _clean_cases_from_test_db, _register_kpi_scored_cases
 
 @pytest.fixture
 def disable_nested_loops_in_db(db):
-    cursor = connection.cursor()
-    print("!! Disabling nested loops in DB")
-    cursor.execute("SET enable_nestloop TO off")
-    yield
-    print("!! Re-enabling nested loops in DB")
-    cursor.execute("SET enable_nestloop TO on")
+    pass
+    # cursor = connection.cursor()
+    # print("!! Disabling nested loops in DB")
+    # cursor.execute("SET enable_nestloop TO off")
+    # yield
+    # print("!! Re-enabling nested loops in DB")
+    # cursor.execute("SET enable_nestloop TO on")
 
 
 @pytest.mark.parametrize(

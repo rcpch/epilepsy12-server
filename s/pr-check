@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-s/test
+# s/test
 
-# s/test -s epilepsy12/tests/common_view_functions_tests/aggregate_by_tests/test_calculate_kpi_value_counts_queryset.py \
-#     epilepsy12/tests/common_view_functions_tests/aggregate_by_tests/test_update_kpiaggregation_model.py
+s/test -s epilepsy12/tests/common_view_functions_tests/aggregate_by_tests/test_calculate_kpi_value_counts_queryset.py \
+    epilepsy12/tests/common_view_functions_tests/aggregate_by_tests/test_update_kpiaggregation_model.py
