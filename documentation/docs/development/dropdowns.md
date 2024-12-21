@@ -23,13 +23,31 @@ Since go-live, E12 have wished on the basis of user feedback, from time to time 
 
 ### EpilepsyCause
 
-1. Epilepsy12 team to supply the SNOMED CT ID (SCTID) of the concept
-2. The development team add the SCTID to the list `extra_concept_ids` in migration 0006 for future seeding from scratch, mostly for development reasons
-3. In the python shell to run the seed function:
+Workflow to add a new cause:
 
-```console
-docker compose exec django python manage.py seed --mode=add_new_epilepsy_causes -sctids 764946008 52767006 ...
-```
+1. Navigate to the SNOMED CT browser: https://browser.ihtsdotools.org/ and search for the cause and get the SCTID
+2. Add the SCTID to the `extra_concept_ids` list in `migrations/0006_seed_epilepsy_causes.py` together with the appropriate name in the comments as a fallback Should include the SCTID, the term and the preferred term
+3. if the cause is not in the SNOMED CT server, add it manually to the `extra_causes_without_concept_ids` list in `migrations/0006_seed_epilepsy_causes.py`. Should include the term and the preferred term, with the `conceptId` provided as `None`.
+eg: `extra_causes_without_concept_ids = [...., {"preferredTerm": "Cause name", "term": "Cause name"}]`
+4. REMEMBER: adding causes here will not add them to the database, and is only for reference should the database be reseeded
+5. To add the causes to the database depends on whether the cause has an SCTID or not:
+    - If the cause has an SCTID, on the command line in the epilepsy12 app, run the command:
+    `python manage.py seed --mode=add_new_epilepsy_causes -sctids <list of SCTIDs>`
+    [e.g. `python manage.py seed --mode=add_new_epilepsy_causes -sctids 764946008 52767006`]
+    - if the cause does not have an SCTID, use the django shell:
+  
+        ```console
+        python manage.py shell
+        from epilepsy12.general_functions import add_epilepsy_causes_without_snomedct_ids
+        causes = [{"preferredTerm": "Cause name", "term": "Cause name"}]
+        add_epilepsy_causes_without_snomedct_ids(causes)
+        ```
+
+6. Check the database to ensure the causes have been added (a summary of the causes added will be printed to the console)
+
+    ```console
+    docker compose exec django python manage.py seed --mode=add_new_epilepsy_causes -sctids 764946008 52767006 ...
+    ```
 
 Note that the function expects a list, even if only one item is supplied.
 
