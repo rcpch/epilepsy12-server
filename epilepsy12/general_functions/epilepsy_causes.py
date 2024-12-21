@@ -58,6 +58,17 @@ def add_epilepsy_causes_without_snomedct_ids(causes):
     """
     errors = []
     added_causes = []
+    # check that all keys are present
+    if not all(
+        key in ["conceptId", "term", "preferredTerm"] for key in causes[0].keys()
+    ):
+        logger.error(
+            "All causes must have keys 'conceptId', 'term', and 'preferredTerm'"
+        )
+        return {
+            "success": False,
+            "message": "All causes must have keys 'conceptId', 'term', and 'preferredTerm'",
+        }
     for cause in causes:
         concept_id = cause.get("conceptId")
         term = cause.get("term")
@@ -103,35 +114,46 @@ def add_epilepsy_causes_without_snomedct_ids(causes):
         if EpilepsyCause.objects.filter(
             preferredTerm__icontains=preferred_term
         ).exists():
-            return {"success": False, "message": "Duplicate conceptId"}
-        new_cause = EpilepsyCause(
-            conceptId=concept_id,
-            term=term,
-            preferredTerm=preferred_term,
-        )
-        try:
-            new_cause.save()
-            added_causes.append(
-                {
-                    "concept_id": concept_id,
-                    "preferredTerm": preferred_term,
-                    "term": term,
-                }
-            )
-        except Exception as e:
             errors.append(
                 {
                     "conceptId": concept_id,
                     "term": term,
                     "preferredTerm": preferred_term,
-                    "error": f"Error: {e}",
+                    "error": "Cause already exists",
                 }
             )
             continue
+        else:
+            new_cause = EpilepsyCause(
+                conceptId=concept_id,
+                term=term,
+                preferredTerm=preferred_term,
+            )
+            try:
+                new_cause.save()
+                added_causes.append(
+                    {
+                        "concept_id": concept_id,
+                        "preferredTerm": preferred_term,
+                        "term": term,
+                    }
+                )
+            except Exception as e:
+                errors.append(
+                    {
+                        "conceptId": concept_id,
+                        "term": term,
+                        "preferredTerm": preferred_term,
+                        "error": f"Error: {e}",
+                    }
+                )
+                continue
     logger.info(f"{len(added_causes)} epilepsy causes added")
     for index, cause in enumerate(added_causes):
         logger.info(f"{index + 1}. {cause['preferredTerm']} added")
-    for index, error in enumerate(errors):
-        logger.error(
-            f'{index+1}, {error["preferredTerm"]} ({error["conceptId"]}) not added. {error["error"]}'
-        )
+    if len(errors) > 0:
+        logger.error(f"{len(errors)} could not be added:")
+        for index, error in enumerate(errors):
+            logger.error(
+                f'{index+1}. {error["preferredTerm"]} (conceptId: {error["conceptId"]}) not added. {error["error"]}'
+            )

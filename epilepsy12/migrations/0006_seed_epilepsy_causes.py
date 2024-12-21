@@ -144,61 +144,86 @@ def seed_epilepsy_causes(apps, schema_editor):
     # PHF21A abnormality  NOTE No SNOMED CT code add as PHF21A-related disorder
 
     extra_causes_without_concept_ids = [
-        {"preferredTerm": "KCNT1-related epilepsy", "term": "KCNT1-related epilepsy"},
+        {
+            "preferredTerm": "KCNT1-related epilepsy",
+            "term": "KCNT1-related epilepsy",
+            "conceptId": None,
+        },
         {
             "preferredTerm": "Dysembryoplastic neuroepithelial neoplasm of brain (disorder)",
             "term": "Dysembryoplastic neuroepithelial neoplasm of brain (disorder)",
+            "conceptId": None,
         },
         {
             "preferredTerm": "2q23.3 Microdeletion Syndrome",
             "term": "2q23.3 Microdeletion Syndrome",
+            "conceptId": None,
         },
         {
             "preferredTerm": "POLG mitochondrial disorder",
             "term": "POLG mitochondrial disorder",
+            "conceptId": None,
         },
         {
             "preferredTerm": "PPRT2 associated disorder",
             "term": "PPRT2 associated disorder",
+            "conceptId": None,
         },
         {
             "preferredTerm": "10p 15.3 microdeletion syndrome",
             "term": "10p 15.3 microdeletion syndrome",
+            "conceptId": None,
         },
         {
             "preferredTerm": "16q 24.3 microdeletion syndrome",
             "term": "16q 24.3 microdeletion syndrome",
+            "conceptId": None,
         },
         {
             "preferredTerm": "Usmani-Riazuddin syndrome",
             "term": "Usmani-Riazuddin syndrome",
+            "conceptId": None,
         },
         {
             "preferredTerm": "ReNU syndrome",
             "term": "ReNU syndrome (Neurodevelopmental disorder with hypotonia, brain anomalies, distinctive facies, and absent language (NEDHAFA))",
+            "conceptId": None,
         },
-        {"preferredTerm": "GNB1-related disorder", "term": "GNB1-related disorder"},
+        {
+            "preferredTerm": "GNB1-related disorder",
+            "term": "GNB1-related disorder",
+            "conceptId": None,
+        },
         {
             "preferredTerm": "KCNK4-related neurodevelopmental disease",
             "term": "Autosomal dominant KCNK4-related disease",
+            "conceptId": None,
         },
         {
             "preferredTerm": "EEF1A2–Related Neurodevelopmental Disorder",
             "term": "EEF1A2-Related Neurodevelopmental Disorder",
+            "conceptId": None,
         },
         {
             "preferredTerm": "KCNH1-related epileptic encephalopathy",
             "term": "KCNH1-related epileptic encephalopathy",
+            "conceptId": None,
         },
         {
             "preferredTerm": "2p13.3 deletion",
             "term": "2p13.3 deletion",
+            "conceptId": None,
         },
         {
             "preferredTerm": "COL4A1 or COL4A2-related disorder",
             "term": "COL4A1 or COL4A2-related disorder",
+            "conceptId": None,
         },
-        {"preferredTerm": "PHF21A-related disorder", "term": "PHF21A-related disorder"},
+        {
+            "preferredTerm": "PHF21A-related disorder",
+            "term": "PHF21A-related disorder",
+            "conceptId": None,
+        },
     ]
 
     extra_concept_ids = [
@@ -265,8 +290,7 @@ class Migration(migrations.Migration):
         ("epilepsy12", "0005_seed_organisations"),
     ]
 
-    operations = [migrations.RunPython(seed_epilepsy_causes)]0
-
+    operations = [migrations.RunPython(seed_epilepsy_causes)]
 
     """
     This is the latest list of requested causes to be added to the database as per #1136. Once this has been approved, this list needs adding to live after this PR has been merged.
