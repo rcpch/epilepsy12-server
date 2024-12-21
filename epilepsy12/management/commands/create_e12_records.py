@@ -250,9 +250,8 @@ def create_multiaxial_diagnosis(registration_instance, verbose=True):
 
     if multiaxial_diagnosis.syndrome_present:
         # create a related syndrome
-        syndrome_entity = SyndromeList.objects.filter(
-            syndrome_name=choice(SYNDROMES)[1]
-        ).get()
+        selection = choice(SYNDROMES)[1]
+        syndrome_entity = SyndromeList.objects.filter(syndrome_name=selection).get()
         Syndrome.objects.create(
             syndrome_diagnosis_date=random_date(
                 start=registration_instance.first_paediatric_assessment_date,
@@ -264,7 +263,9 @@ def create_multiaxial_diagnosis(registration_instance, verbose=True):
 
     if multiaxial_diagnosis.epilepsy_cause_known:
         multiaxial_diagnosis.epilepsy_cause = choice(EpilepsyCause.objects.all())
-        multiaxial_diagnosis.epilepsy_cause_categories = choices(EPILEPSY_CAUSES, k = randint(1, 3))
+        multiaxial_diagnosis.epilepsy_cause_categories = choices(
+            EPILEPSY_CAUSES, k=randint(1, 3)
+        )
 
     if multiaxial_diagnosis.mental_health_issue_identified:
         multiaxial_diagnosis.mental_health_issues = [choice(NEUROPSYCHIATRIC)[0]]
