@@ -55,6 +55,7 @@ This comprises a list:
 | Rasmussen syndrome |
 | Progressive myoclonus epilepsies |
 | Epilepsy with reading-induced seizures |
+| Epilepsy with myoclonic atonic seizures (Doose syndrome) |
 
 last updated 21/12/24
 
