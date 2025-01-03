@@ -14,7 +14,7 @@ from django.contrib.gis.db.models import (
     PositiveSmallIntegerField,
     Case as DJANGO_CASE,
     ExpressionWrapper,
-    IntegerField
+    IntegerField,
 )
 from django.db.models.functions import ExtractYear, ExtractMonth, ExtractDay
 
@@ -42,6 +42,7 @@ Reporting
 Aggregations for pie charts
 """
 
+
 def cases_aggregated_by_sex(selected_organisation):
     # aggregate queries on trust level cases
 
@@ -50,15 +51,20 @@ def cases_aggregated_by_sex(selected_organisation):
     sex_long_list = [When(sex=k, then=Value(v)) for k, v in SEX_TYPE]
 
     cases_aggregated_by_sex = (
-        Case.objects.filter(site__organisation=selected_organisation, site__site_is_primary_centre_of_epilepsy_care=True, site__site_is_actively_involved_in_epilepsy_care=True)
+        Case.objects.filter(
+            site__organisation=selected_organisation,
+            site__site_is_primary_centre_of_epilepsy_care=True,
+            site__site_is_actively_involved_in_epilepsy_care=True,
+        )
         .values("sex")
         .annotate(sex_display=DJANGO_CASE(*sex_long_list, output_field=CharField()))
         .values("sex_display")
         .annotate(sexes=Count("sex"))
         .order_by("sexes")
     )
-    
+
     return cases_aggregated_by_sex
+
 
 def cases_aggregated_by_age(selected_organisation):
     """
@@ -81,27 +87,59 @@ def cases_aggregated_by_age(selected_organisation):
     today = date.today()
 
     # Annotate each case with its age in days
-    cases_with_age = Case.objects.filter(site__organisation=selected_organisation, site__site_is_primary_centre_of_epilepsy_care=True, site__site_is_actively_involved_in_epilepsy_care=True).annotate(
+    cases_with_age = Case.objects.filter(
+        site__organisation=selected_organisation,
+        site__site_is_primary_centre_of_epilepsy_care=True,
+        site__site_is_actively_involved_in_epilepsy_care=True,
+    ).annotate(
         age_in_days=ExpressionWrapper(
-            (ExtractYear(today) - ExtractYear(F('date_of_birth'))) * 365 +
-            (ExtractMonth(today) - ExtractMonth(F('date_of_birth'))) * 30 +
-            (ExtractDay(today) - ExtractDay(F('date_of_birth'))),
-            output_field=IntegerField()
+            (ExtractYear(today) - ExtractYear(F("date_of_birth"))) * 365
+            + (ExtractMonth(today) - ExtractMonth(F("date_of_birth"))) * 30
+            + (ExtractDay(today) - ExtractDay(F("date_of_birth"))),
+            output_field=IntegerField(),
         )
     )
 
     # Aggregate cases by age range
-    cases_aggregated_by_age_ranges = cases_with_age.annotate(
-        age_range=DJANGO_CASE(
-            When(age_in_days__isnull=False, age_in_days__lt=under_a_year, then=Value('under_a_year')),
-            When(age_in_days__isnull=False, age_in_days__gte=under_a_year, age_in_days__lt=one_to_five_years, then=Value('one_to_five_years')),
-            When(age_in_days__isnull=False, age_in_days__gte=one_to_five_years, age_in_days__lt=five_to_eleven_years, then=Value('five_to_eleven_years')),
-            When(age_in_days__isnull=False, age_in_days__gte=five_to_eleven_years, age_in_days__lt=eleven_to_eighteen_years, then=Value('eleven_to_eighteen_years')),
-            When(age_in_days__isnull=False, age_in_days__gte=eleven_to_eighteen_years, then=Value('over_eighteen_years')),
-            default=Value('unknown'),
-            output_field=CharField(),
+    cases_aggregated_by_age_ranges = (
+        cases_with_age.annotate(
+            age_range=DJANGO_CASE(
+                When(
+                    age_in_days__isnull=False,
+                    age_in_days__lt=under_a_year,
+                    then=Value("under_a_year"),
+                ),
+                When(
+                    age_in_days__isnull=False,
+                    age_in_days__gte=under_a_year,
+                    age_in_days__lt=one_to_five_years,
+                    then=Value("one_to_five_years"),
+                ),
+                When(
+                    age_in_days__isnull=False,
+                    age_in_days__gte=one_to_five_years,
+                    age_in_days__lt=five_to_eleven_years,
+                    then=Value("five_to_eleven_years"),
+                ),
+                When(
+                    age_in_days__isnull=False,
+                    age_in_days__gte=five_to_eleven_years,
+                    age_in_days__lt=eleven_to_eighteen_years,
+                    then=Value("eleven_to_eighteen_years"),
+                ),
+                When(
+                    age_in_days__isnull=False,
+                    age_in_days__gte=eleven_to_eighteen_years,
+                    then=Value("over_eighteen_years"),
+                ),
+                default=Value("unknown"),
+                output_field=CharField(),
+            )
         )
-    ).values('age_range').annotate(count=Count('id')).order_by('age_range')
+        .values("age_range")
+        .annotate(count=Count("id"))
+        .order_by("age_range")
+    )
 
     # add the display name for each age range
     age_categories = {
@@ -117,9 +155,7 @@ def cases_aggregated_by_age(selected_organisation):
 
         str_map = age_categories.get(age_range, "Unknown")
 
-        aggregate.update(
-            {"age_category_label": str_map}
-        )
+        aggregate.update({"age_category_label": str_map})
 
     return cases_aggregated_by_age_ranges
 
@@ -128,7 +164,11 @@ def cases_aggregated_by_deprivation_score(selected_organisation):
     # aggregate queries on trust level cases
     Case = apps.get_model("epilepsy12", "Case")
 
-    cases_in_selected_organisation = Case.objects.filter(site__organisation=selected_organisation, site__site_is_primary_centre_of_epilepsy_care=True, site__site_is_actively_involved_in_epilepsy_care=True)
+    cases_in_selected_organisation = Case.objects.filter(
+        site__organisation=selected_organisation,
+        site__site_is_primary_centre_of_epilepsy_care=True,
+        site__site_is_actively_involved_in_epilepsy_care=True,
+    )
 
     cases_aggregated_by_deprivation = (
         # Filter just Cases in selected org
@@ -182,7 +222,11 @@ def cases_aggregated_by_ethnicity(selected_organisation):
     ethnicity_long_list = [When(ethnicity=k, then=Value(v)) for k, v in ETHNICITIES]
 
     cases_aggregated_by_ethnicity = (
-        Case.objects.filter(site__organisation=selected_organisation, site__site_is_primary_centre_of_epilepsy_care=True, site__site_is_actively_involved_in_epilepsy_care=True)
+        Case.objects.filter(
+            site__organisation=selected_organisation,
+            site__site_is_primary_centre_of_epilepsy_care=True,
+            site__site_is_actively_involved_in_epilepsy_care=True,
+        )
         .values("ethnicity")
         .annotate(
             ethnicity_display=DJANGO_CASE(
@@ -200,6 +244,8 @@ def cases_aggregated_by_ethnicity(selected_organisation):
 """
 Filter cases, run aggregations and store results in KPIAggregation models - there is one for each cohort and one for each level of abstraction
 """
+
+
 def update_all_kpi_agg_models(
     cohort: int,
     abstractions: Union[Literal["all"], list[EnumAbstractionLevel]] = "all",
@@ -231,7 +277,7 @@ def update_all_kpi_agg_models(
     for ABSTRACTION_LEVEL in abstraction_levels:
         """
         Loop through each level of abstraction
-        
+
         For each level of of abstraction:
 
         filter all Cases for all sites where
@@ -254,7 +300,7 @@ def update_all_kpi_agg_models(
             abstraction_level=ABSTRACTION_LEVEL,
             kpis="all",
         )
-        
+
         # Update all KPIAggregation models for abstraction
         update_kpi_aggregation_model(
             abstraction_level=ABSTRACTION_LEVEL,
@@ -262,6 +308,7 @@ def update_all_kpi_agg_models(
             cohort=cohort,
             open_access=open_access,
         )
+
 
 def calculate_kpi_value_counts_queryset(
     filtered_cases,
@@ -294,6 +341,9 @@ def calculate_kpi_value_counts_queryset(
     # for each kpi name, eg. 'ecg',
     # create aggregation query to calculate total passed, total eligible, total ineligble, incompelete
     for kpi_name in kpi_names:
+        if kpi_name == "epilepsy_specialist_nurse":
+            print("epilepsy_specialist_nurse")
+            continue
         aggregate_queries.update(
             {
                 f"{kpi_name}_passed": Count(
@@ -340,6 +390,7 @@ def calculate_kpi_value_counts_queryset(
         )
 
     return kpi_value_counts
+
 
 def update_kpi_aggregation_model(
     abstraction_level: EnumAbstractionLevel,
@@ -402,7 +453,7 @@ def update_kpi_aggregation_model(
                 logger.exception(f"Unable to save National KPIAggregation: {error}")
 
         return
-    
+
     # update models where numbers have changed.
     for value_count in kpi_value_counts:
         ABSTRACTION_CODE = value_count.pop(f"organisation__{abstraction_level.value}")
@@ -432,7 +483,7 @@ def update_kpi_aggregation_model(
             value_count["abstraction_relation"] = abstraction_relation_instance
             value_count["cohort"] = cohort
             value_count["open_access"] = open_access
-            
+
             try:
                 new_obj = AbstractionKPIAggregationModel.objects.create(**value_count)
                 logger.debug(f"created {new_obj}")
@@ -470,15 +521,20 @@ def update_kpi_aggregation_model(
                 logger.debug(f"created {new_obj}")
             else:
                 logger.debug(f"updated {new_obj}")
-            
-    
-    logger.debug(f"{len(list_of_updated_abstraction_level_instance)} scored {abstraction_level.name} instances updated with aggregated scores of a total {AbstractionKPIAggregationModel.objects.filter(cohort=cohort).count()} {abstraction_level.name}s")
-    
-    not_updated = AbstractionKPIAggregationModel.objects.exclude(abstraction_relation__in=list_of_updated_abstraction_level_instance).filter(cohort=cohort)
+
+    logger.debug(
+        f"{len(list_of_updated_abstraction_level_instance)} scored {abstraction_level.name} instances updated with aggregated scores of a total {AbstractionKPIAggregationModel.objects.filter(cohort=cohort).count()} {abstraction_level.name}s"
+    )
+
+    not_updated = AbstractionKPIAggregationModel.objects.exclude(
+        abstraction_relation__in=list_of_updated_abstraction_level_instance
+    ).filter(cohort=cohort)
 
     if not_updated.count() > 0:
-        logger.debug(f"Not updated: {list(not_updated.values_list('abstraction_name'))})")
-    
+        logger.debug(
+            f"Not updated: {list(not_updated.values_list('abstraction_name'))})"
+        )
+
 
 def filter_completed_cases_at_one_year_by_abstraction_level(
     abstraction_level: EnumAbstractionLevel, cohort: int
@@ -521,6 +577,7 @@ def filter_completed_cases_at_one_year_by_abstraction_level(
 """
 Get KPIAggregation data from tables
 """
+
 
 def get_filtered_cases_queryset_for(
     abstraction_level: EnumAbstractionLevel, organisation, cohort: int
@@ -567,6 +624,7 @@ def get_filtered_cases_queryset_for(
     )
 
     return cases
+
 
 def get_all_kpi_aggregation_data_for_view(
     organisation,
@@ -664,9 +722,12 @@ def get_all_kpi_aggregation_data_for_view(
 
     return ALL_DATA
 
+
 """
 Helper functions
 """
+
+
 def get_abstraction_value_from(organisation, abstraction_level: EnumAbstractionLevel):
     """For the given abstraction level, will call getattr until the final object's value is returned.
 
@@ -681,6 +742,7 @@ def get_abstraction_value_from(organisation, abstraction_level: EnumAbstractionL
     for attribute in abstraction_level.value.split("__"):
         return_object = getattr(return_object, attribute, None)
     return return_object
+
 
 def get_abstraction_model_from_level(
     enum_abstraction_level: EnumAbstractionLevel,
@@ -742,14 +804,19 @@ def _calculate_all_kpis():
             logger.debug(f"KPIs recalculated for {case}")
             index += 1
         except Exception as error:
-            logger.error(f"It was not possible to calculate and update KPI record for {case}: {error}")
+            logger.error(
+                f"It was not possible to calculate and update KPI record for {case}: {error}"
+            )
             continue
     logger.info(f"{index} cases updated from a total of {all_cases.count()}")
+
 
 """
 Sets up the KPIAggregation models - one for each cohort and each level of abstraction
 Function also to delete them
 """
+
+
 def _seed_all_aggregation_models(cohort=None) -> None:
     """
     Seeds all KPIAggregation models for each level of abstraction, for requested cohort
@@ -884,12 +951,15 @@ def ___delete_and_recreate_all_kpi_aggregation_models():
 
     _seed_all_aggregation_models()
 
+
 """
 Functions to create Excel reports
 """
+
+
 def create_kpi_report_row(key, kpi_field, aggregation_row, level):
     kpi = kpi_field.name
-    measure = kpi_field.help_text['label']
+    measure = kpi_field.help_text["label"]
 
     ret = {
         level: key,
@@ -902,12 +972,9 @@ def create_kpi_report_row(key, kpi_field, aggregation_row, level):
 
         if numerator is not None and denominator is not None:
             # Make sure we don't divide by zero
-            ret["Percentage"] = (
-                0 if denominator == 0 else (numerator / denominator)
-            )
+            ret["Percentage"] = 0 if denominator == 0 else (numerator / denominator)
             ret["Numerator"] = numerator
             ret["Denominator"] = denominator
-
 
         if numerator is None:
             logger.info(f"Missing numerator for {key} {measure} {kpi}")
@@ -917,25 +984,24 @@ def create_kpi_report_row(key, kpi_field, aggregation_row, level):
 
     return ret
 
+
 def get_kpi_aggregation_rows(
     model_aggregation,
     cohort,
     abstraction_key_field=None,
 ):
-    query = model_aggregation.objects.filter(
-        cohort=cohort,
-        open_access=False
-    )
+    query = model_aggregation.objects.filter(cohort=cohort, open_access=False)
 
     if abstraction_key_field:
         query = query.annotate(
             key_field=F(f"abstraction_relation__{abstraction_key_field}")
         )
-    
+
     # Eagerly evaluate the query as we use some result sets twice in kpi.py
     # Otherwise we'd have to re-run the query to avoid getting empty results
     # the second time we try and use it.
     return list(query.values())
+
 
 def create_KPI_aggregation_dataframe(
     aggregation_rows,
@@ -947,10 +1013,7 @@ def create_KPI_aggregation_dataframe(
     for measure in measures:
         for aggregation_row in aggregation_rows:
             report_row = create_kpi_report_row(
-                aggregation_row["key_field"],
-                measure,
-                aggregation_row,
-                title
+                aggregation_row["key_field"], measure, aggregation_row, title
             )
 
             final_list.append(report_row)
@@ -1028,12 +1091,16 @@ def create_reference_dataframe(trusts, health_boards, networks, icbs, totals=Fal
 
     return pd.DataFrame.from_dict(final_list)
 
+
 def create_totals_dataframe(cohort, abstraction_level):
     """
     create a dataframe for all organisations with totals of all registered cases vs cases included in aggregation
     """
-    
-    from ..common_view_functions import all_registered_cases_for_cohort_and_abstraction_level
+
+    from ..common_view_functions import (
+        all_registered_cases_for_cohort_and_abstraction_level,
+    )
+
     Organisation = apps.get_model("epilepsy12", "Organisation")
     Trust = apps.get_model("epilepsy12", "Trust")
     LocalHealthBoard = apps.get_model("epilepsy12", "LocalHealthBoard")
@@ -1041,60 +1108,84 @@ def create_totals_dataframe(cohort, abstraction_level):
     NHSEnglandRegion = apps.get_model("epilepsy12", "NHSEnglandRegion")
     OPENUKNetwork = apps.get_model("epilepsy12", "OPENUKNetwork")
     Country = apps.get_model("epilepsy12", "Country")
-    
+
     abs_level = []
 
-
     if abstraction_level == "trust":
-        query_set = Trust.objects.annotate(organisation_count=Count('organisation')).filter(organisation_count__gt=0)
+        query_set = Trust.objects.annotate(
+            organisation_count=Count("organisation")
+        ).filter(organisation_count__gt=0)
     elif abstraction_level == "local_health_board":
-        query_set = LocalHealthBoard.objects.annotate(organisation_count=Count('organisation')).filter(organisation_count__gt=0)
+        query_set = LocalHealthBoard.objects.annotate(
+            organisation_count=Count("organisation")
+        ).filter(organisation_count__gt=0)
     elif abstraction_level == "icb":
-        query_set = IntegratedCareBoard.objects.annotate(organisation_count=Count('organisation')).filter(organisation_count__gt=0)
+        query_set = IntegratedCareBoard.objects.annotate(
+            organisation_count=Count("organisation")
+        ).filter(organisation_count__gt=0)
     elif abstraction_level == "nhs_england_region":
-        query_set = NHSEnglandRegion.objects.annotate(organisation_count=Count('organisation')).filter(organisation_count__gt=0)
+        query_set = NHSEnglandRegion.objects.annotate(
+            organisation_count=Count("organisation")
+        ).filter(organisation_count__gt=0)
     elif abstraction_level == "open_uk":
-        query_set = OPENUKNetwork.objects.annotate(organisation_count=Count('organisation')).filter(organisation_count__gt=0)
+        query_set = OPENUKNetwork.objects.annotate(
+            organisation_count=Count("organisation")
+        ).filter(organisation_count__gt=0)
     elif abstraction_level == "country":
-        query_set = Country.objects.annotate(organisation_count=Count('organisation')).filter(organisation_count__gt=0)
-
+        query_set = Country.objects.annotate(
+            organisation_count=Count("organisation")
+        ).filter(organisation_count__gt=0)
 
     for abstraction_item in query_set:
         if abstraction_level == "trust":
-            organisation_instance = Organisation.objects.filter(trust=abstraction_item).first()
+            organisation_instance = Organisation.objects.filter(
+                trust=abstraction_item
+            ).first()
         elif abstraction_level == "local_health_board":
-            organisation_instance = Organisation.objects.filter(local_health_board=abstraction_item).first()
+            organisation_instance = Organisation.objects.filter(
+                local_health_board=abstraction_item
+            ).first()
         elif abstraction_level == "icb":
-            organisation_instance = Organisation.objects.filter(integrated_care_board=abstraction_item).first()
+            organisation_instance = Organisation.objects.filter(
+                integrated_care_board=abstraction_item
+            ).first()
         elif abstraction_level == "nhs_england_region":
-            organisation_instance = Organisation.objects.filter(nhs_england_region=abstraction_item).first()
+            organisation_instance = Organisation.objects.filter(
+                nhs_england_region=abstraction_item
+            ).first()
         elif abstraction_level == "open_uk":
-            organisation_instance = Organisation.objects.filter(openuk_network=abstraction_item).first()
+            organisation_instance = Organisation.objects.filter(
+                openuk_network=abstraction_item
+            ).first()
         elif abstraction_level == "country":
-            organisation_instance = Organisation.objects.filter(country=abstraction_item).first()
-        
+            organisation_instance = Organisation.objects.filter(
+                country=abstraction_item
+            ).first()
+
         all_cases = all_registered_cases_for_cohort_and_abstraction_level(
             organisation_instance=organisation_instance,
-            cohort=cohort, 
-            case_complete=False, 
-            abstraction_level=abstraction_level
+            cohort=cohort,
+            case_complete=False,
+            abstraction_level=abstraction_level,
         ).count()
         all_registered_cases = all_registered_cases_for_cohort_and_abstraction_level(
             organisation_instance=organisation_instance,
-            cohort=cohort, 
-            case_complete=True, 
-            abstraction_level=abstraction_level
+            cohort=cohort,
+            case_complete=True,
+            abstraction_level=abstraction_level,
         ).count()
 
-        abs_level.append({
-            "Name": abstraction_item.name,
-            "All Registered Cases": all_registered_cases,
-            "All Cases": all_cases,
-            "Percentage": round((all_registered_cases/all_cases)*100,1) if all_cases > 0 else 0
-        })
-    
+        abs_level.append(
+            {
+                "Name": abstraction_item.name,
+                "All Registered Cases": all_registered_cases,
+                "All Cases": all_cases,
+                "Percentage": (
+                    round((all_registered_cases / all_cases) * 100, 1)
+                    if all_cases > 0
+                    else 0
+                ),
+            }
+        )
+
     return pd.DataFrame.from_dict(abs_level)
-
-        
-
-
