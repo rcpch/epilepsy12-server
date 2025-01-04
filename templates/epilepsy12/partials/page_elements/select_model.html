@@ -30,14 +30,14 @@ endpoint posted to is specific to the choices. {% endcomment %}
     </span>
   </h5>
   {% if enabled %}
-  <div class="ui rcpch_light_blue fluid search selection dropdown">
-    {% else %}
+    <div class="ui rcpch_light_blue fluid search selection dropdown">
+  {% else %}
         <div class="ui rcpch_light_blue fluid search selection disabled dropdown">
-    {% endif %} 
-    {% if test_positive %}
+  {% endif %} 
+  {% if test_positive %}
       <i class="rcpch_pink check circle outline icon"></i>
-    {% else %}
-        {% if not allow_none %}
+  {% else %}
+      {% if not allow_none %}
             <span
                 data-tooltip="Incomplete field. This must be scored to complete the record."
                 data-inverted=""
@@ -45,8 +45,8 @@ endpoint posted to is specific to the choices. {% endcomment %}
             >
                 <i class="rcpch_light_blue dot circle outline icon"></i>
             </span>
-        {% endif %}
       {% endif %}
+  {% endif %}
 
       <i class="dropdown icon"></i>
       <input
@@ -57,17 +57,18 @@ endpoint posted to is specific to the choices. {% endcomment %}
         hx-target="{{hx_target}}"
         hx-swap="{{hx_swap}}"
         hx-trigger="{{hx_trigger}}"
-        value="{{test_positive}}"
+        value={{test_positive}}
       />
       <div class="default text">{{hx_default_text}}</div>
       <div class="menu">
         {% if allow_none %}
         <div class="item" data-value="empty">Not available in the list (defaults to empty on selection)</div>
-        {% endif %} {% for item in choices %}
-        <div class="item" data-value="{{item.pk}}">
-          {% value_for_field_name item field_name False %} 
-          {% value_for_field_name item field_name2 True %}
-        </div>
+        {% endif %} 
+        {% for item in choices %}
+            <div class="item" data-value="{{item.pk}}">
+              {% value_for_field_name item field_name False %} 
+              {% value_for_field_name item field_name2 True %}
+            </div>
         {% endfor %}
       </div>
     </div>

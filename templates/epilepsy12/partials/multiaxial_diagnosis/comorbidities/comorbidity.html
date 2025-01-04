@@ -28,16 +28,30 @@
             {% include 'epilepsy12/partials/page_elements/select_model.html' with choices=comorbidity_choices hx_post=hx_post hx_target="#comorbidities" hx_trigger='change' hx_swap="innerHTML" hx_name='comorbidityentity' field_name='preferredTerm' field_name2='term' hx_default_text="Select a comorbidity..." test_positive=comorbidity.comorbidityentity.pk label=comorbidity.get_comorbidityentity_help_label_text reference=comorbidity.get_comorbidityentity_help_reference_text data_position='top left' enabled=perms.epilepsy12.change_comorbidity %}
         </div>
 
-        <div class='field'>
-            <button class='ui rcpch_primary button'
-                hx-trigger='click'
-                hx-post='{% url "close_comorbidity" comorbidity_id=comorbidity.pk %}'
-                hx-swap='innerHTML swap:500ms'
-                name='comorbidity_return'
-                hx-target='#comorbidities'
-            >
-            Save new Comorbidity
-            </button>
+        <div class="fields">
+            <div class='field'>
+                <button class='ui rcpch_primary button'
+                    hx-trigger='click'
+                    hx-post='{% url "close_comorbidity" comorbidity_id=comorbidity.pk %}'
+                    hx-swap='innerHTML swap:500ms'
+                    name='comorbidity_return'
+                    hx-target='#comorbidities'
+                >
+                Save new Comorbidity
+                </button>
+            </div>
+            
+            <div class='field'>
+                <button class='ui rcpch_grey button'
+                    hx-trigger='click'
+                    hx-post='{% url "close_comorbidity" comorbidity_id=comorbidity.pk %}'
+                    hx-swap='innerHTML swap:500ms'
+                    name='comorbidity_cancel'
+                    hx-target='#comorbidities'
+                >
+                Cancel
+                </button>
+            </div>
         </div>
 
     </div>
