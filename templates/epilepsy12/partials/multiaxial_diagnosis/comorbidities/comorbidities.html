@@ -46,6 +46,7 @@
                             {% endif %}
                             hx-post='{% url "edit_comorbidity" comorbidity_id=comorbidity.pk %}'
                             hx-target='#comorbidities'
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                             hx-trigger='click'
                             hx-swap='innerHTML'
                         >
@@ -57,6 +58,7 @@
                             {% else %}
                                 class="ui rcpch_red icon button"
                             {% endif %}
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                             hx-post='{% url "remove_comorbidity" comorbidity_id=comorbidity.pk %}'
                             hx-target='#comorbidities'
                             hx-trigger='click'
@@ -86,6 +88,7 @@
             class="ui rcpch_primary button"
             {% endif %}
             hx-post="{% url 'add_comorbidity' multiaxial_diagnosis_id=multiaxial_diagnosis.pk %}"
+            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
             hx-target="#comorbidities"
             hx-swap='innerHTML swap:500ms settle:500ms'
             hx-trigger='click'

@@ -12,11 +12,17 @@ def get_comorbidity_choices(multiaxial_diagnosis, comorbidity_id=None):
     Comorbidity = apps.get_model("epilepsy12", "Comorbidity")
     ComorbidityList = apps.get_model("epilepsy12", "ComorbidityList")
 
+    # Get all comorbidity entities that have been selected for this multiaxial diagnosis except the current one
     all_selected_comorbidityentities = (
         Comorbidity.objects.filter(multiaxial_diagnosis=multiaxial_diagnosis)
         .exclude(pk=comorbidity_id)
         .values_list("comorbidityentity", flat=True)
     )
+
+    # Filter out None values from all_selected_comorbidityentities
+    all_selected_comorbidityentities = [
+        entity for entity in all_selected_comorbidityentities if entity is not None
+    ]
 
     comorbidity_choices = (
         ComorbidityList.objects.all()

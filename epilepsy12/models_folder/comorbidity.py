@@ -57,6 +57,8 @@ class Comorbidity(
             "reference": "Paediatric neurodisability outpatient diagnosis simple reference set (999001751000000105), SNOMED-CT",
         },
         default=None,
+        null=True,
+        blank=True,
     )
 
     class Meta:
