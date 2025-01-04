@@ -1,4 +1,5 @@
 {% load epilepsy12_template_tags %}
+{% csrf_token %}
 <div>
     {% if comorbidities|length > 0 %}
         <table class="ui rcpch basic table">
