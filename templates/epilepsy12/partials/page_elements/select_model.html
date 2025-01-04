@@ -62,20 +62,19 @@ endpoint posted to is specific to the choices. {% endcomment %}
       <div class="default text">{{hx_default_text}}</div>
       <div class="menu">
         {% if allow_none %}
-        <div class="item" data-value="empty">Not available in the list (defaults to empty on selection)</div>
+          <div class="item" data-value="empty">Not available in the list (defaults to empty on selection)</div>
         {% endif %} 
-        {% for item in choices %}
-            <div class="item" data-value="{{item.pk}}">
-              {% value_for_field_name item field_name False %} 
-              {% value_for_field_name item field_name2 True %}
-            </div>
-        {% endfor %}
-      </div>
-    </div>
+          {% for item in choices %}
+              <div class="item" data-value="{{item.pk}}">
+                {% value_for_field_name item field_name False %} 
+                {% value_for_field_name item field_name2 True %}
+              </div>
+          {% endfor %}
+      </div><!--menu-->
+    
+
     {% if not enabled %}
-    <small class="rcpch_warning_label"
-      >You do not have permission to update this field</small
-    >
+      <small class="rcpch_warning_label">You do not have permission to update this field</small>
     {% endif %}
-  </div>
-</div>
+  </div><!--dropdown-->
+</div><!--field-->

@@ -1,5 +1,6 @@
 
 
+{% csrf_token %}
 <div class="ui pink message" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
     <div class="ui rcpch_pink segment">
