@@ -29,18 +29,24 @@ def score_kpi_2(registration_instance) -> int:
     if (
         assessment.epilepsy_specialist_nurse_referral_made is None
         or assessment.epilepsy_specialist_nurse_referral_date is None
-        or assessment.epilepsy_specialist_nurse_input_date is None
+        or (
+            assessment.epilepsy_specialist_nurse_input_date is None
+            and assessment.epilepsy_specialist_nurse_input_achieved
+        )
     ):
         return KPI_SCORE["NOT_SCORED"]
 
     # score check
-    has_seen_nurse_within_1_yr_registration = (
-        assessment.epilepsy_specialist_nurse_input_date
-        <= registration_instance.first_paediatric_assessment_date
-        + relativedelta(years=1)
-    )
+    if assessment.epilepsy_specialist_nurse_input_achieved:
+        has_seen_nurse_within_1_yr_registration = (
+            assessment.epilepsy_specialist_nurse_input_date
+            <= registration_instance.first_paediatric_assessment_date
+            + relativedelta(years=1)
+        )
 
-    if has_seen_nurse_within_1_yr_registration:
-        return KPI_SCORE["PASS"]
+        if has_seen_nurse_within_1_yr_registration:
+            return KPI_SCORE["PASS"]
+        else:
+            return KPI_SCORE["FAIL"]
     else:
-        return KPI_SCORE["FAIL"]
+        return KPI_SCORE["PASS"]
