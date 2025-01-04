@@ -14,6 +14,7 @@ from epilepsy12.models import (
 from ..common_view_functions import (
     validate_and_update_model,
     recalculate_form_generate_response,
+    get_medicine_choices,
 )
 from ..decorator import user_may_view_this_child, login_and_otp_required
 
@@ -160,16 +161,11 @@ def add_antiepilepsy_medicine(request, management_id, is_rescue_medicine):
 
     # get all medicines excluding those already selected, and excluding this medicine
     management = antiepilepsy_medicine.management
-    all_selected_antiepilepsymedicines = (
-        AntiEpilepsyMedicine.objects.filter(management=management)
-        .exclude(pk=antiepilepsy_medicine.pk)
-        .values_list("medicine_entity", flat=True)
-    )
 
-    choices = (
-        Medicine.objects.filter(is_rescue=antiepilepsy_medicine.is_rescue_medicine)
-        .exclude(pk__in=all_selected_antiepilepsymedicines)
-        .order_by("medicine_name")
+    choices = get_medicine_choices(
+        antiepilepsy_medicine_id=antiepilepsy_medicine.pk,
+        is_rescue=is_rescue,
+        management=management,
     )
 
     context = {
@@ -344,16 +340,11 @@ def medicine_id(request, antiepilepsy_medicine_id):
 
     # get all medicines excluding those already selected, and excluding this medicine
     management = antiepilepsy_medicine.management
-    all_selected_antiepilepsymedicines = (
-        AntiEpilepsyMedicine.objects.filter(management=management)
-        .exclude(pk=antiepilepsy_medicine_id)
-        .values_list("medicine_entity", flat=True)
-    )
 
-    choices = (
-        Medicine.objects.filter(is_rescue=antiepilepsy_medicine.is_rescue_medicine)
-        .exclude(pk__in=all_selected_antiepilepsymedicines)
-        .order_by("medicine_name")
+    choices = get_medicine_choices(
+        antiepilepsy_medicine_id=antiepilepsy_medicine.pk,
+        is_rescue=antiepilepsy_medicine.is_rescue_medicine,
+        management=management,
     )
 
     # get id of medicine entity

@@ -25,6 +25,7 @@ from .aggregate_by import (
     _seed_all_aggregation_models,
     _calculate_all_kpis,
 )
+from .medicine_choices import get_medicine_choices
 from .report_queries import (
     all_registered_cases_for_cohort_and_abstraction_level,
     get_all_nhs_regions,
