@@ -40,7 +40,7 @@ def test_measure_2_should_not_score(
     e12_case_factory,
     epilepsy_specialist_nurse_referral_made,
     epilepsy_specialist_nurse_referral_date,
-    epilepsy_specialist_nurse_input_achieved
+    epilepsy_specialist_nurse_input_achieved,
     epilepsy_specialist_nurse_input_date,
     expected_score,
 ):
@@ -115,6 +115,7 @@ def test_measure_2_should_fail_referral_after_1_yr(
         registration__first_paediatric_assessment_date=FIRST_PAEDIATRIC_ASSESSMENT_DATE,
         registration__assessment__epilepsy_specialist_nurse_referral_made=True,
         registration__assessment__epilepsy_specialist_nurse_referral_date=REFERRAL_DATE,
+        registration__assessment__epilepsy_specialist_nurse_input_achieved=True,
         registration__assessment__epilepsy_specialist_nurse_input_date=INPUT_DATE,
     )
 
@@ -148,6 +149,7 @@ def test_measure_2_should_pass_timely_input(
         registration__assessment__epilepsy_specialist_nurse_referral_made=True,
         registration__first_paediatric_assessment_date=FIRST_PAEDIATRIC_ASSESSMENT_DATE,
         registration__assessment__epilepsy_specialist_nurse_referral_date=PASSING_REFERRAL_DATE,
+        registration__assessment__epilepsy_specialist_nurse_input_achieved=True,
         registration__assessment__epilepsy_specialist_nurse_input_date=PASSING_INPUT_DATE,
     )
 

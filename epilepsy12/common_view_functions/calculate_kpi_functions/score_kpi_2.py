@@ -30,8 +30,12 @@ def score_kpi_2(registration_instance) -> int:
         assessment.epilepsy_specialist_nurse_referral_made is None
         or assessment.epilepsy_specialist_nurse_referral_date is None
         or (
-            assessment.epilepsy_specialist_nurse_input_date is None
-            and assessment.epilepsy_specialist_nurse_input_achieved
+            assessment.epilepsy_specialist_nurse_input_achieved
+            and assessment.epilepsy_specialist_nurse_input_date is None
+        )
+        or (
+            assessment.epilepsy_specialist_nurse_referral_made
+            and assessment.epilepsy_specialist_nurse_input_achieved is None
         )
     ):
         return KPI_SCORE["NOT_SCORED"]
