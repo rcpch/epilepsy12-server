@@ -100,11 +100,12 @@
         <div class='two fields'>
 
             <div class='field'>
-                {% url 'medicine_id' antiepilepsy_medicine_id=antiepilepsy_medicine.pk as hx_post %}
                 {% if is_rescue_medicine %}
-                    {% include 'epilepsy12/partials/page_elements/select_model.html' with choices=choices hx_post=hx_post hx_target='#rescue_medicine_list' hx_trigger='change' hx_swap='innerHTML' hx_name='medicine_id' field_name='medicine_name' field_name2='preferredTerm' test_positive=antiepilepsy_medicine.medicine_entity.pk label=antiepilepsy_medicine.get_medicine_entity_help_label_text reference=antiepilepsy_medicine.get_medicine_entity_help_reference_text hx_default_text='Antiseizure medicine' data_position='top left' enabled=perms.epilepsy12.change_antiepilepsymedicine %}
+                    {% url 'medicine_id' antiepilepsy_medicine_id=antiepilepsy_medicine.pk medicine_status='rescue' as hx_post %}
+                    {% include 'epilepsy12/partials/page_elements/select_model.html' with choices=choices hx_post=hx_post hx_target='#rescue_medicine_list' hx_trigger='change' hx_swap='innerHTML' hx_name='rescue_medicine_id' field_name='medicine_name' field_name2='preferredTerm' test_positive=antiepilepsy_medicine.medicine_entity.pk label=antiepilepsy_medicine.get_medicine_entity_help_label_text reference=antiepilepsy_medicine.get_medicine_entity_help_reference_text hx_default_text='Antiseizure medicine' data_position='top left' enabled=perms.epilepsy12.change_antiepilepsymedicine %}
                 {% else %}
-                    {% include 'epilepsy12/partials/page_elements/select_model.html' with choices=choices hx_post=hx_post hx_target='#antiepilepsy_medicine_list' hx_trigger='change' hx_swap='innerHTML' hx_name='medicine_id' field_name='medicine_name' field_name2='preferredTerm' test_positive=antiepilepsy_medicine.medicine_entity.pk label=antiepilepsy_medicine.get_medicine_entity_help_label_text reference=antiepilepsy_medicine.get_medicine_entity_help_reference_text hx_default_text='Antiseizure medicine' data_position='top left' enabled=perms.epilepsy12.change_antiepilepsymedicine %}
+                    {% url 'medicine_id' antiepilepsy_medicine_id=antiepilepsy_medicine.pk medicine_status='epilepsy' as hx_post %}
+                    {% include 'epilepsy12/partials/page_elements/select_model.html' with choices=choices hx_post=hx_post hx_target='#antiepilepsy_medicine_list' hx_trigger='change' hx_swap='innerHTML' hx_name='epilepsy_medicine_id' field_name='medicine_name' field_name2='preferredTerm' test_positive=antiepilepsy_medicine.medicine_entity.pk label=antiepilepsy_medicine.get_medicine_entity_help_label_text reference=antiepilepsy_medicine.get_medicine_entity_help_reference_text hx_default_text='Antiseizure medicine' data_position='top left' enabled=perms.epilepsy12.change_antiepilepsymedicine %}
                 {% endif %}
             </div>
 
@@ -153,7 +154,7 @@
                     hx-target='#antiepilepsy_medicine_list'
                 {% endif %}
                 hx-trigger='click'
-                _="on every transition opacity to 0 then remove me"
+                _="on every click transition opacity to 0 then remove me"
                 hx-swap='innerHTML swap:500ms'
             >{% if is_rescue_medicine %}Return to rescue medication list{%else%}Return to antiseizure medication list{%endif%}</div>
         </div>

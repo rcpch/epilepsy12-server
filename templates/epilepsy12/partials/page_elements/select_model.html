@@ -1,5 +1,5 @@
-{% load epilepsy12_template_tags %} {% comment %} This is a single choice select
-which is reused in multiple places. It accepts only django models as lookup Note
+{% load epilepsy12_template_tags %} {% comment %} 
+This is a single choice select which is reused in multiple places. It accepts only django models as lookup Note
 requires jquery to work. This select accepts the following parameters: choices:
 these are the choices available hx_post: the url posted to including parameters
 hx_target: the id of the html element to target the server response hx_trigger:
@@ -15,7 +15,7 @@ allow_none: if this is not a mandatory field, it can default to None The chosen
 value is stored as the name of the button and accessed in the view as
 request.htmx.trigger_name Which choices are selected from is obvious because the
 endpoint posted to is specific to the choices. {% endcomment %}
-<div class="field" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<div class="field" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' id="{{hx_name}}_field">
   <h5 class="rcpch_plain_label">
     {{label|safe}}&nbsp;
     <span
