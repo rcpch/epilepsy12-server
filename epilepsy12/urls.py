@@ -1032,7 +1032,7 @@ antiepilepsy_medicine_patterns = [
         name="close_antiepilepsy_medicine",
     ),
     path(
-        "antiepilepsy_medicine/<int:antiepilepsy_medicine_id>/medicine_id",
+        "antiepilepsy_medicine/<int:antiepilepsy_medicine_id>/medicine_id/<str:medicine_status>",
         medicine_id,
         name="medicine_id",
     ),
