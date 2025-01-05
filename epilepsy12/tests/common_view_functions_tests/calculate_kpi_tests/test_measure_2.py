@@ -28,11 +28,11 @@ from epilepsy12.constants import KPI_SCORE
 
 
 @pytest.mark.parametrize(
-    "epilepsy_specialist_nurse_referral_made,epilepsy_specialist_nurse_referral_date,epilepsy_specialist_nurse_input_date, expected_score",
+    "epilepsy_specialist_nurse_referral_made,epilepsy_specialist_nurse_referral_date,epilepsy_specialist_nurse_input_achieved,epilepsy_specialist_nurse_input_date,expected_score",
     [
-        (None, None, None, KPI_SCORE["NOT_SCORED"]),
-        (True, None, None, KPI_SCORE["NOT_SCORED"]),
-        (True, date(2023, 1, 1), None, KPI_SCORE["NOT_SCORED"]),
+        (None, None, None, None, KPI_SCORE["NOT_SCORED"]),
+        (True, None, None, None, KPI_SCORE["NOT_SCORED"]),
+        (True, date(2023, 1, 1), None, None, KPI_SCORE["NOT_SCORED"]),
     ],
 )
 @pytest.mark.django_db
@@ -40,6 +40,7 @@ def test_measure_2_should_not_score(
     e12_case_factory,
     epilepsy_specialist_nurse_referral_made,
     epilepsy_specialist_nurse_referral_date,
+    epilepsy_specialist_nurse_input_achieved
     epilepsy_specialist_nurse_input_date,
     expected_score,
 ):
@@ -50,6 +51,7 @@ def test_measure_2_should_not_score(
     case = e12_case_factory(
         registration__assessment__epilepsy_specialist_nurse_referral_made=epilepsy_specialist_nurse_referral_made,
         registration__assessment__epilepsy_specialist_nurse_referral_date=epilepsy_specialist_nurse_referral_date,
+        registration__assessment__epilepsy_specialist_nurse_input_achieved=epilepsy_specialist_nurse_input_achieved,
         registration__assessment__epilepsy_specialist_nurse_input_date=epilepsy_specialist_nurse_input_date,
     )
 
@@ -65,6 +67,8 @@ def test_measure_2_should_not_score(
         assertion_message += f"epilepsy_specialist_nurse_referral_made\n"
     if registration.assessment.epilepsy_specialist_nurse_referral_date is None:
         assertion_message += f"epilepsy_specialist_nurse_referral_date\n"
+    if registration.assessment.epilepsy_specialist_nurse_input_achieved is None:
+        assertion_message += f"epilepsy_specialist_nurse_input_achieved\n"
     if registration.assessment.epilepsy_specialist_nurse_input_date is None:
         assertion_message += f"epilepsy_specialist_nurse_input_date\n"
 
