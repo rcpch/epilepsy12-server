@@ -2612,24 +2612,38 @@ def test_users_update_antiepilepsymedicine_forbidden(client):
                 )
             elif URL in toggle_buttons:
                 # these are all toggle buttons
+                url = reverse(
+                    URL,
+                    kwargs={"antiepilepsy_medicine_id": antiepilepsy_medicine.pk},
+                )
                 response = client.post(
-                    reverse(
-                        URL,
-                        kwargs={
-                            "antiepilepsy_medicine_id": antiepilepsy_medicine.pk,
-                        },
-                    ),
+                    url,
                     headers={"Hx-Trigger-Name": "button-true", "Hx-Request": "true"},
                 )
             else:
                 # these are all button clicks
-                response = client.post(
-                    reverse(
-                        URL,
-                        kwargs={"antiepilepsy_medicine_id": antiepilepsy_medicine.pk},
-                    ),
-                    headers={"Hx-Trigger-Name": URL, "Hx-Request": "true"},
-                )
+                if URL == "medicine_id":
+                    response = client.post(
+                        reverse(
+                            URL,
+                            kwargs={
+                                "antiepilepsy_medicine_id": antiepilepsy_medicine.pk,
+                                "medicine_status": "rescue",
+                            },
+                        ),
+                        headers={"Hx-Trigger-Name": URL, "Hx-Request": "true"},
+                        data={"rescue_medicine_id": 8},  # Clobazam
+                    )
+                else:
+                    response = client.post(
+                        reverse(
+                            URL,
+                            kwargs={
+                                "antiepilepsy_medicine_id": antiepilepsy_medicine.pk
+                            },
+                        ),
+                        headers={"Hx-Trigger-Name": URL, "Hx-Request": "true"},
+                    )
 
             assert (
                 response.status_code == HTTPStatus.FORBIDDEN
@@ -2728,14 +2742,29 @@ def test_users_update_antiepilepsymedicine_success(client):
                 )
             else:
                 # these are all button clicks
-                response = client.post(
-                    reverse(
-                        URL,
-                        kwargs={"antiepilepsy_medicine_id": antiepilepsy_medicine.pk},
-                    ),
-                    headers={"Hx-Trigger-Name": URL, "Hx-Request": "true"},
-                    data={"medicine_id": 8},  # Clobazam
-                )
+                if URL == "medicine_id":
+                    response = client.post(
+                        reverse(
+                            URL,
+                            kwargs={
+                                "antiepilepsy_medicine_id": antiepilepsy_medicine.pk,
+                                "medicine_status": "rescue",
+                            },
+                        ),
+                        headers={"Hx-Trigger-Name": URL, "Hx-Request": "true"},
+                        data={"rescue_medicine_id": 8},  # Clobazam
+                    )
+                else:
+                    response = client.post(
+                        reverse(
+                            URL,
+                            kwargs={
+                                "antiepilepsy_medicine_id": antiepilepsy_medicine.pk
+                            },
+                        ),
+                        headers={"Hx-Trigger-Name": URL, "Hx-Request": "true"},
+                        data={"medicine_id": 8},  # Clobazam
+                    )
 
             assert (
                 response.status_code == HTTPStatus.OK
