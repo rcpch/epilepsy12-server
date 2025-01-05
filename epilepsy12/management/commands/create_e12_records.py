@@ -509,10 +509,12 @@ def create_assessment(registration_instance, verbose=True):
                 start=registration_instance.first_paediatric_assessment_date,
                 end=date.today(),
             )
-            assessment.epilepsy_specialist_nurse_input_date = (
-                assessment.epilepsy_specialist_nurse_referral_date
-                + relativedelta(weeks=randint(1, 12))
-            )
+            assessment.epilepsy_specialist_nurse_input_achieved = bool(getrandbits(1))
+            if assessment.epilepsy_specialist_nurse_input_achieved:
+                assessment.epilepsy_specialist_nurse_input_date = (
+                    assessment.epilepsy_specialist_nurse_referral_date
+                    + relativedelta(weeks=randint(1, 12))
+                )
 
         assessment.save()
         return assessment
