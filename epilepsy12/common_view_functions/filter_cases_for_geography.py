@@ -18,6 +18,9 @@ def filter_all_registered_cases_by_active_lead_site_and_cohort_and_level_of_abst
     filtered_cases = (
         Case.objects.filter(
             ~Q(postcode__in=UNKNOWN_POSTCODES_NO_SPACES),
+            location_wgs84__isnull=False,  # Ensure location is not null
+            site__organisation__longitude__isnull=False,  # Ensure location is not null
+            site__organisation__latitude__isnull=False,  # Ensure location is not null
             registration__isnull=False,
             registration__cohort=cohort,
             site__organisation=organisation,
