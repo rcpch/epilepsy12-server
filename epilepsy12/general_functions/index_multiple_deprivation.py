@@ -30,7 +30,7 @@ def imd_for_postcode(user_postcode: str) -> int:
 
     if response.status_code != 200:
         logger.error(
-            "Could not get deprivation score. Response status %s", response.status_code
+            f"Could not get deprivation score for {user_postcode}. Response status {response.status_code}"
         )
         return None
 
