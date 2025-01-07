@@ -48,6 +48,8 @@ EMAIL_HOST_USER= # username for SMTP service
 SMTP_EMAIL_ENABLED=True # To output emails to console, set SMTP_EMAIL_ENABLED=False
 # Password reset link expires after (in seconds)
 PASSWORD_RESET_TIMEOUT=259200
+# Error reporting when DEBUG=False. Format: <name>:<email>,<name>:<email>...
+# ADMINS="admin:admin@rcpch.ac.uk"
 
 
 # HERMES (SNOMED CT)
