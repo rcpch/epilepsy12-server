@@ -341,9 +341,6 @@ def calculate_kpi_value_counts_queryset(
     # for each kpi name, eg. 'ecg',
     # create aggregation query to calculate total passed, total eligible, total ineligble, incompelete
     for kpi_name in kpi_names:
-        if kpi_name == "epilepsy_specialist_nurse":
-            print("epilepsy_specialist_nurse")
-            continue
         aggregate_queries.update(
             {
                 f"{kpi_name}_passed": Count(
