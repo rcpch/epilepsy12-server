@@ -1,5 +1,6 @@
 """Factory fn to create new E12 Assessments, related to a created Registration.
 """
+
 # standard imports
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -73,6 +74,7 @@ class E12AssessmentFactory(factory.django.DjangoModelFactory):
                 lambda o: o.registration.first_paediatric_assessment_date
                 + relativedelta(days=5)
             ),
+            epilepsy_specialist_nurse_input_achieved=True,
             epilepsy_specialist_nurse_input_date=factory.LazyAttribute(
                 lambda o: o.epilepsy_specialist_nurse_referral_date
                 + relativedelta(days=5)

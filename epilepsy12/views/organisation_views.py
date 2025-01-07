@@ -281,12 +281,17 @@ def publish_kpis(request, organisation_id):
     Returns the publish button partial + success message
     """
 
-    # get latest cohort - in future will be selectable
-    cohort = cohort_number_from_first_paediatric_assessment_date(date.today())
-    cohort_data = dates_for_cohort(cohort)
+    # get submitting_cohort number - in future will be selectable
+    cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
+
+    cohort_number = (
+        cohort_data["grace_cohort"]["cohort"]
+        if cohort_data["within_grace_period"]
+        else cohort_data["submitting_cohort"]
+    )
 
     # perform aggregations and update all the KPIAggregation models only for clinicians
-    update_all_kpi_agg_models(cohort=cohort_data["cohort"], open_access=True)
+    update_all_kpi_agg_models(cohort=cohort_number, open_access=True)
 
     return render(
         request=request,
