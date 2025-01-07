@@ -10,7 +10,7 @@ Measure 2 `epilepsy_specialist_nurse`
 
 - [x] epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> epilepsy_specialist_nurse_input_achieved - True -> epilepsy_specialist_nurse_input_date - WITHIN FIRST YEAR OF CARE -> PASS
 - [x] epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> (epilepsy_specialist_nurse_input_achieved - None) -> epilepsy_specialist_nurse_input_date - WITHIN FIRST YEAR OF CARE -> PASS (incomplete form but some users may have this as new field introduced late)
-- [x] epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> epilepsy_specialist_nurse_input_achieved - FALSE  (epilepsy_specialist_nurse_input_date NONE)-> PASS
+- [x] epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> epilepsy_specialist_nurse_input_achieved - FALSE  (epilepsy_specialist_nurse_input_date NONE)-> FAIL
 
 - [x] epilepsy_specialist_nurse_referral_made - None -> NOT_SCORED
 - [x] epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - None -> NOT_SCORED
@@ -232,5 +232,5 @@ def test_measure_2_should_pass_timely_input(
         kpi_score_achieved_unscored == KPI_SCORE["PASS"]
     ), f"Seen by epilepsy nurse within {PASSING_INPUT_DATE - FIRST_PAEDIATRIC_ASSESSMENT_DATE} but measure is not passing (kpi_score_achieved_unscored)"
     assert (
-        kpi_score_achieved_false == KPI_SCORE["PASS"]
-    ), f"Referred to epilepsy nurse on {PASSING_REFERRAL_DATE} and no second date but should pass as clinician declared seen date not achieved within the year. This should pass but measure is not passing"
+        kpi_score_achieved_false == KPI_SCORE["FAIL"]
+    ), f"Referred to epilepsy nurse on {PASSING_REFERRAL_DATE} and no second date but fail as clinician declared seen date not achieved within the year. This should fail but measure is passing"

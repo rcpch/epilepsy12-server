@@ -58,7 +58,7 @@ def score_kpi_2(registration_instance) -> int:
             return KPI_SCORE["FAIL"]
     else:
         if assessment.epilepsy_specialist_nurse_input_achieved is False:
-            return KPI_SCORE["PASS"]
+            return KPI_SCORE["FAIL"]
         else:
             # if input achieved but no date, or input achieved is None and no date(should be handled above): either way not scored
             return KPI_SCORE["NOT_SCORED"]
@@ -71,7 +71,7 @@ def score_kpi_2(registration_instance) -> int:
     - epilepsy_specialist_nurse_referral_made - False -> FAIL
     - epilepsy_specialist_nurse_referral_made - None -> NOT_SCORED
     - epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - None -> NOT_SCORED
-    - epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> epilepsy_specialist_nurse_input_achieved - FALSE  (epilepsy_specialist_nurse_input_date NONE)-> PASS
+    - epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> epilepsy_specialist_nurse_input_achieved - FALSE  (epilepsy_specialist_nurse_input_date NONE)-> FAIL
     - epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> epilepsy_specialist_nurse_input_achieved - None -> epilepsy_specialist_nurse_input_date - None -> NOT_SCORED
     - epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> epilepsy_specialist_nurse_input_achieved - TRUE -> epilepsy_specialist_nurse_input_date - None -> NOT_SCORED
     - epilepsy_specialist_nurse_referral_made - True -> epilepsy_specialist_nurse_referral_date - PROVIDED -> epilepsy_specialist_nurse_input_achieved - TRUE -> epilepsy_specialist_nurse_input_date - WITHIN FIRST YEAR OF CARE -> PASS
