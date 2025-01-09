@@ -60,7 +60,7 @@ FAIL_INPUT_DATE = REFERRAL_DATE + relativedelta(days=15)
             REFERRAL_DATE,
             None,
             KPI_SCORE["PASS"],
-        ),  # Paediatrician seen within 14 days, neurologist involved but not referred
+        ),  # Paediatrician seen within 14 days, neurologist involved,  referred but not seen
         (
             True,
             REFERRAL_DATE,
@@ -87,7 +87,7 @@ FAIL_INPUT_DATE = REFERRAL_DATE + relativedelta(days=15)
             REFERRAL_DATE,
             PASS_INPUT_DATE,
             KPI_SCORE["PASS"],
-        ),  # Paediatrician seen within 14 days, neurologist not declared referred but seen and referred within 14 days
+        ),  # Paediatrician seen within 14 days, neurologist not declared referred but seen and referred within 14 days - Note only one has to be seen within 14 days
         (
             True,
             REFERRAL_DATE,

@@ -28,7 +28,7 @@ def score_kpi_1(registration_instance) -> int:
     ):
         return KPI_SCORE["FAIL"]
 
-    # check all fields complete for either consultant or neurologist
+    # check all fields complete for either consultant or neurologist dates only
     all_consultant_paediatrician_date_fields_complete = (
         assessment.consultant_paediatrician_referral_date is not None
     ) and (assessment.consultant_paediatrician_input_date is not None)
@@ -43,17 +43,16 @@ def score_kpi_1(registration_instance) -> int:
         return KPI_SCORE["NOT_SCORED"]
 
     # score KPI
-    did_pass_paediatrician = None
-    did_pass_neurologist = None
+    did_pass = None
     if all_consultant_paediatrician_date_fields_complete:
         passed_metric = (
             assessment.consultant_paediatrician_input_date
             - assessment.consultant_paediatrician_referral_date
         ).days <= 14
         if passed_metric:
-            did_pass_paediatrician = True
+            return KPI_SCORE["PASS"]
         else:
-            did_pass_paediatrician = False
+            did_pass = False
 
     if all_paediatric_neurologist_date_fields_complete:
         passed_metric = (
@@ -61,13 +60,11 @@ def score_kpi_1(registration_instance) -> int:
             - assessment.paediatric_neurologist_referral_date
         ).days <= 14
         if passed_metric:
-            did_pass_neurologist = True
+            return KPI_SCORE["PASS"]
         else:
-            did_pass_neurologist = False
+            did_pass = False
 
-    if did_pass_paediatrician or did_pass_neurologist:
-        return KPI_SCORE["PASS"]
-    elif did_pass_paediatrician is False or did_pass_neurologist:
+    if did_pass is False:
         return KPI_SCORE["FAIL"]
     else:
         return KPI_SCORE["NOT_SCORED"]
