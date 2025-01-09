@@ -29,40 +29,45 @@ def score_kpi_1(registration_instance) -> int:
         return KPI_SCORE["FAIL"]
 
     # check all fields complete for either consultant or neurologist
-    all_consultant_paediatrician_fields_complete = (
-        (assessment.consultant_paediatrician_referral_made is not None)
-        and (assessment.consultant_paediatrician_referral_date is not None)
-        and (assessment.consultant_paediatrician_input_date is not None)
-    )
-    all_paediatric_neurologist_fields_complete = (
-        (assessment.paediatric_neurologist_referral_made is not None)
-        and (assessment.paediatric_neurologist_referral_date is not None)
-        and (assessment.paediatric_neurologist_input_date is not None)
-    )
+    all_consultant_paediatrician_date_fields_complete = (
+        assessment.consultant_paediatrician_referral_date is not None
+    ) and (assessment.consultant_paediatrician_input_date is not None)
+    all_paediatric_neurologist_date_fields_complete = (
+        assessment.paediatric_neurologist_referral_date is not None
+    ) and (assessment.paediatric_neurologist_input_date is not None)
 
     # incomplete
-    if (not all_consultant_paediatrician_fields_complete) and (
-        not all_paediatric_neurologist_fields_complete
+    if (not all_consultant_paediatrician_date_fields_complete) and (
+        not all_paediatric_neurologist_date_fields_complete
     ):
         return KPI_SCORE["NOT_SCORED"]
 
     # score KPI
-    if all_consultant_paediatrician_fields_complete:
+    did_pass_paediatrician = None
+    did_pass_neurologist = None
+    if all_consultant_paediatrician_date_fields_complete:
         passed_metric = (
             assessment.consultant_paediatrician_input_date
             - assessment.consultant_paediatrician_referral_date
         ).days <= 14
         if passed_metric:
-            return KPI_SCORE["PASS"]
+            did_pass_paediatrician = True
         else:
-            return KPI_SCORE["FAIL"]
+            did_pass_paediatrician = False
 
-    elif all_paediatric_neurologist_fields_complete:
+    if all_paediatric_neurologist_date_fields_complete:
         passed_metric = (
             assessment.paediatric_neurologist_input_date
             - assessment.paediatric_neurologist_referral_date
         ).days <= 14
         if passed_metric:
-            return KPI_SCORE["PASS"]
+            did_pass_neurologist = True
         else:
-            return KPI_SCORE["FAIL"]
+            did_pass_neurologist = False
+
+    if did_pass_paediatrician or did_pass_neurologist:
+        return KPI_SCORE["PASS"]
+    elif did_pass_paediatrician is False or did_pass_neurologist:
+        return KPI_SCORE["FAIL"]
+    else:
+        return KPI_SCORE["NOT_SCORED"]
