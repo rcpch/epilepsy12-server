@@ -467,6 +467,50 @@ def test_measure_1_should_pass_seen_neurologist(
             None,  # paediatric_neurologist_input_date
             KPI_SCORE["FAIL"],  # expected_score
         ),  # Paediatrician never referred, neurologist referred, input achieved but no date
+        (
+            True,
+            REFERRAL_DATE,
+            True,
+            FAIL_INPUT_DATE,
+            True,
+            REFERRAL_DATE,
+            True,
+            FAIL_INPUT_DATE,
+            KPI_SCORE["FAIL"],
+        ),
+        (
+            True,
+            REFERRAL_DATE,
+            None,
+            FAIL_INPUT_DATE,
+            True,
+            REFERRAL_DATE,
+            True,
+            FAIL_INPUT_DATE,
+            KPI_SCORE["FAIL"],
+        ),
+        (
+            True,
+            REFERRAL_DATE,
+            True,
+            FAIL_INPUT_DATE,
+            True,
+            REFERRAL_DATE,
+            None,
+            FAIL_INPUT_DATE,
+            KPI_SCORE["FAIL"],
+        ),
+        (
+            True,
+            REFERRAL_DATE,
+            None,
+            FAIL_INPUT_DATE,
+            True,
+            REFERRAL_DATE,
+            None,
+            FAIL_INPUT_DATE,
+            KPI_SCORE["FAIL"],
+        ),
     ],
 )
 @pytest.mark.django_db
@@ -879,9 +923,61 @@ Paediatrician
 Neurologist
 - paediatric_neurologist_referral_made                  True
 - paediatric_neurologist_referral_date                     REFERRAL_DATE
-- paediatric_neurologist_input_achieved                 FALSE
+- paediatric_neurologist_input_achieved                 False
 - paediatric_neurologist_input_date                         FAIL_INPUT_DATE
-# (True,REFERRAL_DATE,None,None,True,REFERRAL_DATE,FALSE,FAIL_INPUT_DATE)
+# (True,REFERRAL_DATE,None,None,True,REFERRAL_DATE,False,FAIL_INPUT_DATE)
+
+- [ ] Paediatrician complete and fail, neurology seen but no input within 14 days
+Paediatrician
+- consultant_paediatrician_referral_made               True
+- consultant_paediatrician_referral_date                 REFERRAL_DATE
+- consultant_paediatrician_input_achieved             True
+- consultant_paediatrician_input_date                     FAIL_INPUT_DATE
+Neurologist
+- paediatric_neurologist_referral_made                  True
+- paediatric_neurologist_referral_date                     REFERRAL_DATE
+- paediatric_neurologist_input_achieved                 True
+- paediatric_neurologist_input_date                         FAIL_INPUT_DATE
+# (True,REFERRAL_DATE,True,FAIL_INPUT_DATE,True,REFERRAL_DATE,True,FAIL_INPUT_DATE, KPI_SCORE["FAIL"]),
+
+- [ ] Paediatrician complete and fail (None for achieved), neurology seen but no input within 14 days
+Paediatrician
+- consultant_paediatrician_referral_made               True
+- consultant_paediatrician_referral_date                 REFERRAL_DATE
+- consultant_paediatrician_input_achieved             None
+- consultant_paediatrician_input_date                     FAIL_INPUT_DATE
+Neurologist
+- paediatric_neurologist_referral_made                  True
+- paediatric_neurologist_referral_date                     REFERRAL_DATE
+- paediatric_neurologist_input_achieved                 True
+- paediatric_neurologist_input_date                         FAIL_INPUT_DATE
+# (True,REFERRAL_DATE,None,FAIL_INPUT_DATE,True,REFERRAL_DATE,True,FAIL_INPUT_DATE, KPI_SCORE["FAIL"]),
+
+- [ ] Paediatrician complete and fail (None for achieved), neurology seen but no input within 14 days (None)
+Paediatrician
+- consultant_paediatrician_referral_made               True
+- consultant_paediatrician_referral_date                 REFERRAL_DATE
+- consultant_paediatrician_input_achieved             True
+- consultant_paediatrician_input_date                     FAIL_INPUT_DATE
+Neurologist
+- paediatric_neurologist_referral_made                  True
+- paediatric_neurologist_referral_date                     REFERRAL_DATE
+- paediatric_neurologist_input_achieved                 None
+- paediatric_neurologist_input_date                         FAIL_INPUT_DATE
+# (True,REFERRAL_DATE,None,FAIL_INPUT_DATE,True,REFERRAL_DATE,True,FAIL_INPUT_DATE, KPI_SCORE["FAIL"]),
+
+- [ ] Paediatrician complete and fail (None for achieved), neurology seen but no input within 14 days (None)
+Paediatrician
+- consultant_paediatrician_referral_made               True
+- consultant_paediatrician_referral_date                 REFERRAL_DATE
+- consultant_paediatrician_input_achieved             None
+- consultant_paediatrician_input_date                     FAIL_INPUT_DATE
+Neurologist
+- paediatric_neurologist_referral_made                  True
+- paediatric_neurologist_referral_date                     REFERRAL_DATE
+- paediatric_neurologist_input_achieved                 None
+- paediatric_neurologist_input_date                         FAIL_INPUT_DATE
+# (True,REFERRAL_DATE,None,FAIL_INPUT_DATE,True,REFERRAL_DATE,None,FAIL_INPUT_DATE, KPI_SCORE["FAIL"]),
 
 (True, REFERRAL_DATE, False, None, False, None, None, None, KPI_SCORE["FAIL"]),
 (True,REFERRAL_DATE,True,FAIL_INPUT_DATE,False,None,None,None,KPI_SCORE["FAIL"]),
@@ -890,4 +986,8 @@ Neurologist
 (False,None,None,None,True, REFERRAL_DATE,True,FAIL_INPUT_DATE,KPI_SCORE["FAIL"]),
 (False,None,None,None,True, REFERRAL_DATE,None,FAIL_INPUT_DATE,KPI_SCORE["FAIL"]),
 (True,REFERRAL_DATE,None,None,True,REFERRAL_DATE,FALSE,FAIL_INPUT_DATE,KPI_SCORE["FAIL"]),
+(True,REFERRAL_DATE,True,FAIL_INPUT_DATE,True,REFERRAL_DATE,True,FAIL_INPUT_DATE, KPI_SCORE["FAIL"]),
+(True,REFERRAL_DATE,None,FAIL_INPUT_DATE,True,REFERRAL_DATE,True,FAIL_INPUT_DATE, KPI_SCORE["FAIL"]),
+(True,REFERRAL_DATE,None,FAIL_INPUT_DATE,True,REFERRAL_DATE,True,FAIL_INPUT_DATE, KPI_SCORE["FAIL"]),
+(True,REFERRAL_DATE,None,FAIL_INPUT_DATE,True,REFERRAL_DATE,None,FAIL_INPUT_DATE, KPI_SCORE["FAIL"]),
 """
