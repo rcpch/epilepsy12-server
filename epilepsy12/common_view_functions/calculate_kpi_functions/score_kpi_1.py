@@ -22,28 +22,39 @@ def score_kpi_1(registration_instance) -> int:
 
     assessment = registration_instance.assessment
 
-    # never saw a consultant OR neurologist!
-    if (assessment.consultant_paediatrician_referral_made == False) and (
-        assessment.paediatric_neurologist_referral_made == False
-    ):
-        return KPI_SCORE["FAIL"]
-
-    # check all fields complete for either consultant or neurologist dates only
+    # set variables which check if date fields complete for either consultant or neurologist
+    # It is important to use the dates only because the achieved fields were introduced later so it is possible that the achieved fields are not filled in but two dates are still present.
     all_consultant_paediatrician_date_fields_complete = (
         assessment.consultant_paediatrician_referral_date is not None
-    ) and (assessment.consultant_paediatrician_input_date is not None)
+        and assessment.consultant_paediatrician_input_date is not None
+    )
+
+    all_consultant_paediatrician_date_fields_empty = (
+        assessment.consultant_paediatrician_referral_date is None
+        and assessment.consultant_paediatrician_input_date is None
+    )
+
+    some_consultant_paediatrician_date_fields_empty = (
+        assessment.consultant_paediatrician_referral_date is None
+        or assessment.consultant_paediatrician_input_date is None
+    )
+
     all_paediatric_neurologist_date_fields_complete = (
         assessment.paediatric_neurologist_referral_date is not None
-    ) and (assessment.paediatric_neurologist_input_date is not None)
+        and assessment.paediatric_neurologist_input_date is not None
+    )
 
-    # incomplete
-    if (not all_consultant_paediatrician_date_fields_complete) and (
-        not all_paediatric_neurologist_date_fields_complete
-    ):
-        return KPI_SCORE["NOT_SCORED"]
-
-    # score KPI
+    all_paediatric_neurologist_date_fields_empty = (
+        assessment.paediatric_neurologist_referral_date is None
+        and assessment.paediatric_neurologist_input_date is None
+    )
+    some_paediatric_neurologist_date_fields_empty = (
+        assessment.paediatric_neurologist_referral_date is None
+        or assessment.paediatric_neurologist_input_date is None
+    )
     did_pass = None
+
+    # all all doubled date events
     if all_consultant_paediatrician_date_fields_complete:
         passed_metric = (
             assessment.consultant_paediatrician_input_date
@@ -62,6 +73,20 @@ def score_kpi_1(registration_instance) -> int:
         if passed_metric:
             return KPI_SCORE["PASS"]
         else:
+            did_pass = False
+
+    # leaves options where some fields are empty
+    if some_consultant_paediatrician_date_fields_empty:
+        if (
+            assessment.consultant_paediatrician_referral_made is False
+            or assessment.consultant_paediatrician_input_achieved is False
+        ):
+            did_pass = False
+    if some_paediatric_neurologist_date_fields_empty:
+        if (
+            assessment.paediatric_neurologist_referral_made is False
+            or assessment.paediatric_neurologist_input_achieved is False
+        ):
             did_pass = False
 
     if did_pass is False:
