@@ -14,7 +14,7 @@ AND
 
 - [ x] Measure 5 passed (registration.kpi.mri == 1) if MRI done in 6 weeks and are NOT JME or JAE or CAE or CECTS/Rolandic or Epilepsy with generalized tonic–clonic seizures alone (lines 270-324)
 - [ x] Measure 5 failed (registration.kpi.mri == 0) if MRI not done in 6 weeks and are NOT JME or JAE or CAE or CECTS/Rolandic or Epilepsy with generalized tonic–clonic seizures alone (lines 270-324)
-- [ x] Measure 5 ineligible (registration.kpi.mri == 0) if JME or JAE or CAE or CECTS/Rolandic or Epilepsy with generalized tonic–clonic seizures alone
+- [ x] Measure 5 ineligible (registration.kpi.mri ==2) if JME or JAE or CAE or CECTS/Rolandic or Epilepsy with generalized tonic–clonic seizures alone
 """
 
 # Standard imports
@@ -182,6 +182,16 @@ def test_measure_5_mri_syndromes_pass_fail(
         assert (
             kpi_score == EXPECTED_SCORE
         ), f"None of JME or JAE or CAE or CECTS/Rolandi present, MRI booked > 6 weeks but not failing measure"
+
+    registration.investigations.mri_brain_requested_date = None
+    registration.investigations.mri_brain_reported_date = None
+    registration.investigations.mri_indicated = True
+    registration.investigations.save()
+
+    calculate_kpis(registration_instance=registration)
+
+    kpi_score = KPI.objects.get(pk=registration.kpi.pk).mri
+    assert kpi_score == KPI_SCORE["FAIL"], "MRI indicated but no dates should fail."
 
 
 @pytest.mark.parametrize(
