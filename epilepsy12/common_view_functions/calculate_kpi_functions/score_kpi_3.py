@@ -5,6 +5,9 @@ from datetime import date
 from django.contrib.gis.db.models import Q
 from django.apps import apps
 
+# 3rd party imports
+from dateutil.relativedelta import relativedelta
+
 # E12 imports
 from epilepsy12.constants import KPI_SCORE
 
@@ -58,13 +61,33 @@ def score_kpi_3(registration_instance, age_at_first_paediatric_assessment) -> in
     if not any(eligibility_criteria):
         return KPI_SCORE["INELIGIBLE"]
 
-    # first evaluate relevant fields complete
-    tertiary_input_answered = (
-        assessment.paediatric_neurologist_input_date is not None
-    ) or (assessment.childrens_epilepsy_surgical_service_referral_made is not None)
+    paediatric_neurologist_seen_one_year = None
+    childrens_epilepsy_surgery_service_referred_one_year = None
+    if assessment.paediatric_neurologist_input_date is not None:
+        paediatric_neurologist_seen_one_year = (
+            registration_instance.first_paediatric_assessment_date
+            + relativedelta(years=1)
+            <= assessment.paediatric_neurologist_input_date
+        )
+    if assessment.childrens_epilepsy_surgical_service_referral_made is not None:
+        childrens_epilepsy_surgery_service_referred_one_year = (
+            registration_instance.first_paediatric_assessment_date
+            + relativedelta(years=1)
+            <= assessment.childrens_epilepsy_surgical_service_referral_made
+        )
 
-    if not tertiary_input_answered:
+    if (
+        paediatric_neurologist_seen_one_year is None
+        and childrens_epilepsy_surgery_service_referred_one_year is None
+    ):
+        # not scored
         return KPI_SCORE["NOT_SCORED"]
+
+    # first evaluate relevant fields complete
+    pass_criteria = (
+        childrens_epilepsy_surgery_service_referred_one_year
+        or paediatric_neurologist_seen_one_year
+    )
 
     pass_criteria = [
         (isinstance(assessment.paediatric_neurologist_input_date, date)),
