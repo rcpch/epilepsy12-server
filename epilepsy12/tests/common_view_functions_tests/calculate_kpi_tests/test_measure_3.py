@@ -83,6 +83,7 @@ CASE_PARAM_NAMES = "DATE_OF_BIRTH, FIRST_PAEDIATRIC_ASSESSMENT_DATE, CHILDRENS_E
 date_of_birth = date(2021, 1, 1)
 first_paediatric_assessment_date_under_3 = date(2023, 1, 1)  # exactly 2yo
 first_paediatric_assessment_date_under_4 = date(2024, 12, 1)  # date at age 3y 11mths
+first_paediatric_assessment_date_over_4 = date(2025, 12, 1)  # date at age 3y 11mths
 input_referral_date_pass_fpa_under_3 = date(
     2024, 1, 1
 )  # 1 year after first_paediatric_assessment_date
@@ -234,7 +235,8 @@ def test_measure_3_3AEMs_seen(
     #         - CESS referral
     #     *FAIL*
     #     1) child is on 3 or more AEMS && eithr NOT seen within 1 y by (neurologist OR epilepsy surgery)
-    #       or child ion < 3 AEMS and seen by neurologist / surgery within 1 year
+    #     *INELIGIBLE*
+    #       child ion < 3 AEMS and has no other eligibilities and seen by neurologist / referred surgery within 1 year
     #     """
 
     case = e12_case_factory(
@@ -315,67 +317,139 @@ def test_measure_3_3AEMs_seen(
         ), f"Age at FPA is {calculate_age_at_first_paediatric_assessment_in_years(case.registration)}, not eligible for surgery and on {number_of_aems} drugs but did not return ineligible"
 
 
-# @pytest.mark.parametrize(
-#     CASE_PARAM_NAMES,
-#     CASE_PARAM_VALUES,
-# )
-# @pytest.mark.django_db
-# def test_measure_3_lt_4yo_generalised_myoclonic_seen(
-#     e12_case_factory,
-#     e12_episode_factory,
-#     PAEDIATRIC_NEUROLOGIST_INPUT_DATE,
-#     CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_MADE,
-#     expected_kpi_score,
-# ):
-#     """
-#     *PASS*
-#     1) child is under 4 and has myoclonic epilepsy && ONE OF:
-#         - input by BOTH neurologist
-#         - CESS referral
-#     *FAIL*
-#     1) child is under 4 and has myoclonic epilepsy && NOT seen by (neurologist OR epilepsy surgery)
-#     """
+# "DATE_OF_BIRTH, FIRST_PAEDIATRIC_ASSESSMENT_DATE, CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_CRITERIA_MET, PAEDIATRIC_NEUROLOGIST_INPUT_DATE, CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_DATE, expected_kpi_score"
+@pytest.mark.parametrize(
+    CASE_PARAM_NAMES,
+    [
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            False,
+            input_referral_date_pass_fpa_under_4,
+            None,
+            KPI_SCORE["PASS"],
+        ),
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            True,
+            None,
+            input_referral_date_pass_fpa_under_4,
+            KPI_SCORE["PASS"],
+        ),
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            False,
+            None,
+            None,
+            KPI_SCORE["FAIL"],
+        ),
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            True,
+            None,
+            input_referral_date_fail_under_4,
+            KPI_SCORE["FAIL"],
+        ),
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            False,
+            input_referral_date_fail_under_4,
+            None,
+            KPI_SCORE["FAIL"],
+        ),
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_over_4,
+            False,
+            None,
+            None,
+            KPI_SCORE["INELIGIBLE"],
+        ),
+    ],
+)
+@pytest.mark.django_db
+def test_measure_3_lt_4yo_generalised_myoclonic_seen(
+    e12_case_factory,
+    e12_episode_factory,
+    DATE_OF_BIRTH,
+    FIRST_PAEDIATRIC_ASSESSMENT_DATE,
+    CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_CRITERIA_MET,
+    PAEDIATRIC_NEUROLOGIST_INPUT_DATE,
+    CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_DATE,
+    expected_kpi_score,
+):
+    """
+    *PASS*
+    1) child is under 4 and has myoclonic epilepsy && no other eligibilities ONE OF:
+        - input by neurologist within 1 year OR
+        - CESS referral within 1 year
+    *FAIL*
+    1) child is under 4 and has myoclonic epilepsy && NOT seen by (neurologist OR epilepsy surgery)
+    *INELIGIBLE*
+    1) child is > 4y and has myoclonic epilepsy && no other eligibilities and seen by neurologist / referred surgery within 1 year
+    """
 
-#     # SET UP CONSTANTS
-#     DATE_OF_BIRTH = date(2021, 1, 1)
-#     FIRST_PAEDIATRIC_ASSESSMENT_DATE = DATE_OF_BIRTH + relativedelta(
-#         years=3, months=11
-#     )  # a child who is 3y11m at first_paediatric_assessment_date (=FPA)
-#     MYOCLONIC = GENERALISED_SEIZURE_TYPE[5][0]
+    # SET UP CONSTANTS
+    MYOCLONIC = GENERALISED_SEIZURE_TYPE[5][0]
 
-#     case = e12_case_factory(
-#         date_of_birth=DATE_OF_BIRTH,
-#         registration__first_paediatric_assessment_date=FIRST_PAEDIATRIC_ASSESSMENT_DATE,
-#         registration__assessment__paediatric_neurologist_input_date=PAEDIATRIC_NEUROLOGIST_INPUT_DATE,
-#         registration__assessment__childrens_epilepsy_surgical_service_referral_made=CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_MADE,
-#     )
+    case = e12_case_factory(
+        date_of_birth=DATE_OF_BIRTH,
+        registration__first_paediatric_assessment_date=FIRST_PAEDIATRIC_ASSESSMENT_DATE,
+        registration__assessment__paediatric_neurologist_input_date=PAEDIATRIC_NEUROLOGIST_INPUT_DATE,
+        registration__assessment__childrens_epilepsy_surgical_service_referral_criteria_met=CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_CRITERIA_MET,
+        registration__assessment__childrens_epilepsy_surgical_service_referral_date=CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_DATE,
+    )
 
-#     # get registration for the saved case model
-#     registration = Registration.objects.get(case=case)
+    # get registration for the saved case model
+    registration = Registration.objects.get(case=case)
 
-#     # Assign a myoclonic episode
-#     e12_episode_factory.create(
-#         multiaxial_diagnosis=registration.multiaxialdiagnosis,
-#         epileptic_seizure_onset_type_generalised=True,
-#         epileptic_generalised_onset=MYOCLONIC,
-#     )
+    # Assign a myoclonic episode
+    e12_episode_factory.create(
+        multiaxial_diagnosis=registration.multiaxialdiagnosis,
+        epileptic_seizure_onset_type_generalised=True,
+        epileptic_generalised_onset=MYOCLONIC,
+        epilepsy_or_nonepilepsy_status="E",
+    )
 
-#     # count myoclonic episodes attached to confirm
-#     episodes = Episode.objects.filter(
-#         multiaxial_diagnosis=registration.multiaxialdiagnosis,
-#         epilepsy_or_nonepilepsy_status="E",
-#         epileptic_generalised_onset=MYOCLONIC,
-#     )
+    # count myoclonic episodes attached to confirm
+    episodes = Episode.objects.filter(
+        multiaxial_diagnosis=registration.multiaxialdiagnosis,
+        epilepsy_or_nonepilepsy_status="E",
+        epileptic_generalised_onset=MYOCLONIC,
+    )
 
-#     calculate_kpis(registration_instance=registration)
+    calculate_kpis(registration_instance=registration)
 
-#     kpi_score = KPI.objects.get(pk=registration.kpi.pk).tertiary_input
+    kpi_score = KPI.objects.get(pk=registration.kpi.pk).tertiary_input
 
-#     assert kpi_score == expected_kpi_score, (
-#         f"Has myoclonic episode (n = {episodes.count()}) and seen by {'neurologist' if PAEDIATRIC_NEUROLOGIST_INPUT_DATE else ''} / {'epilepsy surgery' if CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_MADE else ''} but did not pass measure"
-#         if expected_kpi_score == KPI_SCORE["PASS"]
-#         else f"Has myoclonic episode (n = {episodes.count()}) and not seen by neurologist both surgery and did not fail measure"
-#     )
+    if PAEDIATRIC_NEUROLOGIST_INPUT_DATE:
+        val = (
+            f"Has myoclonic episode (n = {episodes.count()}) and seen by neurologist within 1 year"
+            if PAEDIATRIC_NEUROLOGIST_INPUT_DATE + relativedelta(years=1)
+            >= FIRST_PAEDIATRIC_ASSESSMENT_DATE
+            else "Has myoclonic episode (n = {episodes.count()}) and seen by neurologist beyond 1 year"
+        )
+    elif CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_DATE:
+        val = (
+            f"Has myoclonic episode (n = {episodes.count()}) and referred to CESS within 1 year"
+            if CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_DATE
+            + relativedelta(years=1)
+            >= FIRST_PAEDIATRIC_ASSESSMENT_DATE
+            else "Has myoclonic episode (n = {episodes.count()}) and referred to CESS beyond 1 year"
+        )
+
+    if expected_kpi_score == KPI_SCORE["INELIGIBLE"]:
+        val += " but did not return ineligible"
+    elif expected_kpi_score == KPI_SCORE["FAIL"]:
+        val += " but did not fail measure"
+    elif expected_kpi_score == KPI_SCORE["PASS"]:
+        val += " but did not pass measure"
+
+    assert kpi_score == expected_kpi_score, f"{val}"
 
 
 # @pytest.mark.parametrize(

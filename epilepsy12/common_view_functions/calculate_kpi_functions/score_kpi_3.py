@@ -78,13 +78,6 @@ def score_kpi_3(registration_instance, age_at_first_paediatric_assessment) -> in
         met_cess_criteria,
     ]
 
-    print(
-        (age_at_first_paediatric_assessment <= 3),
-        (age_at_first_paediatric_assessment < 4 and has_myoclonic_epilepsy_episode),
-        (aems_count >= 3),
-        met_cess_criteria,
-    )
-
     # None of eligibility criteria are True -> set ineligible with guard clause
     if not any(eligibility_criteria):
         return KPI_SCORE["INELIGIBLE"]
