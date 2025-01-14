@@ -10,6 +10,7 @@ FAIL:
 INELIGIBLE:
 - [x] age_at_first_paediatric_assessment >= 5
 """
+
 # Standard imports
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -26,8 +27,8 @@ from epilepsy12.models import KPI, Registration
 @pytest.mark.parametrize(
     "age,individualised_care_plan_includes_ehcp, expected_score",
     [
-        (relativedelta(years=5), True, KPI_SCORE["PASS"]),
-        (relativedelta(years=5), False, KPI_SCORE["FAIL"]),
+        (relativedelta(years=5, days=14), True, KPI_SCORE["PASS"]),
+        (relativedelta(years=5, days=14), False, KPI_SCORE["FAIL"]),
         (relativedelta(years=4, months=11), False, KPI_SCORE["INELIGIBLE"]),
     ],
 )
@@ -40,6 +41,8 @@ def test_measure_10_school_individual_healthcare_plan(
 ):
     FIRST_PAEDIATRIC_ASSESSMENT_DATE = date(2023, 1, 1)
     DATE_OF_BIRTH = FIRST_PAEDIATRIC_ASSESSMENT_DATE - age
+
+    print(f"age: {age}")
 
     # create case
     case = e12_case_factory(
