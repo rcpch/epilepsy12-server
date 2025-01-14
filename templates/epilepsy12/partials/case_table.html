@@ -107,10 +107,8 @@
     </thead>
     <tbody>
       {% for case in case_list %}
-        
-          {% if case.registration.days_remaining_before_submission == 0 and not request.user.is_rcpch_audit_team_member %}
-              <tr class='disabled'>
-          {% elif case in cases_in_transfer %}
+
+          {% if case in cases_in_transfer %}
               <tr class='active_transfer'>
           {% else %}
               <tr>
@@ -136,7 +134,7 @@
             <div class='ui buttons'>
               <button 
                 data-tooltip='Edit or delete child.'
-                {% if case.locked or case.registration.days_remaining_before_submission == 0 and not request.user.is_rcpch_audit_team_member %}
+                {% if case.locked %}
                   class="ui rcpch_purple icon disabled button"
                 {% else %}
                   class="ui rcpch_purple icon button"
@@ -159,11 +157,7 @@
                 {% else %}
                 <button 
                   data-tooltip='Complete audit details.'
-                  {% if case.registration.days_remaining_before_submission == 0 and not request.user.is_rcpch_audit_team_member %}
-                    class="ui rcpch_dark_purple disabled button"
-                  {% else %}
-                    class="ui rcpch_dark_purple button"
-                  {% endif %}
+                  class="ui rcpch_dark_purple button"
                   tabindexed="2"
                   onclick="location.href='{% url 'register'  case.id %}'"
                   >Audit</button>
@@ -212,7 +206,7 @@
                 hx-post="{{hx_post}}"
                 hx_trigger='click' 
                 hx-target="#case_table"
-                {% if case.registration.days_remaining_before_submission == 0 or case.locked and not perms.epilepsy12.can_unlock_child_case_data_from_editing or not case.locked and not perms.epilepsy12.can_lock_child_case_data_from_editing  %}
+                {% if case.locked and not perms.epilepsy12.can_unlock_child_case_data_from_editing or not case.locked and not perms.epilepsy12.can_lock_child_case_data_from_editing  %}
                   disabled
                 {% else %}
                     {% if case.locked %}
@@ -300,8 +294,6 @@
                   {% endif %}
                 {% elif case.registration.days_remaining_before_submission <= 7 and case.registration.days_remaining_before_submission > 0 and case.registration.audit_progress.audit_complete %}
                   <span data-tooltip="Data complete. Ready imminently for upload before {{case.registration.audit_submission_date|date:'D j M Y'}}"><i class="rcpch_orange check circle outline icon"></i></span>
-                {% elif case.registration.days_remaining_before_submission == 0 %}
-                  <span data-tooltip="Data complete and submission date has passed. No further editing of {{case}}'s record is possible."><i class="rcpch_pink check circle outline icon"></i></span>
                 {% else %}
                   <span data-tooltip="Data incomplete."><i class="rcpch_light_blue dot circle outline icon"></i></span>
                 {% endif %}
