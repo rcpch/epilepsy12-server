@@ -16,6 +16,9 @@ from dateutil.relativedelta import relativedelta
 
 # RCPCH imports
 from epilepsy12.common_view_functions import calculate_kpis
+from epilepsy12.common_view_functions.calculate_kpi_functions import (
+    calculate_age_at_first_paediatric_assessment_in_years,
+)
 from epilepsy12.constants import KPI_SCORE
 from epilepsy12.models import KPI, Registration, MultiaxialDiagnosis
 
@@ -23,8 +26,8 @@ from epilepsy12.models import KPI, Registration, MultiaxialDiagnosis
 @pytest.mark.parametrize(
     "age_fpa,mental_health_screen_done, expected_score",
     [
-        (relativedelta(years=5), True, KPI_SCORE["PASS"]),
-        (relativedelta(years=5), False, KPI_SCORE["FAIL"]),
+        (relativedelta(years=6), True, KPI_SCORE["PASS"]),
+        (relativedelta(years=6), False, KPI_SCORE["FAIL"]),
         (relativedelta(years=4, months=11), True, KPI_SCORE["INELIGIBLE"]),
     ],
 )
@@ -65,10 +68,8 @@ def test_measure_6_screen_mental_health(
         pk=registration.kpi.pk
     ).assessment_of_mental_health_issues
 
-    # get age for AssertionError message
-    age = relativedelta(
-        case.registration.first_paediatric_assessment_date, case.date_of_birth
-    ).years
+    # get age for AssertionError message as decimal in year
+    age = calculate_age_at_first_paediatric_assessment_in_years(case.registration)
 
     if expected_score == KPI_SCORE["PASS"]:
         assertion_message = (
