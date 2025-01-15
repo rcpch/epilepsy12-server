@@ -2,54 +2,14 @@
 Tests for Measure 3 `tertiary_input.
 
 Each test depends on whether child has been AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery
+    - received input by neurologist within 1 year of first paediatric assessment
+    - referred to epilepsy surgery within 1 year of first paediatric assessment
+The eligibiltity criteria for the test include:
+    - age at first paediatric assessment is less than 3 years
+    - child is on 3 or more anti-epilepsy medicines
+    - child has generalised myoclonic epilepsy or focal myoclonic epilepsy and is under 4 years old
+    - meet criteria for epilepsy surgery
 
-- [ ] Measure 3 passed (registration.kpi.tertiary_input == 1) if age at first paediatric assessment is < 3 AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery
-- [ ] Measure 3 passed (registration.kpi.tertiary_input == 1) if child is on 3 or more AEMS (see lines 115-120 for query) and AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery
-- [ ] Measure 3 passed (registration.kpi.tertiary_input == 1) if child is under 4 and has myoclonic epilepsy (lines 128-133) and AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery
-- [ ] Measure 3 passed (registration.kpi.tertiary_input == 1) if child is eligible for epilepsy surgery (registration_instance.assessment.childrens_epilepsy_surgical_service_referral_criteria_met) and AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery
-- [ ] Measure 3 failed (registration.kpi.tertiary_input == 0) if age at first paediatric assessment is < 3 and not AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery ( where age_at_first_paediatric_assessment = relativedelta(registration_instance.first_paediatric_assessment_date,registration_instance.case.date_of_birth).years)
-- [ ] Measure 3 failed (registration.kpi.tertiary_input == 0) if child is on 3 or more AEMS (see lines 115-120 for query) and not AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery
-- [ ] Measure 3 failed (registration.kpi.tertiary_input == 0) if child is under 4 and has myoclonic epilepsy (lines 128-133) and not AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery
-- [ ] Measure 3 failed (registration.kpi.tertiary_input == 0) if child is eligible for epilepsy surgery (registration_instance.assessment.childrens_epilepsy_surgical_service_referral_criteria_met) and not AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery
-- [ ] Measure 3 ineligible (registration.kpi.tertiary_input == 2) if age at first paediatric assessment is > 3 and not not on 3 or more drugs and not eligible for epilepsy surgery and not >4y with myoclonic epilepsy
-Measure 3b
-- [ ] Measure 3b passed (registration.kp.epilepsy_surgery_referral ==1 ) if met criteria for surgery and evidence of referral or being seen (line 224)
-
-    PASS IF ANY OF:
-        1. (age <= 3yo at first assessment) AND (AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery)
-        2. ((age < 4yo) AND (myoclonic epilepsy)) AND (AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery)
-        3. (on >= 3 AEMS) AND (AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery)
-        4. (eligible for epilepsy surgery) AND (AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery)
-    OR MORE SIMPLY:
-        If *criteria met* AND *referred/AT LEAST ONE OF:
-    - received input by neurologist 
-    - referred to epilepsy surgery*
 """
 
 # Standard imports
