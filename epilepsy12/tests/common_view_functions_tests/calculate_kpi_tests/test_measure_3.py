@@ -668,53 +668,48 @@ def test_measure_3b_meets_CESS_seen(
     assert kpi_score == expected_kpi_score, val
 
 
-# @pytest.mark.django_db
-# def test_measure_3_ineligible(
-#     e12_case_factory,
-#     e12_episode_factory,
-# ):
-#     """
-#     *INELIGIBLE*
-#     1) age at first paediatric assessment is > 3y
-#         and
-#         not on 3 or more drugs
-#         and
-#         not >4y with myoclonic epilepsy
-#         and
-#         not eligible for epilepsy surgery
-#     """
+@pytest.mark.django_db
+def test_measure_3_ineligible(
+    e12_case_factory,
+    e12_episode_factory,
+):
+    """
+    *INELIGIBLE*
+    1) age at first paediatric assessment is > 3y
+        and
+        not on 3 or more drugs
+        and
+        not >4y with myoclonic epilepsy
+        and
+        not eligible for epilepsy surgery
+    """
 
-#     # a child who is exactly 3y1mo at first_paediatric_assessment_date (=FPA)
-#     DATE_OF_BIRTH = date(2021, 1, 1)
-#     FIRST_PAEDIATRIC_ASSESSMENT_DATE = DATE_OF_BIRTH + relativedelta(
-#         years=4,
-#     )
+    # default N(AEMs) = 1, override not required
 
-#     # default N(AEMs) = 1, override not required
+    # <4y without myoclonic epilepsy
+    OTHER = GENERALISED_SEIZURE_TYPE[-1][0]
 
-#     # <4y without myoclonic epilepsy
-#     OTHER = GENERALISED_SEIZURE_TYPE[-1][0]
+    case = e12_case_factory(
+        date_of_birth=date_of_birth,
+        registration__first_paediatric_assessment_date=first_paediatric_assessment_date_under_4,
+        registration__assessment__childrens_epilepsy_surgical_service_referral_criteria_met=False,  # not eligible epilepsy surgery criteria
+    )
 
-#     case = e12_case_factory(
-#         date_of_birth=DATE_OF_BIRTH,
-#         registration__first_paediatric_assessment_date=FIRST_PAEDIATRIC_ASSESSMENT_DATE,
-#         registration__assessment__childrens_epilepsy_surgical_service_referral_criteria_met=False,  # not eligible epilepsy surgery criteria
-#     )
+    # get registration for the saved case model
+    registration = Registration.objects.get(case=case)
 
-#     # get registration for the saved case model
-#     registration = Registration.objects.get(case=case)
+    # Assign a NON-MYOCLONIC episode (OTHER)
+    e12_episode_factory.create(
+        multiaxial_diagnosis=registration.multiaxialdiagnosis,
+        epileptic_seizure_onset_type_generalised=True,
+        epileptic_generalised_onset=OTHER,
+        epilepsy_or_nonepilepsy_status="E",
+    )
 
-#     # Assign a NON-MYOCLONIC episode (OTHER)
-#     e12_episode_factory.create(
-#         multiaxial_diagnosis=registration.multiaxialdiagnosis,
-#         epileptic_seizure_onset_type_generalised=True,
-#         epileptic_generalised_onset=OTHER,
-#     )
+    calculate_kpis(registration_instance=registration)
 
-#     calculate_kpis(registration_instance=registration)
+    kpi_score = KPI.objects.get(pk=registration.kpi.pk).tertiary_input
 
-#     kpi_score = KPI.objects.get(pk=registration.kpi.pk).tertiary_input
-
-#     assert (
-#         kpi_score == KPI_SCORE["INELIGIBLE"]
-#     ), f"Child does not meet any criteria but is not scoring as ineligible"
+    assert (
+        kpi_score == KPI_SCORE["INELIGIBLE"]
+    ), f"Child does not meet any criteria but is not scoring as ineligible"
