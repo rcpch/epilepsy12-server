@@ -587,44 +587,85 @@ def test_measure_3_lt_4yo_focal_myoclonic_seen(
     assert kpi_score == expected_kpi_score, f"{val}"
 
 
-# @pytest.mark.parametrize(
-#     CASE_PARAM_NAMES,
-#     CASE_PARAM_VALUES,
-# )
-# @pytest.mark.django_db
-# def test_measure_3b_meets_CESS_seen(
-#     e12_case_factory,
-#     PAEDIATRIC_NEUROLOGIST_INPUT_DATE,
-#     CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_MADE,
-#     expected_kpi_score,
-# ):
-#     """
-#     *PASS*
-#     1) child is eligible for epilepsy surgery (assessment.childrens_epilepsy_surgical_service_referral_criteria_met) && ONE OF:
-#         - input by BOTH neurologist
-#         - CESS referral
-#     *FAIL*
-#     1) child is eligible for epilepsy surgery (assessment.childrens_epilepsy_surgical_service_referral_criteria_met) && NOT seen by (neurologist OR epilepsy surgery)
-#     """
+@pytest.mark.parametrize(
+    CASE_PARAM_NAMES,
+    [
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            True,
+            input_referral_date_pass_fpa_under_4,
+            None,
+            KPI_SCORE["PASS"],
+        ),
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            True,
+            None,
+            input_referral_date_pass_fpa_under_4,
+            KPI_SCORE["PASS"],
+        ),
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            True,
+            input_referral_date_fail_under_4,
+            None,
+            KPI_SCORE["FAIL"],
+        ),
+        (
+            date_of_birth,
+            first_paediatric_assessment_date_under_4,
+            True,
+            None,
+            input_referral_date_fail_under_4,
+            KPI_SCORE["FAIL"],
+        ),
+    ],
+)
+@pytest.mark.django_db
+def test_measure_3b_meets_CESS_seen(
+    e12_case_factory,
+    DATE_OF_BIRTH,
+    FIRST_PAEDIATRIC_ASSESSMENT_DATE,
+    CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_CRITERIA_MET,
+    PAEDIATRIC_NEUROLOGIST_INPUT_DATE,
+    CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_DATE,
+    expected_kpi_score,
+):
+    """
+    *PASS*
+    1) child is eligible for epilepsy surgery (assessment.childrens_epilepsy_surgical_service_referral_criteria_met) && ONE OF:
+        - input by neurologist within 1 year OR
+        - CESS referral within 1 year
+    *FAIL*
+    1) child is eligible for epilepsy surgery (assessment.childrens_epilepsy_surgical_service_referral_criteria_met) && NOT seen by (neurologist OR epilepsy surgery)
+    """
 
-#     case = e12_case_factory(
-#         registration__assessment__childrens_epilepsy_surgical_service_referral_criteria_met=True,
-#         registration__assessment__paediatric_neurologist_input_date=PAEDIATRIC_NEUROLOGIST_INPUT_DATE,
-#         registration__assessment__childrens_epilepsy_surgical_service_referral_made=CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_MADE,
-#     )
+    case = e12_case_factory(
+        date_of_birth=DATE_OF_BIRTH,
+        registration__first_paediatric_assessment_date=FIRST_PAEDIATRIC_ASSESSMENT_DATE,
+        registration__assessment__paediatric_neurologist_input_date=PAEDIATRIC_NEUROLOGIST_INPUT_DATE,
+        registration__assessment__childrens_epilepsy_surgical_service_referral_criteria_met=CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_CRITERIA_MET,
+        registration__assessment__childrens_epilepsy_surgical_service_referral_date=CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_DATE,
+    )
 
-#     # get registration for the saved case model
-#     registration = Registration.objects.get(case=case)
+    # get registration for the saved case model
+    registration = Registration.objects.get(case=case)
 
-#     calculate_kpis(registration_instance=registration)
+    calculate_kpis(registration_instance=registration)
 
-#     kpi_score = KPI.objects.get(pk=registration.kpi.pk).epilepsy_surgery_referral
+    kpi_score = KPI.objects.get(pk=registration.kpi.pk).epilepsy_surgery_referral
 
-#     assert kpi_score == expected_kpi_score, (
-#         f"Met CESS criteria and {'seen by neurologist' if PAEDIATRIC_NEUROLOGIST_INPUT_DATE else ''}  {'referred to CESS' if CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_MADE else ''} but did not pass measure"
-#         if expected_kpi_score == KPI_SCORE["PASS"]
-#         else f"Met CESS criteria and not seen by neurologist / surgery and did not fail measure"
-#     )
+    if PAEDIATRIC_NEUROLOGIST_INPUT_DATE:
+        val = f"Eligible for surgery and seen by neurologist within 1 year but did not pass measure"
+    elif CHILDRENS_EPILEPSY_SURGICAL_SERVICE_REFERRAL_DATE:
+        val = f"Eligible for surgery and referred to CESS within 1 year but did not pass measure"
+    else:
+        val = f"Not eligible for surgery but did not score as ineligible"
+
+    assert kpi_score == expected_kpi_score, val
 
 
 # @pytest.mark.django_db

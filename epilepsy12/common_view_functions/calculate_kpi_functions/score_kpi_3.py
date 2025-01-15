@@ -118,15 +118,22 @@ def score_kpi_3b(registration_instance) -> int:
 
     # not scored
     if (
-        assessment.childrens_epilepsy_surgical_service_referral_made is None
-        and assessment.paediatric_neurologist_referral_made is None
+        assessment.childrens_epilepsy_surgical_service_referral_date is None
+        and assessment.paediatric_neurologist_input_date is None
     ):
         return KPI_SCORE["NOT_SCORED"]
 
     # score KPI
     if (
-        assessment.childrens_epilepsy_surgical_service_referral_made
-        or assessment.paediatric_neurologist_input_date
+        assessment.paediatric_neurologist_input_date is not None
+        and assessment.paediatric_neurologist_input_date
+        <= registration_instance.first_paediatric_assessment_date
+        + relativedelta(years=1)
+    ) or (
+        assessment.childrens_epilepsy_surgical_service_referral_date is not None
+        and assessment.childrens_epilepsy_surgical_service_referral_date
+        <= registration_instance.first_paediatric_assessment_date
+        + relativedelta(years=1)
     ):
         return KPI_SCORE["PASS"]
     else:
