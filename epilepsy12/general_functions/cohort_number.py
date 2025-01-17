@@ -116,7 +116,7 @@ def cohorts_and_dates(first_paediatric_assessment_date: date):
         submitting_cohort_number = None
         submitting_cohort = {}
 
-    if date.today().month >= 12 or date.today() < nth_tuesday_of_year(
+    if date.today().month >= 12 or date.today() <= nth_tuesday_of_year(
         date.today().year, n=2
     ):
         # if today is in or after December and before the second Tuesday of the year - during this period
