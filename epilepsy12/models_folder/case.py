@@ -163,6 +163,9 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
         Today's date is optional and defaults to date.today()
         """
         return stringify_time_elapsed(self.date_of_birth, today_date)
+    
+    def editable(self):
+        return not self.locked and (self.registration and self.registration.days_remaining_before_submission > 0)
 
     def save(self, *args, **kwargs) -> None:
         # calculate the index of multiple deprivation quintile if the postcode is present

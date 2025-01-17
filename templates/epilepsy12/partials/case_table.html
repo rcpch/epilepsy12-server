@@ -134,54 +134,21 @@
             <div class='ui buttons'>
               <button 
                 data-tooltip='Edit or delete child.'
-                {% if case.locked %}
-                  class="ui rcpch_purple icon disabled button"
-                {% else %}
-                  class="ui rcpch_purple icon button"
-                {% endif %}
-                tabindexed="0" {% if case.locked or not perms.epilepsy12.change_case and not request.user.is_rcpch_audit_team_member %}disabled{% endif %}>
+                class="ui rcpch_purple icon button"
+                tabindexed="0"
+                {% if not perms.epilepsy12.change_case or not case.editable and not request.user.is_rcpch_audit_team_member %}disabled{% endif %}>
                 <a href="{% url 'update_case' organisation_id=organisation_id case_id=case.id%}" class="rcpch_purple half_button">
                   <i class="edit outline icon icon_white"></i>
                   Edit
                 </a>
               </button>
-              
-              {% if case.registration.first_paediatric_assessment_date %}
-                {% if case.locked %}
-                <button 
+              <button 
                   data-tooltip='Complete audit details.'
-                  class="ui rcpch_dark_purple disabled button" 
+                  class="ui rcpch_dark_purple button" 
                   tabindexed="2" 
                   onclick="location.href='{% url 'register'  case.id %}'"
+                  {% if not case.editable and not request.user.is_rcpch_audit_team_member %} disabled {% endif %}
                 >Audit</button>
-                {% else %}
-                <button 
-                  data-tooltip='Complete audit details.'
-                  class="ui rcpch_dark_purple button"
-                  tabindexed="2"
-                  onclick="location.href='{% url 'register'  case.id %}'"
-                  >Audit</button>
-                
-                {% endif %}
-              {% else %}
-                {% if case.locked and not request.user.is_rcpch_audit_team_member %}
-
-                <button 
-                  class="ui rcpch_dark_purple disabled button" 
-                  tabindexed="2"
-                  onclick="location.href='{% url 'register' case_id=case.id %}'"
-                >Audit</button>
-
-                {% else %}
-
-                <button 
-                  class="ui rcpch_dark_purple button" 
-                  tabindexed="2"
-                  onclick="location.href='{% url 'register' case_id=case.id %}'"
-                >Audit</button>
-
-                {% endif %}
-              {% endif %}
             </div>
 
             {% if not case.registration.audit_progress.audit_complete and not case.locked and case.registration.first_paediatric_assessment_date %}
