@@ -138,7 +138,7 @@ def test_registration_days_remaining_before_submission(
             2022, 1, 10
         )  # cohort 5, submission date 9/1/24
     ).registration
-    assert registration.days_remaining_before_submission == 405
+    assert registration.days_remaining_before_submission == 406
 
     # submission date = 2023-01-10, 41 days after today
     registration = e12_case_factory(
@@ -146,7 +146,7 @@ def test_registration_days_remaining_before_submission(
             2021, 1, 1
         )  # cohort 4, submission 10/1/2023
     ).registration
-    assert registration.days_remaining_before_submission == 41
+    assert registration.days_remaining_before_submission == 42
 
 
 @patch.object(Registration, "get_current_date", return_value=date(2025, 1, 30))

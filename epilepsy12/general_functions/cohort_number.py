@@ -11,8 +11,9 @@ from .date_functions import nth_tuesday_of_year
 
 def days_remaining_before_submission(audit_submission_date: date, current_date: date) -> int:
     if audit_submission_date:
-        remaining_dateime = audit_submission_date - current_date
-        return remaining_dateime.days if remaining_dateime.days > 0 else 0
+        remaining = audit_submission_date - current_date
+        # submission is possible on the last day
+        return max(0, remaining.days + 1)
 
 
 def cohort_number_from_first_paediatric_assessment_date(
