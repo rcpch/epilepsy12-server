@@ -173,7 +173,7 @@
                 hx-post="{{hx_post}}"
                 hx_trigger='click' 
                 hx-target="#case_table"
-                {% if case.locked and not perms.epilepsy12.can_unlock_child_case_data_from_editing or not case.locked and not perms.epilepsy12.can_lock_child_case_data_from_editing  %}
+                {% if case.registration.days_remaining_before_submission == 0 or case.locked and not perms.epilepsy12.can_unlock_child_case_data_from_editing or not case.locked and not perms.epilepsy12.can_lock_child_case_data_from_editing  %}
                   disabled
                 {% else %}
                     {% if case.locked %}
@@ -253,14 +253,16 @@
                   </button>
                 </div>
               {% else %}
-                {% if case.registration.days_remaining_before_submission > 7 and case.registration.audit_progress.audit_complete %}
-                  {% if case.locked %}
-                    <span data-tooltip="Data complete and uploaded. {{case}}'s record can still be unlocked and edited up until {{case.registration.audit_submission_date|date:'D j M Y'}}"><i class="rcpch_pink check circle outline icon"></i></span>
+                {% if case.registration.audit_progress.audit_complete %}
+                  {% if case.registration.days_remaining_before_submission > 0 %}
+                    {% if case.locked %}
+                      <span data-tooltip="Data complete and uploaded. {{case}}'s record can still be unlocked and edited up until {{case.registration.audit_submission_date|date:'D j M Y'}}"><i class="rcpch_pink check circle outline icon"></i></span>
+                    {% else %}
+                      <span data-tooltip="Data complete. Ready for upload by {{case.registration.audit_submission_date|date:'D j M Y'}}"><i class="rcpch_pink check circle outline icon"></i></span>
+                    {% endif %}
                   {% else %}
-                    <span data-tooltip="Data complete. Ready for upload by {{case.registration.audit_submission_date|date:'D j M Y'}}"><i class="rcpch_pink check circle outline icon"></i></span>
+                    <span data-tooltip="Data complete and submission date has passed. No further editing is possible."><i class="rcpch_orange check circle outline icon"></i></span>
                   {% endif %}
-                {% elif case.registration.audit_progress.audit_complete %}
-                  <span data-tooltip="Data complete"><i class="rcpch_orange check circle outline icon"></i></span>
                 {% else %}
                   <span data-tooltip="Data incomplete."><i class="rcpch_light_blue dot circle outline icon"></i></span>
                 {% endif %}
