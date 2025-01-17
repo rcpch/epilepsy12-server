@@ -9,9 +9,9 @@ from datetime import date
 from .date_functions import nth_tuesday_of_year
 
 
-def days_remaining_before_submission(audit_submission_date: date) -> int:
+def days_remaining_before_submission(audit_submission_date: date, current_date: date) -> int:
     if audit_submission_date:
-        remaining_dateime = audit_submission_date - date.today()
+        remaining_dateime = audit_submission_date - current_date
         return remaining_dateime.days if remaining_dateime.days > 0 else 0
 
 
@@ -74,7 +74,8 @@ def dates_for_cohort(cohort: int):
     cohort_end_date = date(year=2016 + cohort + 1, month=11, day=30)
     submission_date = nth_tuesday_of_year(cohort_end_date.year + 2, n=2)
     days_remaining_til_submission = days_remaining_before_submission(
-        audit_submission_date=submission_date
+        audit_submission_date=submission_date,
+        current_date=date.today(),
     )
 
     cohort_data = {
