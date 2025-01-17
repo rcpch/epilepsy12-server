@@ -77,8 +77,8 @@ def return_random_postcode(country_boundary_identifier: str):
 
     response = requests.get(url=url)
 
-    if response.status_code == 404:
-        logger.error("Postcode generation failure. Could not get random postcode.")
+    if response.status_code != 200:
+        logger.error(f"Postcode generation failure. Could not get random postcode for {country_boundary_identifier}. {response.status_code=}")
         return None
 
     return response.json()["data"]["relationships"]["example_postcodes"]["data"][0][
