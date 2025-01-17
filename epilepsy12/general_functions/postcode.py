@@ -26,12 +26,21 @@ def is_valid_postcode(postcode: str) -> bool:
 
     if response.status_code == 200:
         return True
+    
+    if response.status_code in [400, 404]:
+        # Log this at error so we still email the admins about it.
+        # This is to try and spot any examples where a correct postcode is marked as invalid.
+        logger.error(
+            f"Invalid postcode {postcode} from {url}. {response.status_code=}"
+        )
+        return False
 
-    # Only other possibility should be 404, but handle any other status code
+    # For anything else, log the error but say the postcode is valid.
+    # We don't want to stop data entry if the postcode validation service is down.
     logger.error(
         f"Postcode validation failure. Could not validate postcode at {url}. {response.status_code=}"
     )
-    return False
+    return True
 
 
 def coordinates_for_postcode(postcode: str) -> bool:
