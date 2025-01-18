@@ -45,6 +45,8 @@ This has 6 subheadings
 | 9e | SUDEP | Percentage of children and young people with epilepsy with evidence of discussion regarding SUDEP. |
 | 9f | Service contact details | Percentage of children and young people with epilepsy with evidence of being given service contact details. |
 
+Each query for each KPI is stored in a separate file within the `/common_view_functions/calculate_kpi_functions/` folder. The comment text at the head of each function documents the parameters of each query, the numerator and denominator.
+
 ## Scoring
 
 Key performance indicators have 4 states:
