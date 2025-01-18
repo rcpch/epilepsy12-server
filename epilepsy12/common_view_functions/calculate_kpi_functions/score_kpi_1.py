@@ -11,6 +11,8 @@ def score_kpi_1(registration_instance) -> int:
     """
     1. `paediatrician_with_expertise_in_epilepsies`
 
+    Title: Paediatrician with expertise in Epilepsy within 2 weeks
+
     % of children and young people with epilepsy, with input by a ‘consultant paediatrician with expertise in epilepsies’ within 2 weeks of initial referral
 
     Calculation Method

@@ -7,7 +7,10 @@ from epilepsy12.constants import KPI_SCORE
 
 
 def score_kpi_6(registration_instance, age_at_first_paediatric_assessment) -> int:
-    """6. assessment_of_mental_health_issues
+    """
+    6. assessment_of_mental_health_issues
+
+    Title: Assessment of Mental Health Issues
 
     Calculation Method
 
