@@ -15,13 +15,24 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from unittest.mock import patch
 
+# Django imports
+from django.core.exceptions import ValidationError
+from django.urls import reverse
+
 # Third party imports
 import pytest
-from django.core.exceptions import ValidationError
 
 # RCPCH imports
-from epilepsy12.models import (
-    Registration,
+from epilepsy12.models import Registration, Organisation
+from epilepsy12.tests.view_tests.permissions_tests.perm_tests_utils import (
+    twofactor_signin,
+)
+from epilepsy12.tests.UserDataClasses import (
+    test_user_audit_centre_administrator_data,
+    test_user_audit_centre_clinician_data,
+    test_user_audit_centre_lead_clinician_data,
+    test_user_clinicial_audit_team_data,
+    test_user_rcpch_audit_team_data,
 )
 
 
@@ -208,3 +219,106 @@ def test_registration_validate_dofpa_not_before_child_dob(e12_case_factory):
             date_of_birth=date_of_birth,
             registration__first_paediatric_assessment_date=first_paediatric_assessment_date,
         )
+
+
+@pytest.mark.django_db
+def test_registration_transfer_response(
+    client, e12_case_factory, e12_site_factory, e12_user_factory
+):
+    """
+    Tests that the `transfer_response` method works as expected.
+
+    This method is used to transfer the primary site of care to a new site.
+    In the process the existing site sets the `site_is_actively_involved_in_epilepsy_care` to False and a new site is create where it is set it to True.
+    If the new site is already involved in epilepsy care, the `site_is_primary_centre_of_epilepsy_care` is set to True, and the existing responsibility is retained.
+    The old site is retained in the database, but is no longer the primary site of care.
+
+    the `transfer_response` method is called from the view when the new site approves the transfer request.
+    It accepts the Organisation id of the new organisation, the case id and a string indicating the response of the new organisation.
+    This string can be either 'approve' or 'reject'.
+    """
+    date_of_birth = date(2023, 1, 1)
+    first_paediatric_assessment_date = date_of_birth + relativedelta(days=10)
+
+    GOSH = Organisation.objects.get(
+        ods_code="RP401",
+        trust__ods_code="RP4",
+    )
+
+    KCH = Organisation.objects.get(
+        ods_code="RJZ01",
+        trust__ods_code="RJZ",
+    )
+
+    # Create the Case instance and associate it with the Site
+    case = e12_case_factory(
+        date_of_birth=date_of_birth,
+        registration__first_paediatric_assessment_date=first_paediatric_assessment_date,
+    )
+    # Create the Site instance and set the field - KCH is the primary site of care, but a transfer to GOSH is requested
+    site = e12_site_factory(
+        organisation=KCH,
+        case=case,
+        active_transfer=True,
+        transfer_origin_organisation=GOSH,
+        transfer_request_date=date.today(),
+    )
+    case.organisations.add(KCH)
+
+    # Verify the Site instance
+    assert (
+        site.site_is_primary_centre_of_epilepsy_care is True
+    ), f"KCH is the primary site of care before the transfer, but the test is set up to transfer to {site.organisation}"
+    assert (
+        site.case == case
+    ), f"The site is associated with the {case}, but should be associated with {site.case}"
+    assert (
+        site.organisation == KCH
+    ), f"The site is associated with {site.organisation}, but should be associated with {KCH}"
+    assert (
+        site.active_transfer is True
+    ), "The site has no active transfer request, but the test is set up to have an active transfer"
+    assert (
+        site.transfer_origin_organisation == GOSH
+    ), f"The site has a transfer request from {site.transfer_origin_organisation}, but should be from {GOSH}"
+
+    # Verify the Case instance
+    case.refresh_from_db()
+    assert case.organisations.filter(pk=KCH.pk).exists()
+
+    GOSH_USER = e12_user_factory(
+        email=f"{GOSH}_LEAD_CLINICIAN@email.com",
+        first_name=f"{GOSH}_LEAD_CLINICIAN",
+        role=test_user_audit_centre_lead_clinician_data.role,
+        # Assign flags based on user role
+        is_active=test_user_audit_centre_lead_clinician_data.is_active,
+        is_staff=test_user_audit_centre_lead_clinician_data.is_staff,
+        is_rcpch_audit_team_member=test_user_audit_centre_lead_clinician_data.is_rcpch_audit_team_member,
+        is_rcpch_staff=test_user_audit_centre_lead_clinician_data.is_rcpch_staff,
+        organisation_employer=GOSH,
+    )
+
+    client.force_login(GOSH_USER)
+
+    # OTP ENABLE
+    twofactor_signin(client, GOSH_USER)
+
+    # GOSH now approves the transfer
+    response = client.post(
+        reverse(
+            "transfer_response",
+            kwargs={
+                "organisation_id": GOSH.pk,
+                "case_id": case.id,
+                "organisation_response": "approve",
+            },
+        )
+    )
+
+    print(response.status_code)
+
+    # Verify the Site instance
+    site.refresh_from_db()
+    assert site.site_is_primary_centre_of_epilepsy_care is False
+    assert site.case == case
+    assert site.organisation == KCH
