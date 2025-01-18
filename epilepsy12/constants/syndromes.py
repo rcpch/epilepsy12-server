@@ -31,7 +31,7 @@ SYNDROMES = (
     (29, "GLUT1DS-DEE"),
     (30, "Sturge–Weber syndrome"),
     (31, "Gelastic seizures with HH"),
-    (32, "Epilepsy with myoclonic–atonic seizures"),
+    (32, "Epilepsy with myoclonic–atonic seizures (Doose syndrome)"),
     (33, "Lennox–Gastaut syndrome"),
     (34, "DEE or EE with spike-and-wave activation in sleep"),
     (35, "Febrile infection-related epilepsy syndrome"),

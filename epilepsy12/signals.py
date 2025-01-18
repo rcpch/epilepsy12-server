@@ -56,10 +56,13 @@ def log_user_login_failed(sender, request, user=None, **kwargs):
 
 @receiver(user_logged_out)
 def log_user_logout(sender, request, user, **kwargs):
-    logger.info(f"{user} ({user.email}) logged out from {get_client_ip(request)}.")
-    VisitActivity.objects.create(
-        activity=3, ip_address=get_client_ip(request), epilepsy12user=user
-    )
+    if user:
+        logger.info(f"{user} ({user.email}) logged out from {get_client_ip(request)}.")
+        VisitActivity.objects.create(
+            activity=3, ip_address=get_client_ip(request), epilepsy12user=user
+        )
+    else:
+        logger.info(f"Anonymous user logged out from {get_client_ip(request)}.")
 
 
 # Epilepsy12User Signal handlers

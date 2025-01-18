@@ -687,6 +687,9 @@ def update_case(request, organisation_id, case_id):
             case.registration.kpi.delete()
             case.registration.audit_progress.delete()
             # deletes related registration, KPI and Registration if they exist
+        case.updated_at = timezone.now()
+        case.updated_by = request.user
+        case.save()  # save the updated case before deleting it to ensure the updated_at and updated_by fields are updated
         case.delete()
         url = reverse("cases", kwargs={"organisation_id": organisation_id})
         return HttpResponseClientRedirect(redirect_to=url, status=200)

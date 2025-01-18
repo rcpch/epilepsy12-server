@@ -79,7 +79,11 @@ def selected_organisation_summary(request, organisation_id):
     # get submitting_cohort number - in future will be selectable
     cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
 
-    cohort_number = cohort_data["submitting_cohort"]
+    cohort_number = (
+        cohort_data["grace_cohort"]["cohort"]
+        if cohort_data["within_grace_period"]
+        else cohort_data["submitting_cohort"]
+    )
 
     # thes are all registered cases for the current cohort at the selected organisation to be plotted in the map
     cases_to_plot = filter_all_registered_cases_by_active_lead_site_and_cohort_and_level_of_abstraction(
@@ -219,7 +223,8 @@ def selected_organisation_summary(request, organisation_id):
 
     context = {
         "user": request.user,
-        "cohort": cohort_number,
+        "cohort_number": cohort_number,  # the number of the cohort that should be highlighted as imminently submitting
+        "cohort_data": cohort_data,  # the cohort data object for the cohort_card
         "selected_organisation": selected_organisation,
         "organisation_list": organisation_list,
         "cases_aggregated_by_ethnicity": cases_aggregated_by_ethnicity(
@@ -250,7 +255,6 @@ def selected_organisation_summary(request, organisation_id):
         "count_of_current_cohort_registered_completed_cases_in_this_organisation": count_of_current_cohort_registered_completed_cases_in_this_organisation,
         "count_of_all_current_cohort_registered_cases_in_this_trust": count_of_all_current_cohort_registered_cases_in_this_trust,
         "count_of_current_cohort_registered_completed_cases_in_this_trust": count_of_current_cohort_registered_completed_cases_in_this_trust,
-        "cohort_data": cohort_data,
         "individual_kpi_choices": INDIVIDUAL_KPI_MEASURES,
         "organisation_cases_map": scatterplot_of_cases_for_selected_organisation,
         "aggregated_distances": aggregated_distances,
@@ -289,12 +293,17 @@ def publish_kpis(request, organisation_id):
     Returns the publish button partial + success message
     """
 
-    # get latest cohort - in future will be selectable
-    cohort = cohort_number_from_first_paediatric_assessment_date(date.today())
-    cohort_data = dates_for_cohort(cohort)
+    # get submitting_cohort number - in future will be selectable
+    cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
+
+    cohort_number = (
+        cohort_data["grace_cohort"]["cohort"]
+        if cohort_data["within_grace_period"]
+        else cohort_data["submitting_cohort"]
+    )
 
     # perform aggregations and update all the KPIAggregation models only for clinicians
-    update_all_kpi_agg_models(cohort=cohort_data["cohort"], open_access=True)
+    update_all_kpi_agg_models(cohort=cohort_number, open_access=True)
 
     return render(
         request=request,
@@ -310,7 +319,7 @@ def selected_trust_kpis(request, organisation_id, access):
     """
     HTMX get request returning kpis.html 'Real-time Key Performance Indicator (KPI) Metrics' table.
 
-    This aggregates all KPI measures asynchronously at different levels of abstraction related to the selected organisation
+    This aggregates all KPI measures synchronously at different levels of abstraction related to the selected organisation
     Organisation level, Trust level, ICB level, NHS Region, OPEN UK level, country level and national level.
 
     It then presents each abstraction level's KPIAggregation model.
@@ -328,6 +337,11 @@ def selected_trust_kpis(request, organisation_id, access):
 
     # Get all relevant data for submission cohort
     cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
+    cohort_number = (
+        cohort_data["grace_cohort"]["cohort"]
+        if cohort_data["within_grace_period"]
+        else cohort_data["submitting_cohort"]
+    )
     organisation = Organisation.objects.get(pk=organisation_id)
 
     if logged_in_user_may_access_this_organisation(request.user, organisation):
@@ -335,14 +349,12 @@ def selected_trust_kpis(request, organisation_id, access):
 
         if access == "private":
             # perform aggregations and update all the KPIAggregation models only for clinicians
-            update_all_kpi_agg_models(
-                cohort=cohort_data["submitting_cohort"], open_access=False
-            )
+            update_all_kpi_agg_models(cohort=cohort_number, open_access=False)
 
         # Gather relevant data specific for this view - still show only published data if this is public view
         all_data = get_all_kpi_aggregation_data_for_view(
             organisation=organisation,
-            cohort=cohort_data["submitting_cohort"],
+            cohort=cohort_number,
             open_access=access == "open",
         )
 
@@ -351,7 +363,7 @@ def selected_trust_kpis(request, organisation_id, access):
         # Gather relevant open access data specific for this view
         all_data = get_all_kpi_aggregation_data_for_view(
             organisation=organisation,
-            cohort=cohort_data["submitting_cohort"],
+            cohort=cohort_number,
             open_access=True,
         )
 
@@ -383,7 +395,7 @@ def selected_trust_kpis(request, organisation_id, access):
         ),  # for public view dropdown
         "last_published_date": last_published_date,
         "publish_success": False,
-        "cohort_data": cohort_data,
+        "cohort_number": cohort_number,
     }
 
     return render(
@@ -458,19 +470,22 @@ def selected_trust_select_kpi(request, organisation_id):
         # on page load there may be no kpi_name - default to paediatrician_with_experise_in_epilepsy
         kpi_name = INDIVIDUAL_KPI_MEASURES[0][0]
     kpi_name_title_case = value_from_key(key=kpi_name, choices=INDIVIDUAL_KPI_MEASURES)
-    cohort = cohorts_and_dates(first_paediatric_assessment_date=date.today())[
-        "submitting_cohort"
-    ]
+    cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
+    cohort_number = (
+        cohort_data["grace_cohort"]["cohort"]
+        if cohort_data["within_grace_period"]
+        else cohort_data["submitting_cohort"]
+    )
 
     all_data = get_all_kpi_aggregation_data_for_view(
-        organisation=organisation, cohort=cohort, open_access=False
+        organisation=organisation, cohort=cohort_number, open_access=False
     )
 
     all_data = update_all_data_with_charts(
         all_data=all_data,
         kpi_name=kpi_name,
         kpi_name_title_case=kpi_name_title_case,
-        cohort=cohort,
+        cohort=cohort_number,
     )
 
     context = {

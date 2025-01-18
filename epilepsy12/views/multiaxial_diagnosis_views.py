@@ -1528,12 +1528,12 @@ def add_comorbidity(request, multiaxial_diagnosis_id):
     """
     multiaxial_diagnosis = MultiaxialDiagnosis.objects.get(pk=multiaxial_diagnosis_id)
 
-    comorbidityentity = ComorbidityList.objects.all().first()
+    # comorbidityentity = ComorbidityList.objects.all().first()
 
     comorbidity = Comorbidity.objects.create(
         multiaxial_diagnosis=multiaxial_diagnosis,
         comorbidity_diagnosis_date=None,
-        comorbidityentity=comorbidityentity,
+        comorbidityentity=None,
     )
 
     # get a list of comorbidityentities for select, excluding that already chosen
@@ -1622,8 +1622,13 @@ def close_comorbidity(request, comorbidity_id):
     comorbidity = Comorbidity.objects.get(pk=comorbidity_id)
     multiaxial_diagnosis = comorbidity.multiaxial_diagnosis
 
+    print()
+
     # if all the fields are none this was not completed - delete the record
-    if completed_fields(comorbidity) == 0:
+    if (
+        completed_fields(comorbidity) == 0
+        or request.htmx.trigger_name == "comorbidity_cancel"
+    ):
         comorbidity.delete()
 
     comorbidities = Comorbidity.objects.filter(

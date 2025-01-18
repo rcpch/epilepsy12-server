@@ -138,6 +138,7 @@ nav:
     - 'clinician-users/user-group-permissions.md'
     - 'clinician-users/getting-started.md'
     - 'clinician-users/views.md'
+    - 'clinician-users/dropdowns.md'
     - 'clinician-users/creating-editing-and-deleting-users.md'
     - 'clinician-users/entering-patient-data.md'
     - 'clinician-users/audit-dataset.md'

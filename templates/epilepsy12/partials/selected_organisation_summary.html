@@ -94,6 +94,10 @@
                 {% endif %}
         </div>
 
+        <div class="fluid centered row">
+        {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort_data=cohort_data %}
+        </div>
+
         <div class='sixteen wide fluid column'>
 
 
@@ -101,9 +105,9 @@
 
                 <div class="ui card">
                     <div class="content">
-                            <div class="ui centered header">
-                                <h3>{{ selected_organisation.name }}</h3>
-                            </div>
+                        <div class="ui centered header">
+                            <h3>{{ selected_organisation.name }}</h3>
+                        </div>
                             <h4 class="ui horizontal divider">
                                 <i class="ui  rcpch  small organisation icon "></i>Address
                             </h4>
@@ -144,14 +148,42 @@
                         </div>
                 </div>
 
+                <div class="ui card">
+                    <div class="content">
+                        <div class="ui centered header">
+                            <h3>Memberships</h3>
+                        </div>
+                        <div class="organisation_details">
+                            <h4 class="ui horizontal divider">
+                                <i class="ui  rcpch  small map signs icon "></i>Open UK Network
+                            </h4>
+                            <div class="organisation_details ">
+                            {{ selected_organisation.openuk_network }}
+                            </div>
+                            {% if selected_organisation.trust %}
+                                <h4 class="ui horizontal divider">
+                                    <i class="ui  rcpch  small organisation icon "></i>Integrated Care Board
+                                </h4>
+                                <div class="organisation_details ">
+                                    {{ selected_organisation.integrated_care_board }}
+                                </div>
+                                <h4 class="ui horizontal divider">
+                                    <i class="ui  rcpch  small map outline icon "></i> NHS England Region
+                                </h4>
+                                <div class="organisation_details ">
+                                    {{ selected_organisation.nhs_england_region }}
+                                </div>
+                            {% endif %}
 
-                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort_data=cohort_data %}
 
+                        </div>
+                    </div>
+                </div>
 
                 <div class="ui  card">
                     <div class="content">
                         <div class="ui centered header">
-                            <h3>Completed Patient Records</h3>
+                            <h3>Cohort {{cohort_number}} Completed Patient Records</h3>
                         </div>
                         <div class="">
 
@@ -181,7 +213,7 @@
 
                         </div>
                     </div>
-                </div>
+            </div>
 
 
 
@@ -308,7 +340,7 @@
                                     class="info circle icon"
                                     id='organisation_cases_help'
                                     data-title='Epilepsy12 Cases Distribution'
-                                    data-content="Distribution of children with epilepsy registered within cohort {{cohort}} at {{selected_organisation}} in the Epilepsy12 audit."
+                                    data-content="Distribution of children with epilepsy registered within Cohort {{cohort_number}} at {{selected_organisation}} in the Epilepsy12 audit."
                                     data-position='top right'
                                     _="init js $('#organisation_cases_help').popup(); end"
                                 ></i>
@@ -357,7 +389,7 @@
                                     class="info circle icon"
                                     id='icb_help'
                                     data-title='Epilepsy12 Cases Distribution'
-                                    data-content="Density of children with epilepsy across ICBs, registered within cohort {{cohort}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
+                                    data-content="Density of children with epilepsy across ICBs, registered within Cohort {{cohort_number}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
                                     data-position='top right'
                                     _="init js $('#icb_help').popup(); end"
                                 ></i>
@@ -396,7 +428,7 @@
                                 class="info circle icon"
                                 id='nhsregion_help'
                                 data-title='Epilepsy12 Cases Distribution'
-                                data-content="Density of children with epilepsy across NHS England Regions, registered within cohort {{cohort}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
+                                data-content="Density of children with epilepsy across NHS England Regions, registered within Cohort {{cohort_number}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
                                 data-position='top right'
                                 _="init js $('#nhsregion_help').popup(); end"
                             ></i>
@@ -422,7 +454,7 @@
                                 class="info circle icon"
                                 id='country_help'
                                 data-title='Epilepsy12 Cases Distribution'
-                                data-content="Density of children with epilepsy across countries, registered within cohort {{cohort}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
+                                data-content="Density of children with epilepsy across countries, registered within Cohort {{cohort_number}} only and who have completed one year of care at {{selected_organisation}} in the Epilepsy12 audit."
                                 data-position='top right'
                                 _="init js $('#country_help').popup(); end"
                             ></i>
@@ -454,7 +486,7 @@
                 </div>
             </div>
 
-            {% include 'epilepsy12/partials/organisation/individual_metrics.html' with organisation_id=selected_organisation.pk cohort=cohort_data.submitting_cohort %}
+            {% include 'epilepsy12/partials/organisation/individual_metrics.html' with organisation_id=selected_organisation.pk cohort_number=cohort_number %}
 
         {% else %}
         
@@ -464,7 +496,7 @@
                     <div class="header">
                         No data
                     </div>
-                    <p>There is no data for cohort {{cohort_data.submitting_cohort}} at {{selected_organisation.name}}. For further information on publication dates, please check <a href="www.epilepsy12.rcpch.ac.uk">our Epilepsy12 website</a></p>
+                    <p>There is no data for Cohort {{cohort_number}} at {{selected_organisation.name}}. For further information on publication dates, please check <a href="www.epilepsy12.rcpch.ac.uk">our Epilepsy12 website</a></p>
                 </div>
             </div>
 

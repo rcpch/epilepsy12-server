@@ -76,12 +76,15 @@ def validate_and_update_model(
             )
             field_value = syndrome_entity  # note field name here is syndrome
         elif request.htmx.trigger_name == "epilepsy_cause":
-            try:
-                epilepsy_cause_entity = EpilepsyCause.objects.get(
-                    pk=request.POST.get(request.htmx.trigger_name)
-                )
-            except Exception as e:
-                raise Exception("Unable to save epilepsy cause. ", e)
+            if request.POST.get(request.htmx.trigger_name) == "empty":
+                epilepsy_cause_entity = None
+            else:
+                try:
+                    epilepsy_cause_entity = EpilepsyCause.objects.get(
+                        pk=request.POST.get(request.htmx.trigger_name)
+                    )
+                except Exception as e:
+                    raise Exception("Unable to save epilepsy cause. ", e)
             field_value = (
                 epilepsy_cause_entity  # note field name here is epilepsy_cause
             )

@@ -5,6 +5,9 @@ from datetime import date
 from django.contrib.gis.db.models import Q
 from django.apps import apps
 
+# 3rd party imports
+from dateutil.relativedelta import relativedelta
+
 # E12 imports
 from epilepsy12.constants import KPI_SCORE
 
@@ -25,6 +28,10 @@ def score_kpi_3(registration_instance, age_at_first_paediatric_assessment) -> in
     Denominator = Number of children [less than 3 years old at first assessment] AND [diagnosed with epilepsy] OR (number of children and young people diagnosed with epilepsy who had [3 or more maintenance AEDS] at first year )OR (number of children and young people diagnosed with epilepsy  who met [CESS criteria] OR (Number of children less than 4 years old at first assessment with epilepsy AND  (has generalised myoclonic seizures OR has focal myoclonic seizures))
     """
 
+    if registration_instance.first_paediatric_assessment_date is None:
+        # in theory, this should never happen, but just in case
+        return KPI_SCORE["NOT_SCORED"]
+
     assessment = registration_instance.assessment
 
     AntiEpilepsyMedicine = apps.get_model("epilepsy12", "AntiEpilepsyMedicine")
@@ -38,41 +45,50 @@ def score_kpi_3(registration_instance, age_at_first_paediatric_assessment) -> in
         is_rescue_medicine=False,
         antiepilepsy_medicine_start_date__lt=registration_instance.completed_first_year_of_care_date,
     ).count()
+
     has_myoclonic_epilepsy_episode = Episode.objects.filter(
         Q(multiaxial_diagnosis=registration_instance.multiaxialdiagnosis)
         & Q(epilepsy_or_nonepilepsy_status="E")
         & (Q(epileptic_generalised_onset="MyC") | Q(focal_onset_myoclonic=True))
     ).exists()
 
+    met_cess_criteria = (
+        assessment.childrens_epilepsy_surgical_service_referral_criteria_met
+    )
+
+    evidence_of_tertiary_input = (  # referral made to CESS within 1 year
+        assessment.childrens_epilepsy_surgical_service_referral_date is not None
+        and registration_instance.first_paediatric_assessment_date is not None
+        and registration_instance.first_paediatric_assessment_date
+        + relativedelta(years=1)
+        >= assessment.childrens_epilepsy_surgical_service_referral_date
+    ) or (  # paediatric neurologist input within 1 year
+        assessment.paediatric_neurologist_input_date is not None
+        and assessment.paediatric_neurologist_input_date
+        and registration_instance.first_paediatric_assessment_date
+        + relativedelta(years=1)
+        >= assessment.paediatric_neurologist_input_date
+    )
+
     # List of True/False assessing if meets any of criteria
     eligibility_criteria = [
         (age_at_first_paediatric_assessment <= 3),
         (age_at_first_paediatric_assessment < 4 and has_myoclonic_epilepsy_episode),
         (aems_count >= 3),
-        (
-            assessment.childrens_epilepsy_surgical_service_referral_criteria_met
-        ),  # NOTE: CESS_referral_criteria_met is only one that could be None (rest must be True/False), however, only checking whether it is True or not True here so doesn't matter
+        met_cess_criteria,
     ]
 
     # None of eligibility criteria are True -> set ineligible with guard clause
     if not any(eligibility_criteria):
         return KPI_SCORE["INELIGIBLE"]
 
-    # first evaluate relevant fields complete
-    tertiary_input_answered = (
-        assessment.paediatric_neurologist_input_date is not None
-    ) or (assessment.childrens_epilepsy_surgical_service_referral_made is not None)
+    # ELIGIBILITY CRITERIA MET -> SCORE KPI
 
-    if not tertiary_input_answered:
-        return KPI_SCORE["NOT_SCORED"]
-
-    pass_criteria = [
-        (isinstance(assessment.paediatric_neurologist_input_date, date)),
-        (assessment.childrens_epilepsy_surgical_service_referral_made is True),
-    ]
+    # run KPI
+    pass_criteria = evidence_of_tertiary_input
 
     # if input neurologist or referral CESS, they pass
-    if any(pass_criteria):
+    if pass_criteria:
         return KPI_SCORE["PASS"]
     else:
         return KPI_SCORE["FAIL"]
@@ -102,15 +118,22 @@ def score_kpi_3b(registration_instance) -> int:
 
     # not scored
     if (
-        assessment.childrens_epilepsy_surgical_service_referral_made is None
-        and assessment.paediatric_neurologist_referral_made is None
+        assessment.childrens_epilepsy_surgical_service_referral_date is None
+        and assessment.paediatric_neurologist_input_date is None
     ):
         return KPI_SCORE["NOT_SCORED"]
 
     # score KPI
     if (
-        assessment.childrens_epilepsy_surgical_service_referral_made
-        or assessment.paediatric_neurologist_input_date
+        assessment.paediatric_neurologist_input_date is not None
+        and assessment.paediatric_neurologist_input_date
+        <= registration_instance.first_paediatric_assessment_date
+        + relativedelta(years=1)
+    ) or (
+        assessment.childrens_epilepsy_surgical_service_referral_date is not None
+        and assessment.childrens_epilepsy_surgical_service_referral_date
+        <= registration_instance.first_paediatric_assessment_date
+        + relativedelta(years=1)
     ):
         return KPI_SCORE["PASS"]
     else:

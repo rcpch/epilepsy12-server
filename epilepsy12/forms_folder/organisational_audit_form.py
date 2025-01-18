@@ -83,15 +83,15 @@ class OrganisationalAuditSubmissionForm(forms.ModelForm):
             "S01JobPlannedHoursPerWeekLeadershipQIActivities": {
                 "section": "1. Workforce",
                 "question_number": "1.5",
-                "label": "What is the total number of hours per week for your Health Board/Trust specified towards local epilepsy audit and quality improvement?",
-                "reference": "For example in nurse, doctor or allied professionals job plans"            
+                "label": "What are the total number of hours per week for your Health Board/Trust specified towards local epilepsy audit and quality improvement?",
+                "reference": "For example in nurse, doctor or allied professionals job plans. You can specify partial hours as a decimal (1.5 would be an hour and a half)."            
             },
 
             "S01LeadershipHours": {
                 "section": "1. Workforce",
                 "question_number": "1.6",
-                "label": "What is the total number of hours per week for your Health Board/Trust specified towards local epilepsy service leadership?",
-                "reference": "For example in nurse, doctor or allied professionals job plans"
+                "label": "What are the total number of hours per week for your Health Board/Trust specified towards local epilepsy service leadership?",
+                "reference": "For example in nurse, doctor or allied professionals job plans. As above you can use decimal numbers."
             },
 
 

@@ -54,7 +54,7 @@ def score_kpi_5(registration_instance, age_at_first_paediatric_assessment) -> in
 
         if investigations.mri_indicated is not None:
             if any(mri_dates_are_none) and investigations.mri_indicated is True:
-                return KPI_SCORE["NOT_SCORED"]
+                return KPI_SCORE["FAIL"]
             elif investigations.mri_indicated is False:
                 return KPI_SCORE["FAIL"]
 

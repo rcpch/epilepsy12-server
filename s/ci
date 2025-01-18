@@ -23,15 +23,15 @@ docker compose run mkdocs /bin/bash -c 'mkdocs build --config-file documentation
 # HOTFIX: Build again to embed the docs
 docker compose build
 
+# HOTFIX: push the image before the tests so we can deploy asap for https://github.com/rcpch/rcpch-audit-engine/issues/1162
+azure_tag="${AZURE_REGISTRY_NAME}.azurecr.io/e12-django:${GITHUB_SHA}"
+docker tag e12-django:built ${azure_tag}
+docker push ${azure_tag}
+
 # Tests (against local Postgres)
 docker compose up -d
 s/test
 docker compose down
-
-# Push to Azure
-azure_tag="${AZURE_REGISTRY_NAME}.azurecr.io/e12-django:${GITHUB_SHA}"
-docker tag e12-django:built ${azure_tag}
-docker push ${azure_tag}
 
 # Deploy to staging
 az containerapp revision copy \
