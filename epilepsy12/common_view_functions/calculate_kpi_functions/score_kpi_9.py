@@ -7,7 +7,10 @@ from epilepsy12.constants import KPI_SCORE
 
 
 def score_kpi_9A(registration_instance) -> int:
-    """9A. comprehensive_care_planning_agreement
+    """
+    9A. comprehensive_care_planning_agreement
+
+    Title: Care Planning Agreement
 
     % of children and young people with epilepsy after 12 months where there is evidence of a comprehensive care plan that is agreed between the person, their family and/or carers and primary and secondary care providers, and the care plan has been updated where necessary
 
@@ -54,7 +57,8 @@ def score_kpi_9A(registration_instance) -> int:
 
 
 def score_kpi_9Ai(registration_instance) -> int:
-    """i. patient_held_individualised_epilepsy_document
+    """
+    9Ai. patient_held_individualised_epilepsy_document
 
     % of children and young people with epilepsy after 12 months that had an individualised epilepsy document with individualised epilepsy document or a copy clinic letter that includes care planning information
 
@@ -136,7 +140,11 @@ def score_kpi_9Aiii(registration_instance) -> int:
 
 
 def score_kpi_9B(registration_instance) -> int:
-    """9B. comprehensive_care_planning_content
+    """
+    9B. comprehensive_care_planning_content
+
+    Title: Care Planning Components
+
     Percentage of children diagnosed with epilepsy with documented evidence of communication regarding core elements of care planning.
 
     Calculation Method

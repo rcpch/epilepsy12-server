@@ -14,7 +14,10 @@ from epilepsy12.constants import (
 
 
 def score_kpi_5(registration_instance, age_at_first_paediatric_assessment) -> int:
-    """5. MRI
+    """
+    5. MRI
+
+    Title: MRI within 6 weeks
 
     Calculation Method
 

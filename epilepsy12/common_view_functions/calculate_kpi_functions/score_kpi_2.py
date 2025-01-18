@@ -10,6 +10,8 @@ from epilepsy12.constants import KPI_SCORE
 def score_kpi_2(registration_instance) -> int:
     """2. epilepsy_specialist_nurse
 
+    Title: Access to Epilepsy Specialist Nurse
+
     % of children and young people with epilepsy, with input by epilepsy specialist nurse within the first year of care
 
     Calculation Method

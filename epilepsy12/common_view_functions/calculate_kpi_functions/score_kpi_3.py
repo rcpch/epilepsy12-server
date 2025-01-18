@@ -14,6 +14,9 @@ from epilepsy12.constants import KPI_SCORE
 
 def score_kpi_3(registration_instance, age_at_first_paediatric_assessment) -> int:
     """3. tertiary_input
+
+    Title: Tertiary Input
+
     % of children and young people meeting defined criteria for paediatric neurology referral, with input of tertiary care and/or CESS referral within the first year of care
 
     Calculation Method
@@ -95,7 +98,10 @@ def score_kpi_3(registration_instance, age_at_first_paediatric_assessment) -> in
 
 
 def score_kpi_3b(registration_instance) -> int:
-    """3b. epilepsy_surgery_referral
+    """
+    3b. epilepsy_surgery_referral
+
+    Title: Epilepsy Surgery Referral
 
     % of ongoing children and young people meeting defined epilepsy surgery referral criteria with evidence of epilepsy surgery referral
     Calculation Method
