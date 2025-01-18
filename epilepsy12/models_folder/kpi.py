@@ -10,7 +10,7 @@ class KPI(models.Model, HelpTextMixin):
 
     The 12 key performance indicators, as specified by RCPCH, are:
 
-    1. Paediatrician with expertise in epilepsies - % of children and young people with epilepsy, with input by a 'consultant paediatrician with expertise in epilepsies' within 2 weeks of initial referral
+    1. Paediatrician with expertise in Epilepsy within 2 weeks - % of children and young people with epilepsy, with input by a 'consultant paediatrician with expertise in epilepsies' within 2 weeks of initial referral
 
     2. Epilepsy Specialist Nurse - % of children and young people with epilepsy, with input by epilepsy specialist nurse within the first year of care
 
@@ -65,7 +65,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     paediatrician_with_expertise_in_epilepsies = models.IntegerField(
         help_text={
-            "label": "1. Paediatrician with expertise",
+            "label": "1. Paediatrician with expertise in Epilepsy within 2 weeks",
             "reference": "Percentage of children and young people with epilepsy, with input by a 'consultant paediatrician with expertise in epilepsies' within 2 weeks of initial referral",
         },
         default=None,
