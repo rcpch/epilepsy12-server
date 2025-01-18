@@ -77,7 +77,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     epilepsy_specialist_nurse = models.IntegerField(
         help_text={
-            "label": "2. Epilepsy Specialist Nurse",
+            "label": "2. Access to Epilepsy Specialist Nurse",
             "reference": "Percentage of children and young people with epilepsy, with input by epilepsy specialist nurse within the first year of care.",
         },
         default=None,
@@ -89,7 +89,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     tertiary_input = models.IntegerField(
         help_text={
-            "label": "3a. Tertiary involvement",
+            "label": "3a. Tertiary Input",
             "reference": "Percentage of children and young people meeting defined criteria for paediatric neurology referral, with input of tertiary care and/or CESS referral within the first year of care.",
         },
         default=None,
@@ -101,7 +101,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     epilepsy_surgery_referral = models.IntegerField(
         help_text={
-            "label": "3b. Epilepsy surgery referral",
+            "label": "3b. Epilepsy Surgery Referral",
             "reference": "Percentage of ongoing children and young people meeting defined epilepsy surgery referral criteria with evidence of epilepsy surgery referral.",
         },
         default=None,
@@ -125,7 +125,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     mri = models.IntegerField(
         help_text={
-            "label": "5. MRI",
+            "label": "5. MRI within 6 weeks",
             "reference": "Percentage of children and young people with defined indications for an MRI, who had timely MRI within 6 weeks of request",
         },
         default=None,
@@ -137,7 +137,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     assessment_of_mental_health_issues = models.IntegerField(
         help_text={
-            "label": "6. Assessment of mental health issues",
+            "label": "6. Assessment of Mental Health Issues",
             "reference": "Percentage of children and young people with epilepsy where there is documented evidence that they have been asked about mental health either through clinical screening, or a questionnaire/measure.",
         },
         default=None,
@@ -149,7 +149,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     mental_health_support = models.IntegerField(
         help_text={
-            "label": "7. Mental health support",
+            "label": "7. Mental Health Support",
             "reference": "Percentage of children and young people with epilepsy and a mental health problem who have evidence of mental health support",
         },
         default=None,
@@ -161,7 +161,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     sodium_valproate = models.IntegerField(
         help_text={
-            "label": "8. Sodium Valproate",
+            "label": "8. Medication and Reproduction Risks",
             "reference": "Percentage of all females 12 years and above currently on valproate treatment with annual risk acknowledgement form completed",
         },
         default=None,
@@ -173,7 +173,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     comprehensive_care_planning_agreement = models.IntegerField(
         help_text={
-            "label": "9A. Comprehensive care planning agreement",
+            "label": "9A. Care Planning Agreement",
             "reference": "Percentage of children and young people with epilepsy after 12 months where there is evidence of a comprehensive care plan that is agreed between the person, their family and/or carers and primary and secondary care providers, and the care plan has been updated where necessary.",
         },
         default=None,
@@ -221,7 +221,7 @@ class KPI(models.Model, HelpTextMixin):
     """
     comprehensive_care_planning_content = models.IntegerField(
         help_text={
-            "label": "9B. Comprehensive care planning content",
+            "label": "9B. Care Planning Components",
             "reference": "Percentage of children diagnosed with epilepsy with documented evidence of communication regarding core elements of care planning (items a - f).",
         },
         default=None,
