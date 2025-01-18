@@ -386,11 +386,11 @@ def case_statistics(request, organisation_id):
     return response
 
 
-# @login_and_otp_required()
-# @user_may_view_this_child()
-# @permission_required(
-#     "epilepsy12.can_transfer_epilepsy12_lead_centre", raise_exception=True
-# )
+@login_and_otp_required()
+@user_may_view_this_child()
+@permission_required(
+    "epilepsy12.can_transfer_epilepsy12_lead_centre", raise_exception=True
+)
 def transfer_response(request, organisation_id, case_id, organisation_response):
     """
     POST callback from case table on click of accept/reject buttons against transfer request
@@ -404,10 +404,6 @@ def transfer_response(request, organisation_id, case_id, organisation_response):
         active_transfer=True,
         site_is_primary_centre_of_epilepsy_care=True,
         organisation=target_organisation,
-    )
-
-    print(
-        f"Organisation response: {organisation_response}, {site}, {case}, {target_organisation}"
     )
 
     # prepare email response to requesting organisation clinical lead

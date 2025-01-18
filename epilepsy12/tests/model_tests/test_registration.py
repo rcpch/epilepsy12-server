@@ -23,7 +23,7 @@ from django.urls import reverse
 import pytest
 
 # RCPCH imports
-from epilepsy12.models import Registration, Organisation
+from epilepsy12.models import Registration, Organisation, Epilepsy12User, Site
 from epilepsy12.tests.view_tests.permissions_tests.perm_tests_utils import (
     twofactor_signin,
 )
@@ -235,7 +235,7 @@ def test_registration_transfer_response(
 
     the `transfer_response` method is called from the view when the new site approves the transfer request.
     It accepts the Organisation id of the new organisation, the case id and a string indicating the response of the new organisation.
-    This string can be either 'approve' or 'reject'.
+    This string can be either 'accept' or 'reject'.
     """
     date_of_birth = date(2023, 1, 1)
     first_paediatric_assessment_date = date_of_birth + relativedelta(days=10)
@@ -257,13 +257,15 @@ def test_registration_transfer_response(
     )
     # Create the Site instance and set the field - KCH is the primary site of care, but a transfer to GOSH is requested
     site = e12_site_factory(
-        organisation=KCH,
+        organisation=GOSH,
         case=case,
         active_transfer=True,
-        transfer_origin_organisation=GOSH,
+        transfer_origin_organisation=KCH,
         transfer_request_date=date.today(),
     )
     case.organisations.add(KCH)
+    case.registration.kpi.organisation = KCH
+    case.registration.kpi.save()
 
     # Verify the Site instance
     assert (
@@ -273,35 +275,30 @@ def test_registration_transfer_response(
         site.case == case
     ), f"The site is associated with the {case}, but should be associated with {site.case}"
     assert (
-        site.organisation == KCH
-    ), f"The site is associated with {site.organisation}, but should be associated with {KCH}"
+        site.organisation == GOSH
+    ), f"The site is associated with {site.organisation}, but should be associated with {GOSH}"
     assert (
         site.active_transfer is True
     ), "The site has no active transfer request, but the test is set up to have an active transfer"
     assert (
-        site.transfer_origin_organisation == GOSH
-    ), f"The site has a transfer request from {site.transfer_origin_organisation}, but should be from {GOSH}"
+        site.transfer_origin_organisation == KCH
+    ), f"The site has a transfer request from {site.transfer_origin_organisation}, but should be from {KCH}"
+
+    # Verify the organisation associated with the KPI associated with the Case instance's registration is KCH
+    assert case.registration.kpi.organisation == KCH
 
     # Verify the Case instance
     case.refresh_from_db()
     assert case.organisations.filter(pk=KCH.pk).exists()
 
-    GOSH_USER = e12_user_factory(
-        email=f"{GOSH}_LEAD_CLINICIAN@email.com",
-        first_name=f"{GOSH}_LEAD_CLINICIAN",
-        role=test_user_audit_centre_lead_clinician_data.role,
-        # Assign flags based on user role
-        is_active=test_user_audit_centre_lead_clinician_data.is_active,
-        is_staff=test_user_audit_centre_lead_clinician_data.is_staff,
-        is_rcpch_audit_team_member=test_user_audit_centre_lead_clinician_data.is_rcpch_audit_team_member,
-        is_rcpch_staff=test_user_audit_centre_lead_clinician_data.is_rcpch_staff,
-        organisation_employer=GOSH,
+    test_user = Epilepsy12User.objects.get(
+        first_name=test_user_rcpch_audit_team_data.role_str
     )
 
-    client.force_login(GOSH_USER)
+    client.force_login(test_user)
 
     # OTP ENABLE
-    twofactor_signin(client, GOSH_USER)
+    twofactor_signin(client, test_user=test_user)
 
     # GOSH now approves the transfer
     response = client.post(
@@ -310,15 +307,34 @@ def test_registration_transfer_response(
             kwargs={
                 "organisation_id": GOSH.pk,
                 "case_id": case.id,
-                "organisation_response": "approve",
+                "organisation_response": "accept",
             },
         )
     )
 
-    print(response.status_code)
+    assert response.status_code == 200
 
     # Verify the Site instance
-    site.refresh_from_db()
-    assert site.site_is_primary_centre_of_epilepsy_care is False
-    assert site.case == case
-    assert site.organisation == KCH
+    kch_site = Site.objects.get(
+        organisation=KCH,
+        case=case,
+    )
+
+    # KCH is no longer the primary site of care
+    assert kch_site.site_is_primary_centre_of_epilepsy_care is False
+    assert kch_site.site_is_actively_involved_in_epilepsy_care is False
+    assert kch_site.case == case
+
+    # GOSH is now the primary site of care
+    new_site = Site.objects.get(
+        organisation=GOSH,
+        case=case,
+    )
+    assert new_site.site_is_primary_centre_of_epilepsy_care is True
+    assert new_site.site_is_actively_involved_in_epilepsy_care is True
+    assert new_site.case == case
+    assert new_site.active_transfer is False
+    assert new_site.transfer_origin_organisation is None
+    assert new_site.transfer_request_date is None
+    # Verify the organisation associated with the KPI associated with the Case instance's registration has changed to GOSH
+    assert case.registration.kpi.organisation == GOSH
