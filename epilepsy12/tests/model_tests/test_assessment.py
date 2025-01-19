@@ -333,6 +333,14 @@ def test_allocate_general_paediatric_centre_to_case_same_organisation_as_lead(
 
     ADDENBROOKES = Organisation.objects.get(ods_code="RGT01")  # Addenbrookes
 
+    site = e12_site_factory(
+        organisation=ADDENBROOKES,
+        case=case,
+        site_is_primary_centre_of_epilepsy_care=True,
+        site_is_actively_involved_in_epilepsy_care=True,
+        site_is_general_paediatric_centre=False,
+    )
+
     # create a case object
     assessment = case.registration.assessment
 
@@ -346,6 +354,12 @@ def test_allocate_general_paediatric_centre_to_case_same_organisation_as_lead(
         organisation__ods_code="RGT01",
         case=case,
     )
+
+    # ensure the site associated with the case is not a general paediatric centre
+    assert site.organisation == ADDENBROOKES
+    assert site.site_is_primary_centre_of_epilepsy_care is True
+    assert site.site_is_actively_involved_in_epilepsy_care is True
+    assert site.site_is_general_paediatric_centre is False
 
     # update the site model
     update_site_model(
@@ -396,6 +410,14 @@ def test_allocate_general_paediatric_centre_to_case_different_organisation_as_le
     )
 
     ADDENBROOKES = Organisation.objects.get(ods_code="RGT01")  # Addenbrookes
+
+    site = e12_site_factory(
+        organisation=ADDENBROOKES,
+        case=case,
+        site_is_primary_centre_of_epilepsy_care=True,
+        site_is_actively_involved_in_epilepsy_care=True,
+        site_is_general_paediatric_centre=False,
+    )
 
     # create a case object
     assessment = case.registration.assessment
