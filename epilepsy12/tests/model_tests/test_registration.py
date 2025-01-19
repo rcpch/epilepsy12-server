@@ -223,7 +223,11 @@ def test_registration_validate_dofpa_not_before_child_dob(e12_case_factory):
 
 @pytest.mark.django_db
 def test_accept_registration_transfer_response_not_previously_involved(
-    client, e12_case_factory, e12_site_factory
+    client,
+    e12_case_factory,
+    e12_site_factory,
+    seed_groups_fixture,
+    seed_users_fixture,
 ):
     """
     Tests that the `transfer_response` method works as expected.
@@ -358,7 +362,11 @@ def test_accept_registration_transfer_response_not_previously_involved(
 
 @pytest.mark.django_db
 def test_accept_registration_transfer_response_previously_involved(
-    client, e12_case_factory, e12_site_factory
+    client,
+    e12_case_factory,
+    e12_site_factory,
+    seed_groups_fixture,
+    seed_users_fixture,
 ):
     """
     Tests that the `transfer_response` method works as expected.
@@ -536,7 +544,11 @@ def test_accept_registration_transfer_response_previously_involved(
 
 @pytest.mark.django_db
 def test_accept_registration_transfer_response_transfer_centre_still_involved(
-    client, e12_case_factory, e12_site_factory
+    client,
+    e12_case_factory,
+    e12_site_factory,
+    seed_groups_fixture,
+    seed_users_fixture,
 ):
     """
     Tests that the `transfer_response` method works as expected.
@@ -734,7 +746,11 @@ def test_accept_registration_transfer_response_transfer_centre_still_involved(
 
 @pytest.mark.django_db
 def test_reject_registration_transfer_response_not_previously_involved(
-    client, e12_case_factory, e12_site_factory
+    client,
+    e12_case_factory,
+    e12_site_factory,
+    seed_groups_fixture,
+    seed_users_fixture,
 ):
     """
     Tests that the `transfer_response` method works as expected.
@@ -853,7 +869,11 @@ def test_reject_registration_transfer_response_not_previously_involved(
 
 @pytest.mark.django_db
 def test_reject_registration_transfer_response_previously_involved(
-    client, e12_case_factory, e12_site_factory
+    client,
+    e12_case_factory,
+    e12_site_factory,
+    seed_groups_fixture,
+    seed_users_fixture,
 ):
     """
     Tests that the `transfer_response` method works as expected.
@@ -1000,7 +1020,11 @@ def test_reject_registration_transfer_response_previously_involved(
 
 @pytest.mark.django_db
 def test_reject_registration_transfer_response_transfer_centre_still_involved(
-    client, e12_case_factory, e12_site_factory
+    client,
+    e12_case_factory,
+    e12_site_factory,
+    seed_groups_fixture,
+    seed_users_fixture,
 ):
     """
     Tests that the `transfer_response` method works as expected.
