@@ -12,9 +12,8 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 
 # RCPCH imports
-from epilepsy12.models import (
-    Assessment,
-)
+from epilepsy12.models import Assessment, Organisation, Site
+from epilepsy12.views.assessment_views import update_site_model
 
 """
 - [x] Assessment.consultant_paediatrician_referral_date and Assessment.consultant_paediatrician_input_date are both None if Assessment.consultant_paediatrician_referral_made is False
@@ -305,3 +304,142 @@ def test_epilepsy_nurse_specialist_wait_same_day(e12_case_factory):
 
     # Check if the calculated wait time for the epilepsy nurse specialist is correct
     assert assessment.epilepsy_nurse_specialist_wait() == 0
+
+
+@pytest.mark.django_db
+def test_allocate_general_paediatric_centre_to_case_same_organisation_as_lead(
+    e12_case_factory, e12_site_factory
+):
+    """
+    Tests the update_site_model function
+    it accepts the following parameters:
+
+    centre_role: str, selected_organisation, case, user, site_id=None
+
+    centre_role is one of the following:
+    - general_paediatric_centre
+    - paediatric_neurology_centre
+    - epilepsy_surgery_centre
+    """
+    # create a case object
+    case = e12_case_factory(
+        registration__assessment__consultant_paediatrician_input_date=None
+    )
+
+    GOSH = Organisation.objects.get(
+        ods_code="RP401",
+        trust__ods_code="RP4",
+    )
+
+    ADDENBROOKES = Organisation.objects.get(ods_code="RGT01")  # Addenbrookes
+
+    # create a case object
+    assessment = case.registration.assessment
+
+    # create a user object
+    user = assessment.registration.case.created_by
+
+    # create an organisation object - this is the selected organisation and may not be the same as the site organisation
+    selected_organisation = ADDENBROOKES
+
+    site = Site.objects.get(
+        organisation__ods_code="RGT01",
+        case=case,
+    )
+
+    # update the site model
+    update_site_model(
+        centre_role="general_paediatric_centre",
+        selected_organisation=selected_organisation,
+        case=case,
+        user=user,
+        site_id=site.id,
+    )
+
+    # check if the site model was updated
+    site = Site.objects.get(
+        organisation__ods_code="RGT01",
+        case=case,
+    )
+
+    # check if the site model was updated
+    assert site.organisation == ADDENBROOKES
+    assert site.site_is_primary_centre_of_epilepsy_care is True
+    assert site.site_is_actively_involved_in_epilepsy_care is True
+    assert site.site_is_general_paediatric_centre is True
+    assert site.case == case
+
+
+@pytest.mark.django_db
+def test_allocate_general_paediatric_centre_to_case_different_organisation_as_lead(
+    e12_case_factory, e12_site_factory
+):
+    """
+    Tests the update_site_model function
+    it accepts the following parameters:
+
+    centre_role: str, selected_organisation, case, user, site_id=None
+
+    centre_role is one of the following:
+    - general_paediatric_centre
+    - paediatric_neurology_centre
+    - epilepsy_surgery_centre
+    """
+    # create a case object
+    case = e12_case_factory(
+        registration__assessment__consultant_paediatrician_input_date=None
+    )
+
+    GOSH = Organisation.objects.get(
+        ods_code="RP401",
+        trust__ods_code="RP4",
+    )
+
+    ADDENBROOKES = Organisation.objects.get(ods_code="RGT01")  # Addenbrookes
+
+    # create a case object
+    assessment = case.registration.assessment
+
+    # create a user object
+    user = assessment.registration.case.created_by
+
+    # create an organisation object - this is the selected organisation and may not be the same as the site organisation
+    selected_organisation = GOSH
+
+    site = Site.objects.get(
+        organisation=ADDENBROOKES,
+        case=case,
+    )
+
+    # update the site model
+    update_site_model(
+        centre_role="general_paediatric_centre",
+        selected_organisation=selected_organisation,
+        case=case,
+        user=user,
+        site_id=site.id,
+    )
+
+    # check if the site model was updated
+    addenbrookes_site = Site.objects.get(
+        organisation=ADDENBROOKES,
+        case=case,
+    )
+
+    gosh_site = Site.objects.get(
+        organisation=GOSH,
+        case=case,
+    )
+
+    # check if the site model was updated
+    assert addenbrookes_site.organisation == ADDENBROOKES
+    assert addenbrookes_site.site_is_primary_centre_of_epilepsy_care is True
+    assert addenbrookes_site.site_is_actively_involved_in_epilepsy_care is True
+    assert addenbrookes_site.site_is_general_paediatric_centre is False
+    assert addenbrookes_site.case == case
+
+    assert gosh_site.organisation == GOSH
+    assert gosh_site.site_is_primary_centre_of_epilepsy_care is False
+    assert gosh_site.site_is_actively_involved_in_epilepsy_care is True
+    assert gosh_site.site_is_general_paediatric_centre is True
+    assert gosh_site.case == case
