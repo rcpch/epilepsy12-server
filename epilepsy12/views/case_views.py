@@ -419,20 +419,39 @@ def transfer_response(request, organisation_id, case_id, organisation_response):
     )
     origin_organisation = site.transfer_origin_organisation
     if organisation_response == "reject":
-        # Reset the origial site to the original organisation
+        # Reset the original site to the original organisation
         Site.objects.filter(
             case=case,
             organisation=origin_organisation,
         ).update(
             site_is_primary_centre_of_epilepsy_care=True,
             site_is_actively_involved_in_epilepsy_care=True,
+            active_transfer=False,
+            transfer_origin_organisation=None,
+            transfer_request_date=None,
         )
+        # if the original organisation has any additional responsibilities there will be two records in Site for the origin organisation
+        # the one that was created for the transfer request will be deleted
+        if (
+            Site.objects.filter(
+                case=case,
+                organisation=origin_organisation,
+            ).count()
+            > 1
+        ):
+            Site.objects.filter(
+                case=case,
+                organisation=origin_organisation,
+                site_is_general_paediatric_centre=False,
+                site_is_paediatric_neurology_centre=False,
+                site_is_childrens_epilepsy_surgery_centre=False,
+            ).delete()
 
         # Reset the KPI to the original organisation
         case.registration.kpi.organisation = site.transfer_origin_organisation
         case.registration.kpi.save()
 
-        # Any additional responsibilities that were previously maintained before
+        # Any additional responsibilities that were previously maintained before by the target organisation
         # transfer by the target organisation must be handed back by creating new record
         if (
             site.site_is_childrens_epilepsy_surgery_centre
