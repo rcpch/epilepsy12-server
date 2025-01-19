@@ -395,6 +395,11 @@ def transfer_response(request, organisation_id, case_id, organisation_response):
     """
     POST callback from case table on click of accept/reject buttons against transfer request
     Updates associated Site instance and redirects back to case table
+
+    In a transfer, a site relating to the the requested organisation (target_organisation) has already been set as the new primary centre of care
+    This function will either accept or reject the transfer request, and update the site instance accordingly
+    If the transfer is accepted, the site instance simply ahs the active_transfer flag set to False and the transfer_origin_organisation set to None, and the KPI record is updated to the new organisation
+    If the transfer is rejected, the site instance is reset to the original organisation, and the KPI record is also reset to the original organisation
     """
 
     target_organisation = Organisation.objects.get(pk=organisation_id)
@@ -414,6 +419,19 @@ def transfer_response(request, organisation_id, case_id, organisation_response):
     )
     origin_organisation = site.transfer_origin_organisation
     if organisation_response == "reject":
+        # Reset the origial site to the original organisation
+        Site.objects.filter(
+            case=case,
+            organisation=origin_organisation,
+        ).update(
+            site_is_primary_centre_of_epilepsy_care=True,
+            site_is_actively_involved_in_epilepsy_care=True,
+        )
+
+        # Reset the KPI to the original organisation
+        case.registration.kpi.organisation = site.transfer_origin_organisation
+        case.registration.kpi.save()
+
         # Any additional responsibilities that were previously maintained before
         # transfer by the target organisation must be handed back by creating new record
         if (
@@ -421,59 +439,35 @@ def transfer_response(request, organisation_id, case_id, organisation_response):
             or site.site_is_paediatric_neurology_centre
             or site.site_is_general_paediatric_centre
         ):
-            Site.objects.create(
-                site_is_childrens_epilepsy_surgery_centre=site.site_is_childrens_epilepsy_surgery_centre,
-                site_is_paediatric_neurology_centre=site.site_is_paediatric_neurology_centre,
-                site_is_general_paediatric_centre=site.site_is_general_paediatric_centre,
-                site_is_primary_centre_of_epilepsy_care=False,
-                site_is_actively_involved_in_epilepsy_care=True,
-                case=case,
-                organisation=target_organisation,
-            )
-        # Reset the site back to original organisation
-        site.site_is_childrens_epilepsy_surgery_centre = False
-        site.site_is_paediatric_neurology_centre = False
-        site.site_is_general_paediatric_centre = False
+            # The target organisation had additional responsibilities
+            site.site_is_primary_centre_of_epilepsy_care = False
+            site.site_is_actively_involved_in_epilepsy_care = True
+            site.active_transfer = False
+            site.transfer_origin_organisation = None
+            site.transfer_request_date = None
+            site.save()
+        else:
+            # The target organisation had no additional responsibilities
+            site.delete()
+
+    elif organisation_response == "accept":
+        # Reset the transfer flags
         site.active_transfer = False
-        site.organisation = site.transfer_origin_organisation
         site.transfer_origin_organisation = None
         site.transfer_request_date = None
-        site.site_is_primary_centre_of_epilepsy_care = True
-        site.site_is_actively_involved_in_epilepsy_care = True
-
-        site.save(
-            update_fields=[
-                "site_is_childrens_epilepsy_surgery_centre",
-                "site_is_paediatric_neurology_centre",
-                "site_is_general_paediatric_centre",
-                "active_transfer",
-                "organisation",
-                "transfer_origin_organisation",
-                "transfer_request_date",
-                "site_is_primary_centre_of_epilepsy_care",
-                "site_is_actively_involved_in_epilepsy_care",
-            ]
-        )
-
-        # Reset the KPI to the original organisation
-        case.registration.kpi.organisation = site.transfer_origin_organisation
-        case.registration.kpi.save()
-
-        # if the origin lead site had other responsibilities prior to transfer, a new record
-        # would have been created in the transfer process to hold these. This record
-        # now needs deleting
+        # if the target organisation has any additional responsibilities, these will not be affected by this
+        site.save()
 
         Site.objects.filter(
             case=case,
-            organisation=site.organisation,  # this is the origin organisation
+            organisation=origin_organisation,
+            site_is_primary_centre_of_epilepsy_care=True,
+            site_is_actively_involved_in_epilepsy_care=True,
+        ).update(
+            site_is_primary_centre_of_epilepsy_care=False,
             site_is_actively_involved_in_epilepsy_care=False,
-        ).delete()
+        )
 
-    elif organisation_response == "accept":
-        site.active_transfer = False
-        site.transfer_origin_organisation = None
-        site.transfer_request_date = None
-        site.save()
         # if the original organisation has ongoing other responsibilities and a new record had to be created
         # to track these, find those records and set the active_transfer flag to False
         Site.objects.filter(
