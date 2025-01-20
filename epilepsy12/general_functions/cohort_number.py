@@ -9,10 +9,11 @@ from datetime import date
 from .date_functions import nth_tuesday_of_year
 
 
-def days_remaining_before_submission(audit_submission_date: date) -> int:
+def days_remaining_before_submission(audit_submission_date: date, current_date: date) -> int:
     if audit_submission_date:
-        remaining_dateime = audit_submission_date - date.today()
-        return remaining_dateime.days if remaining_dateime.days > 0 else 0
+        remaining = audit_submission_date - current_date
+        # submission is possible on the last day
+        return max(0, remaining.days + 1)
 
 
 def cohort_number_from_first_paediatric_assessment_date(
@@ -74,7 +75,8 @@ def dates_for_cohort(cohort: int):
     cohort_end_date = date(year=2016 + cohort + 1, month=11, day=30)
     submission_date = nth_tuesday_of_year(cohort_end_date.year + 2, n=2)
     days_remaining_til_submission = days_remaining_before_submission(
-        audit_submission_date=submission_date
+        audit_submission_date=submission_date,
+        current_date=date.today(),
     )
 
     cohort_data = {
@@ -114,7 +116,7 @@ def cohorts_and_dates(first_paediatric_assessment_date: date):
         submitting_cohort_number = None
         submitting_cohort = {}
 
-    if date.today().month >= 12 or date.today() < nth_tuesday_of_year(
+    if date.today().month >= 12 or date.today() <= nth_tuesday_of_year(
         date.today().year, n=2
     ):
         # if today is in or after December and before the second Tuesday of the year - during this period

@@ -21,12 +21,14 @@
           </h4>
         </div>
 
-        <div class="rcpch_summary_stats_row">
-          <h1 style="color: var(--rcpch_pink)">{{cohort_data.grace_cohort.days_remaining}}</h1>
-          <h2>Days remaining</h2>
-          <h3>until latest submission date</h3>
-          <h4>({{cohort_data.grace_cohort.submission_date}})</h4>
-        </div>
+        {% if cohort_data.grace_cohort.submission_date > cohort_data.today %} 
+          <div class="rcpch_summary_stats_row">
+            <h1 style="color: var(--rcpch_pink)">{{cohort_data.grace_cohort.days_remaining}}</h1>
+            <h2>Days remaining</h2>
+            <h3>until latest submission date</h3>
+            <h4>({{cohort_data.grace_cohort.submission_date}})</h4>
+          </div>
+        {% endif %}
       </div>
     </div>
 

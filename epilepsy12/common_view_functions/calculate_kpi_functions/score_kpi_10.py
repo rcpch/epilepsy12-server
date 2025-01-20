@@ -7,7 +7,10 @@ from epilepsy12.constants import KPI_SCORE
 
 
 def score_kpi_10(registration_instance, age_at_first_paediatric_assessment) -> int:
-    """10. school_individual_healthcare_plan
+    """
+    10. school_individual_healthcare_plan
+
+    Title" School Individual Health Care Plan
 
     Percentage of children and young people with epilepsy aged 5 years and above with evidence of a school individual healthcare plan by 1 year after first paediatric assessment.
 

@@ -370,7 +370,7 @@ def calculate_kpi_value_counts_queryset(
     if abstraction_level is EnumAbstractionLevel.NATIONAL:
         # NO NEED TO GROUPBY IF NATIONAL
         kpi_value_counts = KPI.objects.filter(
-            registration__id__in=filtered_cases.values_list("registration")
+            registration__id__in=filtered_cases.values_list("registration"),
         ).aggregate(**aggregate_queries)
     else:
         kpi_value_counts = (

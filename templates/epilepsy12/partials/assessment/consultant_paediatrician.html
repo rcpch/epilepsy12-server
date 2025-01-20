@@ -107,26 +107,6 @@
 
             {% endif %}
 
-            {% comment %} {% if historical_general_paediatric_sites|length > 0 %}
-
-            <div class="field">
-                    <label>General paediatric centres previously involved in care</label>
-                    {% for historical_general_paediatric_site in historical_general_paediatric_sites %}
-                        <li>{{historical_general_paediatric_site.organisation.name}}</li>
-                    {% endfor %}
-                </div>
-
-            {% else %}
-
-                <div class="field">
-
-                    <p>No general paediatric centres have previously been involved in the care of {{assessment.registration.case.first_name}} {{assessment.registration.case.surname}}</p>
-
-                </div>
-
-
-            {% endif %} {% endcomment %}
-
         </div>
 
     {% endif %}

@@ -11,7 +11,10 @@ def score_kpi_8(registration_instance, age_at_first_paediatric_assessment) -> in
     AntiEpilepsyMedicine = apps.get_model("epilepsy12", "AntiEpilepsyMedicine")
     Medicine = apps.get_model("epilepsy12", "Medicine")
 
-    """8. Sodium Valproate
+    """
+    8. sodium_valproate
+    
+    Title: Medication and Reproductive Risks
 
     Percentage of all females 12 years and above currently on valproate treatment with annual risk acknowledgement form completed
 
