@@ -6,7 +6,6 @@ import logging
 # django imports
 from django.apps import apps
 from django.conf import settings
-from django.db.models import Count, Q
 
 # third party imports
 import pandas as pd
@@ -163,6 +162,7 @@ def generate_case_counts_for_each_region_in_each_abstraction_level(
     """
 
     Case = apps.get_model("epilepsy12", "Case")
+    Organisation = apps.get_model("epilepsy12", "Organisation")
 
     # Create a new DataFrame to store the results
     df = pd.DataFrame(columns=["identifier", "name", "cases"])

@@ -18,7 +18,7 @@
                 </h5>
                 <h5 class="ui right floated header">
                   {% if registration %}
-                    {{ registration.case.first_name }} {{ registration.case.surname }} {{ registration.case.nhs_number}}
+                    {{ registration.case.first_name }} {{ registration.case.surname }} {% if registration.case.unique_reference_number is not None %}{{ registration.case.unique_reference_number }}{% else %}{{ registration.case.nhs_number  }}{% endif %}
                   {% elif case %}
                     {{ case.first_name }} {{ case.surname }} {{ case.nhs_number }} 
                   {% endif %}
