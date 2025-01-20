@@ -49,7 +49,7 @@ def load_jersey_shape_file_mapping(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("epilepsy12", "0043_alter_country_bng_e_alter_country_bng_n_and_more"),
+        ("epilepsy12", "0046_alter_country_bng_e_alter_country_bng_n_and_more"),
     ]
 
     operations = [

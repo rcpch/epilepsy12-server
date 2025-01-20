@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("epilepsy12", "0046_case_unique_reference_number_and_more"),
+        ("epilepsy12", "0049_case_unique_reference_number_and_more"),
     ]
 
     operations = [

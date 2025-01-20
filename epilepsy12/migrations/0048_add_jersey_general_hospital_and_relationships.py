@@ -82,7 +82,7 @@ def create_jersey_general_hospital(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("epilepsy12", "0044_add_jersey_boundaries_to_country_remap_identifier"),
+        ("epilepsy12", "0047_add_jersey_boundaries_to_country_remap_identifier"),
     ]
 
     operations = [

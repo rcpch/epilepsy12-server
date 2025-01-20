@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("epilepsy12", "0042_set_input_achieved_true"),
+        ("epilepsy12", "0045_alter_kpi_assessment_of_mental_health_issues_and_more"),
     ]
 
     operations = [
