@@ -141,8 +141,6 @@ def test_registration_days_remaining_before_submission(
     Calculated as submission date - current date, return number of days left days as an int.
 
     Test patches "today" - patches the example Registration instance's `.get_current_date`'s return value to always return 30 Nov 2022.
-
-    NOTE: if `audit_submission_date` is before today, returns 0.
     """
 
     # submission date = 9/1/24, today = 30/11/22 405 days after today (30/11/22)
@@ -151,7 +149,7 @@ def test_registration_days_remaining_before_submission(
             2022, 1, 10
         )  # cohort 5, submission date 9/1/24
     ).registration
-    assert registration.days_remaining_before_submission == 405
+    assert registration.days_remaining_before_submission == 406
 
     # submission date = 2023-01-10, 41 days after today
     registration = e12_case_factory(
@@ -159,7 +157,37 @@ def test_registration_days_remaining_before_submission(
             2021, 1, 1
         )  # cohort 4, submission 10/1/2023
     ).registration
-    assert registration.days_remaining_before_submission == 41
+    assert registration.days_remaining_before_submission == 42
+
+
+@patch.object(Registration, "get_current_date", return_value=date(2025, 1, 30))
+@pytest.mark.django_db
+def test_registration_days_remaining_before_submission_after_submission_closed(
+    mocked_get_current_date,
+    e12_case_factory,
+):
+    # Cohort 6: 1 December 2022 - 30 November 2023: submission 14 January 2025
+    registration = e12_case_factory(
+        registration__first_paediatric_assessment_date=date(2023, 1, 1)
+    ).registration
+
+    # clamped to zero
+    assert registration.days_remaining_before_submission == 0
+
+
+@patch.object(Registration, "get_current_date", return_value=date(2025, 1, 14))
+@pytest.mark.django_db
+def test_registration_days_remaining_before_submission_on_last_day_of_grace_period(
+    mocked_get_current_date,
+    e12_case_factory,
+):
+    # Cohort 6: 1 December 2022 - 30 November 2023: submission 14 January 2025
+    registration = e12_case_factory(
+        registration__first_paediatric_assessment_date=date(2023, 1, 1)
+    ).registration
+
+    # clamped to zero
+    assert registration.days_remaining_before_submission == 1
 
 
 @pytest.mark.xfail

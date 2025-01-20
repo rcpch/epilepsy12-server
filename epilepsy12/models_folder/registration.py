@@ -20,6 +20,7 @@ from .time_and_user_abstract_base_classes import *
 from ..general_functions import (
     dates_for_cohort,
     cohort_number_from_first_paediatric_assessment_date,
+    days_remaining_before_submission
 )
 from ..validators import not_in_the_future_validator
 
@@ -79,13 +80,7 @@ class Registration(
 
     @property
     def days_remaining_before_submission(self) -> int:
-        """Returns remaining days between current datetime and submission datetime, minimum value 0."""
-        if self.audit_submission_date:
-            remaining_datetime = self.audit_submission_date - self.get_current_date()
-            if remaining_datetime.days is None or remaining_datetime.days < 0:
-                return 0
-            else:
-                return remaining_datetime.days
+        return days_remaining_before_submission(self.audit_submission_date, self.get_current_date())
 
     # relationships
     case = models.OneToOneField("epilepsy12.Case", on_delete=models.PROTECT, null=True)

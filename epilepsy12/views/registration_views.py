@@ -600,19 +600,16 @@ def first_paediatric_assessment_date(request, case_id):
     case = Case.objects.get(pk=case_id)
     registration = Registration.objects.filter(case=case).get()
 
-    # TODO MRB: put back after hotfix
-    # if request.user.is_superuser or request.user.is_rcpch_audit_team_member:
-    earliest_allowable_date = case.date_of_birth
-    # else:
-    #     # registering a new child in the audit by a clinical team
-    #     # sets the minimum allowable date to the currently submitting cohort start date or the start of the previous cohort if it is still within its grace period
-    #     cohort_dates = cohorts_and_dates(first_paediatric_assessment_date=date.today())
-    #     if cohort_dates["within_grace_period"]:
-    #         earliest_allowable_date = cohort_dates["grace_cohort"]["cohort_start_date"]
-    #     else:
-    #         earliest_allowable_date = cohort_dates["submitting_cohort"][
-    #             "cohort_start_date"
-    #         ]
+    if request.user.is_superuser or request.user.is_rcpch_audit_team_member:
+        earliest_allowable_date = case.date_of_birth
+    else:
+        # registering a new child in the audit by a clinical team
+        # sets the minimum allowable date to the currently submitting cohort start date or the start of the previous cohort if it is still within its grace period
+        cohort_dates = cohorts_and_dates(first_paediatric_assessment_date=date.today())
+        if cohort_dates["within_grace_period"]:
+            earliest_allowable_date = cohort_dates["grace_cohort"]["cohort_start_date"]
+        else:
+            earliest_allowable_date = cohort_dates["submitting_cohort_start_date"]
 
     try:
         error_message = None
