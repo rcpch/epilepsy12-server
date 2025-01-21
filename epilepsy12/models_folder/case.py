@@ -165,7 +165,13 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
         return stringify_time_elapsed(self.date_of_birth, today_date)
     
     def editable(self):
-        return not self.locked and (self.registration and self.registration.days_remaining_before_submission > 0)
+        if self.locked:
+            return False
+        
+        if not hasattr(self, "registration"):
+            return True
+        
+        return self.registration.days_remaining_before_submission > 0
 
     def save(self, *args, **kwargs) -> None:
         # calculate the index of multiple deprivation quintile if the postcode is present
