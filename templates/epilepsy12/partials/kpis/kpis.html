@@ -32,6 +32,7 @@ Currently the aggregation queries are run with every page load.
                             hx-get="{% url 'selected_trust_kpis' organisation_id=organisation.pk access='private' %}"
                             name="refresh"
                             hx-trigger="click"
+                            {% if cohort_number != submitting_cohort_number %}disabled{% endif %}
                             >
                             Refresh
                             <i class="htmx-indicator spinner loading icon"></i>

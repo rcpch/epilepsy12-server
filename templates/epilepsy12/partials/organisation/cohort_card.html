@@ -28,6 +28,10 @@
             <h3>until latest submission date</h3>
             <h4>({{cohort_data.grace_cohort.submission_date}})</h4>
           </div>
+        {% elif cohort_number != cohort_data.grace_cohort.cohort %}
+          <div class="rcpch_summary_stats_row">
+            <a class="ui rcpch_positive button" href="?cohort={{cohort_data.grace_cohort.cohort}}">View dashboard</a>
+          </div>
         {% endif %}
       </div>
     </div>
@@ -63,6 +67,9 @@
           <h2>Days remaining</h2>
           <h3>until latest submission date</h3>
           <h4>({{cohort_data.submitting_cohort_submission_date}})</h4>
+          {% if cohort_number != cohort_data.submitting_cohort %}
+            <a class="ui rcpch_positive button" href="?cohort={{cohort_data.submitting_cohort}}">View dashboard</a>
+          {% endif %}
         </div>
       </div>
     </div>

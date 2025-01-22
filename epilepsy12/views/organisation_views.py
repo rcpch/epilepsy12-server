@@ -76,14 +76,21 @@ def selected_organisation_summary(request, organisation_id):
 
     template_name = "epilepsy12/organisation.html"
 
-    # get submitting_cohort number - in future will be selectable
+    # Dates for the closed, data collection ongoing and actively recruiting cohorts
     cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
 
-    cohort_number = (
-        cohort_data["grace_cohort"]["cohort"]
-        if cohort_data["within_grace_period"]
-        else cohort_data["submitting_cohort"]
-    )
+    # Where dashboard data is filtered by cohort, which cohort?
+    # Users still want to see dashboard data even when data collection is complete.
+    requested_cohort_number = request.GET.get("cohort")
+    
+    if requested_cohort_number:
+        cohort_number = int(requested_cohort_number)
+    else:
+        cohort_number = (
+            cohort_data["grace_cohort"]["cohort"]
+            if cohort_data["within_grace_period"]
+            else cohort_data["submitting_cohort"]
+        )
 
     # thes are all registered cases for the current cohort at the selected organisation to be plotted in the map
     cases_to_plot = filter_all_registered_cases_by_active_lead_site_and_cohort_and_level_of_abstraction(
@@ -324,12 +331,20 @@ def selected_trust_kpis(request, organisation_id, access):
     """
 
     # Get all relevant data for submission cohort
+    requested_cohort_number = request.GET.get("cohort")
+
     cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
-    cohort_number = (
+    submitting_cohort_number = (
         cohort_data["grace_cohort"]["cohort"]
         if cohort_data["within_grace_period"]
         else cohort_data["submitting_cohort"]
     )
+
+    if requested_cohort_number:
+        cohort_number = int(requested_cohort_number)
+    else:
+        cohort_number = submitting_cohort_number
+    
     organisation = Organisation.objects.get(pk=organisation_id)
 
     if logged_in_user_may_access_this_organisation(request.user, organisation):
@@ -384,6 +399,7 @@ def selected_trust_kpis(request, organisation_id, access):
         "last_published_date": last_published_date,
         "publish_success": False,
         "cohort_number": cohort_number,
+        "submitting_cohort_number": submitting_cohort_number
     }
 
     return render(
@@ -458,12 +474,18 @@ def selected_trust_select_kpi(request, organisation_id):
         # on page load there may be no kpi_name - default to paediatrician_with_experise_in_epilepsy
         kpi_name = INDIVIDUAL_KPI_MEASURES[0][0]
     kpi_name_title_case = value_from_key(key=kpi_name, choices=INDIVIDUAL_KPI_MEASURES)
-    cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
-    cohort_number = (
-        cohort_data["grace_cohort"]["cohort"]
-        if cohort_data["within_grace_period"]
-        else cohort_data["submitting_cohort"]
-    )
+    
+    requested_cohort_number = request.POST.get("cohort")
+
+    if requested_cohort_number:
+        cohort_number = int(requested_cohort_number)
+    else:
+        cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
+        cohort_number = (
+            cohort_data["grace_cohort"]["cohort"]
+            if cohort_data["within_grace_period"]
+            else cohort_data["submitting_cohort"]
+        )
 
     all_data = get_all_kpi_aggregation_data_for_view(
         organisation=organisation, cohort=cohort_number, open_access=False
