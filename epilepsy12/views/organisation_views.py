@@ -333,15 +333,17 @@ def selected_trust_kpis(request, organisation_id, access):
     # Get all relevant data for submission cohort
     requested_cohort_number = request.GET.get("cohort")
 
+    cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
+    submitting_cohort_number = (
+        cohort_data["grace_cohort"]["cohort"]
+        if cohort_data["within_grace_period"]
+        else cohort_data["submitting_cohort"]
+    )
+
     if requested_cohort_number:
         cohort_number = int(requested_cohort_number)
     else:
-        cohort_data = cohorts_and_dates(first_paediatric_assessment_date=date.today())
-        cohort_number = (
-            cohort_data["grace_cohort"]["cohort"]
-            if cohort_data["within_grace_period"]
-            else cohort_data["submitting_cohort"]
-        )
+        cohort_number = submitting_cohort_number
     
     organisation = Organisation.objects.get(pk=organisation_id)
 
@@ -397,6 +399,7 @@ def selected_trust_kpis(request, organisation_id, access):
         "last_published_date": last_published_date,
         "publish_success": False,
         "cohort_number": cohort_number,
+        "submitting_cohort_number": submitting_cohort_number
     }
 
     return render(
