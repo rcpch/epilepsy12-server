@@ -1622,8 +1622,6 @@ def close_comorbidity(request, comorbidity_id):
     comorbidity = Comorbidity.objects.get(pk=comorbidity_id)
     multiaxial_diagnosis = comorbidity.multiaxial_diagnosis
 
-    print()
-
     # if all the fields are none this was not completed - delete the record
     if (
         completed_fields(comorbidity) == 0

@@ -366,6 +366,7 @@
     [x] Assert user can change 'has_a_valproate_annual_risk_acknowledgement_form_been_completed' to False
 
 """
+
 # Python imports
 from datetime import date
 from dateutil import relativedelta
@@ -385,7 +386,9 @@ from epilepsy12.tests.UserDataClasses import (
 from epilepsy12.tests.factories import (
     E12CaseFactory,
 )
-from epilepsy12.tests.view_tests.permissions_tests.perm_tests_utils import twofactor_signin
+from epilepsy12.tests.view_tests.permissions_tests.perm_tests_utils import (
+    twofactor_signin,
+)
 
 # E12 imports
 from epilepsy12.models import (
@@ -864,7 +867,6 @@ def test_user_updates_toggles_true_success(client):
     client.force_login(test_user)
 
     for index, url in enumerate(TOGGLES):
-        print(url.get("field_name"))
         model = get_model_from_model(
             case=CASE_FROM_TEST_USER_ORGANISATION, model_name=url.get("model")
         )
@@ -1239,7 +1241,7 @@ def test_age_at_registration_cannot_be_gt_24yo(client, GOSH):
     )
 
     client.force_login(test_user)
-    
+
     # 2fa enable
     twofactor_signin(client, test_user)
 

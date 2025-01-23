@@ -634,6 +634,7 @@ def get_all_kpi_aggregation_data_for_view(
     updates the relevant AbstractionModel and returns the KPI model as a dict.
 
     """
+
     ALL_DATA = {}
     for enum_abstraction_level in EnumAbstractionLevel:
         # For the given abstraction, get the {ABSTRACTION}KPIAggregation model

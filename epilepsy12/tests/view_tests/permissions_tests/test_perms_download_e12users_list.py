@@ -18,7 +18,9 @@ from epilepsy12.models import (
     Epilepsy12User,
     Organisation,
 )
-from epilepsy12.tests.view_tests.permissions_tests.perm_tests_utils import twofactor_signin
+from epilepsy12.tests.view_tests.permissions_tests.perm_tests_utils import (
+    twofactor_signin,
+)
 
 
 @pytest.mark.django_db
@@ -52,8 +54,6 @@ def test_download_button_access(
             )
         )
         if test_user.first_name.endswith(test_user_rcpch_audit_team_data.role_str):
-            
-            print(response)
             assert (
                 response["Content-Disposition"]
                 == 'attachment; filename="epilepsy12users.csv"'

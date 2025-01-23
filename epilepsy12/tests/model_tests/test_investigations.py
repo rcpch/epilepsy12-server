@@ -147,8 +147,6 @@ def test_validation_request_or_performed_in_future(
     # assign performed date to 2 months after today
     performed_date = date(2023, 9, 15) + relativedelta(months=2)
 
-    print(Investigations.get_current_date())
-
     with pytest.raises(ValidationError):
         # try to save an investigation whose request date is after today
         case = e12_case_factory(
