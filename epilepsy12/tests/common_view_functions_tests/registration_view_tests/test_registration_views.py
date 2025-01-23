@@ -11,17 +11,12 @@ from dateutil.relativedelta import relativedelta
 
 # E12 imports
 from epilepsy12.models import Organisation, Epilepsy12User, Site, KPI
-from epilepsy12.common_view_functions import (
-)
+
 from epilepsy12.tests.view_tests.permissions_tests.perm_tests_utils import (
     twofactor_signin,
 )
 from epilepsy12.tests.UserDataClasses import (
     test_user_rcpch_audit_team_data,
-)
-
-from epilepsy12.constants import (
-    EnumAbstractionLevel,
 )
 
 
