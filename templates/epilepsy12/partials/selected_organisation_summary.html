@@ -376,6 +376,9 @@
         <div class="sixteen wide right fluid column">
             <div class="ui three stackable cards">
 
+                {% if selected_organisation.country.name != "Jersey" %}
+                
+                <!-- Trust of Local Health Board tile -->
                 <div class="ui rcpch_light_blue fluid card">
                     <div class="content">
                         <!-- ENGLISH ORG -->
@@ -393,17 +396,17 @@
                             </h3>
                             
                         <!-- WELSH ORG -->
-                        {% else %}
+                        {% elif selected_organisation.local_health_board %}
                             <h3>Local Health Board</h3>
                         {% endif %}
                     </div>
                     <div>
-                        {% if selected_organisation.trust %}
+                        {% if  selected_organisation.trust %}
                         <div 
                             id="icb_map" 
                             style="width:100%;height:600px;"
                         ></div>
-                        {% else %}
+                        {% elif selected_organisation.local_health_board %}
                         <div 
                             id="lhb_map" 
                             style="width:100%;height:600px;"
@@ -415,6 +418,7 @@
                     </div>
                 </div>
 
+                <!-- NHS England Region tile -->
                 {% if selected_organisation.trust %}
                 <div class="ui rcpch_light_blue fluid card">
                     <div class="content">
@@ -439,6 +443,8 @@
                 {% else %}
                 <!-- leave a blank space in welsh orgs -->
                 {% endif %}
+
+            {% endif %}
 
                 <div class="ui rcpch_light_blue fluid card">
                     <div class="content">

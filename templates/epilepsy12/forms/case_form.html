@@ -65,12 +65,21 @@
 
   </div>
 
-  <div class="field">
-    <label>NHS Number</label>
-    {{form.nhs_number}} {% if form.nhs_number.errors %}
-    <div class="ui pointing red basic label">{{form.nhs_number.errors}}</div>
-    {% endif %}
-  </div>
+  {% if organisation.country.boundary_identifier == "JEY" %}
+    <div class="field">
+      <label>Unique Reference Number</label>
+      {{form.unique_reference_number}} {% if form.unique_reference_number.errors %}
+      <div class="ui pointing red basic label">{{form.unique_reference_number.errors}}</div>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="field">
+      <label>NHS Number</label>
+      {{form.nhs_number}} {% if form.nhs_number.errors %}
+      <div class="ui pointing red basic label">{{form.nhs_number.errors}}</div>
+      {% endif %}
+    </div>
+  {% endif %}
 
   <div class="field">
     <label>Ethnicity</label>

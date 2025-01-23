@@ -64,7 +64,20 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
         blank=True,
     )
     nhs_number = models.CharField(  # the NHS number for England and Wales
-        "NHS Number", unique=True, blank=True, null=True, max_length=10
+        "NHS Number",
+        unique=True,
+        blank=True,
+        null=True,
+        max_length=10,
+        help_text="This is the NHS number for England and Wales. It is used to identify the patient in the audit.",
+    )
+    unique_reference_number = models.CharField(
+        "Unique Reference Number (URN)",
+        unique=True,
+        blank=True,
+        null=True,
+        max_length=20,
+        help_text="This is a unique reference number for Jersey patients. It is used to identify the patient in the audit.",
     )
     first_name = CharField(
         "First name",
@@ -207,6 +220,12 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
                 Both are included here and stored in the model, as the shape files for the UK health boundaries are produced as BNG, rather than WGS84.
                 """
                 try:
+                    # If the postcode begins with JE, it is a Jersey postcode. Skip the coordinates lookup.
+                    if self.postcode.lower().startswith("je"):
+                        self.location_wgs84 = None
+                        self.location_bng = None
+                        return super().save(*args, **kwargs)
+
                     # Fetch the coordinates (WGS 84)
                     lon, lat = coordinates_for_postcode(postcode=self.postcode)
 
@@ -227,6 +246,7 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
                     logger.exception(
                         f"Cannot get longitude and latitude for {self.postcode}: {error}"
                     )
+                    pass
             else:
                 # if the IMD quintile has previously been added and postcode now unknown, set
                 # index_of_multiple_deprivation_quintile back to None
@@ -247,6 +267,7 @@ class Case(TimeStampAbstractBaseClass, UserStampAbstractBaseClass, HelpTextMixin
     class Meta:
         verbose_name = "Patient"
         verbose_name_plural = "Patients"
+        unique_together = ["nhs_number", "unique_reference_number"]
         # custom permissions for Case class
         permissions = [
             CAN_LOCK_CHILD_CASE_DATA_FROM_EDITING,

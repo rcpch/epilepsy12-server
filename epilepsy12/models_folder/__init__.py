@@ -64,7 +64,6 @@ from .semiology_keyword import Keyword
 
 from .entities.country import Country
 from .entities.london_borough import LondonBorough
-
 from .entities.open_uk_network import OPENUKNetwork
 from .entities.integrated_care_board import IntegratedCareBoard
 from .entities.nhs_england_region import NHSEnglandRegion
@@ -72,5 +71,8 @@ from .entities.organisation import Organisation
 from .entities.trust import Trust
 from .entities.local_health_board import LocalHealthBoard
 
-from .organisational_audit import OrganisationalAuditSubmissionPeriod, OrganisationalAuditSubmission
+from .organisational_audit import (
+    OrganisationalAuditSubmissionPeriod,
+    OrganisationalAuditSubmission,
+)
 from .banner import Banner

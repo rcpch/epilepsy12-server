@@ -11,7 +11,7 @@ from epilepsy12.models import Case
 from .E12SiteFactory import E12SiteFactory
 from .E12RegistrationFactory import E12RegistrationFactory
 from epilepsy12.constants import SEX_TYPE, DEPRIVATION_QUINTILES
-import nhs_number
+import nhs_number as nhs_number_package
 
 
 class E12CaseFactory(factory.django.DjangoModelFactory):
@@ -68,13 +68,30 @@ class E12CaseFactory(factory.django.DjangoModelFactory):
             registration=None,
         )
 
+        is_jersey = factory.Trait(
+            nhs_number=None,
+            unique_reference_number=factory.Sequence(lambda n: f"JERSEY-{n}"),
+        )
+
+    @factory.lazy_attribute
+    def unique_reference_number(self):
+        """Returns a unique reference number which has not been used in the db yet."""
+        not_found_unique_ref_num = True
+
+        while not_found_unique_ref_num:
+            candidate_num = f"JEY-{nhs_number_package.generate()[0]}"
+
+            if not Case.objects.filter(unique_reference_number=candidate_num).exists():
+                not_found_unique_ref_num = False
+        return candidate_num
+
     @factory.lazy_attribute
     def nhs_number(self):
         """Returns a unique NHS number which has not been used in the db yet."""
         not_found_unique_nhs_num = True
 
         while not_found_unique_nhs_num:
-            candidate_num = nhs_number.generate()[0]
+            candidate_num = nhs_number_package.generate()[0]
 
             if not Case.objects.filter(nhs_number=candidate_num).exists():
                 not_found_unique_nhs_num = False

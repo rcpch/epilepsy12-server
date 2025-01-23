@@ -519,7 +519,6 @@ def test_completed_fields_assessment_random_fields(e12_case_factory, GOSH):
     ANSWER = random.choice([None, True])
     factory_attributes.update({KEY_NAME: ANSWER})
     if ANSWER is not None:
-        print(f"Adding 1 because {KEY_NAME} is not None")
         EXPECTED_SCORE += 1
 
     # All other bool fields have dependent date fields

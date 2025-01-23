@@ -51,7 +51,7 @@ Currently the aggregation queries are run with every page load.
 
                     <h3>Clinical Team</h3>
                     <table class='ui rcpch stackable small table kpi_table'>
-                        {% include './kpi_table_head.html' with kpi_head_id=1 %}
+                        {% include './kpi_table_head.html' with kpi_head_id=1 country=organisation.country %}
                         <tbody>
                         {% comment %}
                         [
@@ -233,7 +233,7 @@ Currently the aggregation queries are run with every page load.
                     <h3>Investigations</h3>
                     {% comment %} [ECG, MRI,] {% endcomment %}
                     <table class='ui rcpch small table'>
-                        {% include './kpi_table_head.html' with kpi_head_id=2  %}
+                        {% include './kpi_table_head.html' with kpi_head_id=2 country=organisation.country %}
                         <tbody>
 
                         {% for kpi_name in kpi_names_list|slice:"4:6" %}
@@ -295,7 +295,7 @@ Currently the aggregation queries are run with every page load.
                     <h3>Mental Health</h3>
                     {% comment %} ['assessment_of_mental_health_issues', 'mental_health_support'] {% endcomment %}
                     <table class='ui rcpch small table'>
-                        {% include './kpi_table_head.html' with kpi_head_id=3  %}
+                        {% include './kpi_table_head.html' with country=organisation.country kpi_head_id=3  %}
                         <tbody>
 
                         {% for kpi_name in kpi_names_list|slice:"6:8" %}
@@ -357,7 +357,7 @@ Currently the aggregation queries are run with every page load.
                     <h3>Medication</h3>
                     {% comment %} [Sodium valproate] {% endcomment %}
                     <table class='ui rcpch small table'>
-                        {% include './kpi_table_head.html' with kpi_head_id=4  %}
+                        {% include './kpi_table_head.html' with  country=organisation.country kpi_head_id=4  %}
                         <tbody>
                         {% comment %}  {% endcomment %}
                         {% for kpi_name in kpi_names_list|slice:"8:9" %}
@@ -419,7 +419,7 @@ Currently the aggregation queries are run with every page load.
                     <h3>Care Planning</h3>
                     {% comment %} ['comprehensive_care_planning_agreement', 'patient_held_individualised_epilepsy_document', 'patient_carer_parent_agreement_to_the_care_planning', 'care_planning_has_been_updated_when_necessary', 'comprehensive_care_planning_content', 'parental_prolonged_seizures_care_plan', 'water_safety', 'first_aid', 'general_participation_and_risk', 'sudep', 'service_contact_details', 'school_individual_healthcare_plan'] {% endcomment %}
                     <table class='ui rcpch small table'>
-                        {% include './kpi_table_head.html' with kpi_head_id=5 %}
+                        {% include './kpi_table_head.html' with country=organisation.country kpi_head_id=5 %}
                         <tbody>
                             {% comment %} comprehensive_care_planning_agreement {% endcomment %}
                             <tr class="subcategory-header">

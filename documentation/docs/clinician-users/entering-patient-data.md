@@ -26,7 +26,7 @@ The NHS number is checked against the NHS number [checksum](https://www.datadict
 
 ### Transferring a patient between centres
 
-Only the [**Lead Clinician**](../user-group-permissions/#lead-clinician) has permissions to transfer children to another centre.
+Only the [**Lead Clinician**](user-group-permissions.md#lead-clinician) has permissions to transfer children to another centre.
 
 The steps to do this for the lead clinician in Organisation A
 

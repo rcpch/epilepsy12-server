@@ -1,11 +1,11 @@
 # python imports
 from datetime import date
 import json
+import logging
 
 # django imports
 from django.apps import apps
 from django.conf import settings
-from django.db.models import Count, Q
 
 # third party imports
 import pandas as pd
@@ -25,6 +25,8 @@ from ..constants import (
 )
 from .tiles_for_region import return_tile_for_region
 
+logger = logging.getLogger(__name__)
+
 
 def generate_case_count_choropleth_map(
     properties, organisation, abstraction_level, cohort
@@ -35,7 +37,9 @@ def generate_case_count_choropleth_map(
     """
     px.set_mapbox_access_token(settings.MAPBOX_API_KEY)
 
-    region_tile = region_tile_for_abstraction_level(abstraction_level=abstraction_level)
+    region_tile = region_tile_for_abstraction_level(
+        abstraction_level=abstraction_level, organisation=organisation
+    )
 
     geojson_data = json.loads(region_tile)
     features = geojson_data["features"]
@@ -111,9 +115,10 @@ def generate_case_count_choropleth_map(
     else:
         identifier = None
 
-    # Highlight the region of the organisation by colouring the region boudary in a pink colour
+    # Highlight the region of the organisation by colouring the region boundary in a pink colour
     organisation_region = getattr(organisation, identifier)
     organisation_region_identifier = getattr(organisation_region, properties)
+
     highlighted_region = dataframe[
         dataframe["identifier"] == organisation_region_identifier
     ]
@@ -157,6 +162,7 @@ def generate_case_counts_for_each_region_in_each_abstraction_level(
     """
 
     Case = apps.get_model("epilepsy12", "Case")
+    Organisation = apps.get_model("epilepsy12", "Organisation")
 
     # Create a new DataFrame to store the results
     df = pd.DataFrame(columns=["identifier", "name", "cases"])
@@ -276,7 +282,9 @@ def all_organisations_within_a_level_of_abstraction(
     return level_abstraction_organisations
 
 
-def region_tile_for_abstraction_level(abstraction_level: EnumAbstractionLevel):
+def region_tile_for_abstraction_level(
+    abstraction_level: EnumAbstractionLevel, organisation
+):
     """
     Returns the geojson tile for a given level of abstraction
     """
@@ -290,7 +298,7 @@ def region_tile_for_abstraction_level(abstraction_level: EnumAbstractionLevel):
     elif abstraction_level == EnumAbstractionLevel.NHS_ENGLAND_REGION:
         region_tile = return_tile_for_region("nhs_england_region")
     elif abstraction_level == EnumAbstractionLevel.COUNTRY:
-        region_tile = return_tile_for_region("country")
+        region_tile = return_tile_for_region("country", organisation)
     else:  # pragma: no cover
         raise ValueError("Invalid abstraction level")
 

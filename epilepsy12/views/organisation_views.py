@@ -112,6 +112,7 @@ def selected_organisation_summary(request, organisation_id):
         )
     )
 
+    # differentiate between England and Wales
     if selected_organisation.country.boundary_identifier == "W92000004":  # Wales
         abstraction_level = "local_health_board"
         # generate choropleth map of case counts for each level of abstraction
@@ -123,19 +124,23 @@ def selected_organisation_summary(request, organisation_id):
         )
     else:
         # generate choropleth map of case counts for each level of abstraction
-        abstraction_level = "trust"
-        icb_heatmap = generate_case_count_choropleth_map(
-            properties="ods_code",
-            abstraction_level=EnumAbstractionLevel.ICB,
-            organisation=selected_organisation,
-            cohort=cohort_number,
-        )
-        nhsregion_heatmap = generate_case_count_choropleth_map(
-            properties="region_code",
-            abstraction_level=EnumAbstractionLevel.NHS_ENGLAND_REGION,
-            organisation=selected_organisation,
-            cohort=cohort_number,
-        )
+        if selected_organisation.ods_code == "RGT1W":
+            # Jersey is a special case and although is mapped to England, is in the Channel Islands and has no ICB, NHS Region or LHB
+            abstraction_level = "trust"
+        else:
+            abstraction_level = "trust"
+            icb_heatmap = generate_case_count_choropleth_map(
+                properties="ods_code",
+                abstraction_level=EnumAbstractionLevel.ICB,
+                organisation=selected_organisation,
+                cohort=cohort_number,
+            )
+            nhsregion_heatmap = generate_case_count_choropleth_map(
+                properties="region_code",
+                abstraction_level=EnumAbstractionLevel.NHS_ENGLAND_REGION,
+                organisation=selected_organisation,
+                cohort=cohort_number,
+            )
 
     country_heatmap = generate_case_count_choropleth_map(
         properties="boundary_identifier",
@@ -153,15 +158,6 @@ def selected_organisation_summary(request, organisation_id):
             abstraction_level="organisation",
         ).count()
     )
-    # query to return all completed E12 cases in the current cohort in this organisation trust
-    count_of_current_cohort_registered_completed_cases_in_this_trust = (
-        all_registered_cases_for_cohort_and_abstraction_level(
-            organisation_instance=selected_organisation,
-            cohort=cohort_number,
-            case_complete=True,
-            abstraction_level=abstraction_level,
-        ).count()
-    )
     # query to return all cases (including incomplete) registered in the current cohort at this organisation
     count_of_all_current_cohort_registered_cases_in_this_organisation = (
         all_registered_cases_for_cohort_and_abstraction_level(
@@ -169,6 +165,16 @@ def selected_organisation_summary(request, organisation_id):
             cohort=cohort_number,
             case_complete=False,
             abstraction_level="organisation",
+        ).count()
+    )
+
+    # query to return all completed E12 cases in the current cohort in this organisation trust
+    count_of_current_cohort_registered_completed_cases_in_this_trust = (
+        all_registered_cases_for_cohort_and_abstraction_level(
+            organisation_instance=selected_organisation,
+            cohort=cohort_number,
+            case_complete=True,
+            abstraction_level=abstraction_level,
         ).count()
     )
     # query to return all cases (including incomplete) registered in the current cohort at this organisation trust
@@ -267,9 +273,15 @@ def selected_organisation_summary(request, organisation_id):
         context["icb_heatmap"] = None
         context["nhsregion_heatmap"] = None
     else:
-        context["lhb_heatmap"] = None
-        context["icb_heatmap"] = icb_heatmap
-        context["nhsregion_heatmap"] = nhsregion_heatmap
+        if selected_organisation.ods_code == "RGT1W":
+            # Jersey is a special case as it is in the Channel Islands and has no ICB, NHS Region or LHB
+            context["trust_heatmap"] = None
+            context["icb_heatmap"] = None
+            context["nhsregion_heatmap"] = None
+        else:
+            context["lhb_heatmap"] = None
+            context["icb_heatmap"] = icb_heatmap
+            context["nhsregion_heatmap"] = nhsregion_heatmap
 
     return render(
         request=request,

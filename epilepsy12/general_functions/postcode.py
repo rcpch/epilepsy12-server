@@ -1,5 +1,7 @@
 import requests
 import logging
+from random import randint
+import re
 
 from django.conf import settings
 from ..constants import UNKNOWN_POSTCODES_NO_SPACES
@@ -8,9 +10,11 @@ from ..constants import UNKNOWN_POSTCODES_NO_SPACES
 logger = logging.getLogger(__name__)
 
 
-def is_valid_postcode(postcode: str) -> bool:
+def is_valid_postcode(postcode: str, is_jersey=False) -> bool:
     """
-    Returns True if postcode valid.
+    Returns True if postcode valid. False otherwise.
+    If is_jersey is True, the postcode is validated against the Jersey postcode format - this is less
+    rigorous than the API validation but is necessary since the API does not support Jersey postcodes.
     """
 
     # convert to upper case and remove spaces
@@ -18,6 +22,9 @@ def is_valid_postcode(postcode: str) -> bool:
     # look for unknown postcodes
     if formatted in UNKNOWN_POSTCODES_NO_SPACES:
         return True
+
+    if is_jersey:
+        return validate_jersey_postcode(value=postcode)
 
     # check against API
     url = f"{settings.POSTCODE_API_BASE_URL}/postcodes/{postcode}"
@@ -43,9 +50,22 @@ def is_valid_postcode(postcode: str) -> bool:
     return True
 
 
+def validate_jersey_postcode(value):
+    """
+    Validates if the given value matches the Jersey postcode format (JE# #AA or JE###AA without spaces).
+    """
+    value = value.upper().replace(" ", "")  # Convert to uppercase and remove all spaces
+    pattern = (
+        r"^JE\d{1,2}\d[ABD-HJLNP-UW-Z]{2}$"  # Regex for Jersey postcodes without spaces
+    )
+    if not re.match(pattern, value):
+        return False
+    return True
+
+
 def coordinates_for_postcode(postcode: str) -> bool:
     """
-    Returns longitude and latitude for a valide postcode.
+    Returns longitude and latitude for a valid postcode.
     """
 
     # convert to upper case and remove spaces
@@ -71,8 +91,71 @@ def coordinates_for_postcode(postcode: str) -> bool:
     return None
 
 
-def return_random_postcode(country_boundary_identifier: str):
-    """Returns random postcode (str) inside country_boundary_identifier or `None` if invalid."""
+def return_random_postcode(
+    country_boundary_identifier: str, is_jersey: bool = False
+) -> str:
+    """
+    Returns random postcode (str) inside country_boundary_identifier or `None` if invalid.
+
+    Also accepts a boolean `is_jersey` to determine if the country is Jersey. In these circumstances the postcode
+    will be randomly chosen from a predefined list of Jersey postcodes since the API does not support Jersey postcodes.
+    """
+    JERSEY_POSTCODES = [
+        "JE1 1AA",
+        "JE1 1AB",
+        "JE1 2BA",
+        "JE2 3CD",
+        "JE2 4EF",
+        "JE3 5GH",
+        "JE3 5IJ",
+        "JE3 6KL",
+        "JE3 7MN",
+        "JE4 8OP",
+        "JE4 8QR",
+        "JE4 9ST",
+        "JE1 3UV",
+        "JE2 1WX",
+        "JE2 2YZ",
+        "JE3 3AA",
+        "JE3 4BB",
+        "JE3 5CC",
+        "JE3 6DD",
+        "JE4 7EE",
+        "JE4 8FF",
+        "JE1 1GG",
+        "JE1 2HH",
+        "JE1 3JJ",
+        "JE2 4KK",
+        "JE2 5LL",
+        "JE2 6MM",
+        "JE3 7NN",
+        "JE3 8OO",
+        "JE4 9PP",
+        "JE1 4QQ",
+        "JE1 5RR",
+        "JE1 6SS",
+        "JE2 7TT",
+        "JE2 8UU",
+        "JE3 9VV",
+        "JE4 1WW",
+        "JE4 2XX",
+        "JE4 3YY",
+        "JE4 4ZZ",
+        "JE1 7AA",
+        "JE1 8BB",
+        "JE2 9CC",
+        "JE2 1DD",
+        "JE3 2EE",
+        "JE3 3FF",
+        "JE3 4GG",
+        "JE4 5HH",
+        "JE4 6JJ",
+        "JE4 7KK",
+    ]
+
+    if is_jersey:
+        return JERSEY_POSTCODES[randint(0, len(JERSEY_POSTCODES) - 1)]
+
     url = f"{settings.POSTCODE_API_BASE_URL}/areas/{country_boundary_identifier}"
 
     response = requests.get(url=url)
@@ -84,3 +167,6 @@ def return_random_postcode(country_boundary_identifier: str):
     return response.json()["data"]["relationships"]["example_postcodes"]["data"][0][
         "id"
     ].replace(" ", "")
+
+
+0

@@ -541,10 +541,6 @@ def test_accept_registration_transfer_response_previously_involved(
     assert kch_site.case == case, "KCH is still historically associated with the case"
 
     # GOSH is now the primary site of care
-    for filter_site in Site.objects.filter(organisation=GOSH, case=case):
-        print(
-            f"primary: {filter_site.site_is_primary_centre_of_epilepsy_care}, general: {filter_site.site_is_general_paediatric_centre}, active: {filter_site.site_is_actively_involved_in_epilepsy_care}, primary: {filter_site.site_is_primary_centre_of_epilepsy_care}"
-        )
     new_site = Site.objects.get(
         organisation=GOSH,
         case=case,
@@ -732,10 +728,6 @@ def test_accept_registration_transfer_response_transfer_centre_still_involved(
     assert kch_site.case == case, "KCH is still a general paediatric centre"
 
     # GOSH is now the primary site of care
-    for filter_site in Site.objects.filter(organisation=GOSH, case=case):
-        print(
-            f"primary: {filter_site.site_is_primary_centre_of_epilepsy_care}, general: {filter_site.site_is_general_paediatric_centre}, active: {filter_site.site_is_actively_involved_in_epilepsy_care}, primary: {filter_site.site_is_primary_centre_of_epilepsy_care}"
-        )
     new_site = Site.objects.get(
         organisation=GOSH,
         case=case,
@@ -1180,11 +1172,6 @@ def test_reject_registration_transfer_response_transfer_centre_still_involved(
     )
 
     assert response.status_code == 200
-
-    for mysite in Site.objects.all():
-        print(
-            f"name: {mysite} active transfer {mysite.active_transfer}, general paediatrics {mysite.site_is_general_paediatric_centre}, primary epilepsy {mysite.site_is_primary_centre_of_epilepsy_care}, actively involved {mysite.site_is_actively_involved_in_epilepsy_care}"
-        )
 
     # Verify the Site instance
     kch_sites = Site.objects.filter(

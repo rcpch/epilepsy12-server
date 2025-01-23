@@ -42,8 +42,6 @@ def test_measure_10_school_individual_healthcare_plan(
     FIRST_PAEDIATRIC_ASSESSMENT_DATE = date(2023, 1, 1)
     DATE_OF_BIRTH = FIRST_PAEDIATRIC_ASSESSMENT_DATE - age
 
-    print(f"age: {age}")
-
     # create case
     case = e12_case_factory(
         date_of_birth=DATE_OF_BIRTH,

@@ -42,7 +42,7 @@
         </th>
         <th class="two wide">
           <div class="rcpch_td_data_indicator_wrapper">
-            <p>NHS Number</p>
+            {% if organisation.country.boundary_identifier == 'JEY' %}<p>Unique Reference Number (URN)</p>{% else %}NHS Number{% endif %}
             {% if sort_flag and sort_flag == "sort_by_nhs_number_down" %}
             <i class="sort icon" id="sort_button" name="sort_by_nhs_number_up" hx-target="#case_table"
               hx-get="{% url 'sort_by_nhs_number_up' organisation_id=organisation.pk %}" hx-trigger="click"></i>
@@ -126,7 +126,7 @@
           <td>
             {% none_masked case.first_name %} {% none_masked case.surname %}</td>
           <td>{% none_masked case.get_sex_display %}</td>
-          <td data-mask="000 000 0000">{% none_masked case.nhs_number %}</td>
+          {% if organisation.country.boundary_identifier == 'JEY' %}<td>{{ case.unique_reference_number }}</td>{% else %}<td data-mask="000 000 0000">{% none_masked case.nhs_number %}</td>{% endif %}
           <td>{% none_masked case.registration.audit_submission_date|date:'D j M Y' %}</td>
           <td>{% if case.registration.cohort is not None %}{{ case.registration.cohort }}{% endif %}</td>
           <td>{% if case.registration.days_remaining_before_submission is not None %}{{ case.registration.days_remaining_before_submission }}{% endif %}</td>

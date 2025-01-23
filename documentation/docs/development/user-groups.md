@@ -3,7 +3,7 @@ title: User groups and permissions
 reviewers: Dr Simon Chapman
 ---
 
-The user groups are summarised [here](../clinician-users/clinician-user-guide.md###Permission)
+The user groups are summarised [here](../clinician-users/clinician-user-guide.md)
 
 Django allows permission-based and group based access. The user groups defined above are containers for permissions to all the models. Generic django permissions allow prescription of view, change, create and delete to each model (found in ```epilepsy12/constants/user_types.py```).
 

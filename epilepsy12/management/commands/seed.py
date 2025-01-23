@@ -40,6 +40,7 @@ ORGANISATION_SEED_LIST = [
     "7A2AJ",  # Bronglais
     "7A6BJ",  # Chepstow Community
     "7A6AV",  # Ysbyty Ystrad Fawr
+    "RGT1W",  # Jersey General Hospital
 ]
 
 
@@ -168,6 +169,9 @@ def run_dummy_cases_seed(cases, organisations, noskip, verbose=True):
         num_cases_to_seed_in_org = int(cases / len(organisations))
         print(f"Creating {num_cases_to_seed_in_org} Cases in {org}")
 
+        # Check if the organisation is in Jersey - this is important for generating postcodes and URNs rather than NHS Numbers
+        is_jersey = org.country.boundary_identifier == "JEY"
+
         # Create random attributes
         random_date = date(randint(2005, 2021), randint(1, 12), randint(1, 28))
         date_of_birth = random_date
@@ -177,7 +181,8 @@ def run_dummy_cases_seed(cases, organisations, noskip, verbose=True):
         random_ethnicity = randint(0, len(choice(ETHNICITIES)))
         ethnicity = ETHNICITIES[random_ethnicity][0]
         postcode = return_random_postcode(
-            country_boundary_identifier=org.country.boundary_identifier
+            country_boundary_identifier=org.country.boundary_identifier,
+            is_jersey=is_jersey,
         )
         index_of_multiple_deprivation_quintile = randint(1, 5)
 
@@ -194,6 +199,7 @@ def run_dummy_cases_seed(cases, organisations, noskip, verbose=True):
                 "seed_male": seed_male,
                 "seed_female": seed_female,
             },
+            is_jersey=is_jersey,
         )
 
 

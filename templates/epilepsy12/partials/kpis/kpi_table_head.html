@@ -29,6 +29,7 @@
                 _="init js $('#totals_trust_{{kpi_head_id}}').popup(); end"
             ></i>({{all_data.TRUST_KPIS.total_cases_registered}})</p>
         </th>
+        {% if country.boundary_identifier != 'JEY' %}
         <th class='right aligned'>
             <p>Integrated Care Board</p>
             <p><i 
@@ -51,6 +52,7 @@
                 _="init js $('#totals_nhs_{{kpi_head_id}}').popup(); end"
             ></i>({{all_data.NHS_ENGLAND_REGION_KPIS.total_cases_registered}})</p>
         </th>
+        {% endif %}
         {% else %}
         <th class='right aligned'>
             <p>Local Health Board</p>

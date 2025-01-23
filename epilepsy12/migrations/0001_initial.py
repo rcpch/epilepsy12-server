@@ -1462,7 +1462,10 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
-                ("conceptId", models.CharField(blank=True, default=None, null=True, unique=True)),
+                (
+                    "conceptId",
+                    models.CharField(blank=True, default=None, null=True, unique=True),
+                ),
                 ("term", models.CharField(blank=True, default=None, null=True)),
                 (
                     "preferredTerm",
@@ -1519,7 +1522,10 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
-                ("conceptId", models.CharField(blank=True, default=None, null=True, unique=True)),
+                (
+                    "conceptId",
+                    models.CharField(blank=True, default=None, null=True, unique=True),
+                ),
                 ("term", models.CharField(blank=True, default=None, null=True)),
                 (
                     "preferredTerm",
@@ -2685,7 +2691,10 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(blank=True, editable=False)),
                 ("updated_at", models.DateTimeField(blank=True, editable=False)),
-                ("conceptId", models.CharField(blank=True, default=None, null=True, unique=True)),
+                (
+                    "conceptId",
+                    models.CharField(blank=True, default=None, null=True, unique=True),
+                ),
                 ("term", models.CharField(blank=True, default=None, null=True)),
                 (
                     "preferredTerm",
@@ -2844,7 +2853,10 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(blank=True, editable=False)),
                 ("updated_at", models.DateTimeField(blank=True, editable=False)),
-                ("conceptId", models.CharField(blank=True, default=None, null=True, unique=True)),
+                (
+                    "conceptId",
+                    models.CharField(blank=True, default=None, null=True, unique=True),
+                ),
                 ("term", models.CharField(blank=True, default=None, null=True)),
                 (
                     "preferredTerm",
@@ -3961,7 +3973,10 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ("conceptId", models.CharField(blank=True, default=None, null=True, unique=True)),
+                (
+                    "conceptId",
+                    models.CharField(blank=True, default=None, null=True, unique=True),
+                ),
                 ("term", models.CharField(blank=True, default=None, null=True)),
                 (
                     "preferredTerm",
@@ -6207,7 +6222,10 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ("conceptId", models.CharField(blank=True, default=None, null=True, unique=True)),
+                (
+                    "conceptId",
+                    models.CharField(blank=True, default=None, null=True, unique=True),
+                ),
                 ("term", models.CharField(blank=True, default=None, null=True)),
                 (
                     "preferredTerm",

@@ -1,8 +1,8 @@
 ---
 title: Privacy Notice
 reviewers: Dr Marcus Baw
-privacy_notice_path: ../../reference-documents/20230118 E12 Privacy Notice.pdf
-privacy_notice_welsh_path: ../../reference-documents/20230118 E12 Privacy Notice Welsh.pdf
+privacy_notice_path: ../reference-documents/20230118 E12 Privacy Notice.pdf
+privacy_notice_welsh_path: ../reference-documents/20230118 E12 Privacy Notice Welsh.pdf
 hide:
   - toc
 ---

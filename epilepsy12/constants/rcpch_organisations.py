@@ -8529,6 +8529,32 @@ RCPCH_ORGANISATIONS = [
     },  # 01/04/2013 Region: Y60 MIDLANDS COMMISSIONING REGION, ICB: QNX NHS SUSSEX INTEGRATED CARE BOARD, OPENUK: South East Thames Epilepsy Group
 ]
 
+JERSEY_ORGANISATION = {
+    "OrganisationID": "",
+    "OrganisationCode": "RGT1W",
+    "OrganisationType": "",
+    "SubType": "",
+    "Sector": "",
+    "OrganisationStatus": "",
+    "IsPimsManaged": "",
+    "OrganisationName": "JERSEY GENERAL HOSPITAL",
+    "Address1": "THE PARADE",
+    "Address2": "",
+    "Address3": "",
+    "City": "ST HELIER",
+    "County": "JERSEY",
+    "Postcode": "JE1 3Q",
+    "Latitude": "49.18841258908002",
+    "Longitude": "-2.1122213730166157",
+    "ParentODSCode": "RGT1W",  # This is a special case as it is both an organisation and a trust so the parent trust ODS code is the same as the organisation code and exists in both models.
+    "ParentName": "JERSEY GENERAL HOSPITAL",
+    "Phone": "01534 442000",
+    "Email": "",
+    "Website": "",
+    "Fax": "",
+    "LocalAuthority": "",
+}  # 01/04/2015 - Jersey General Hospital, Jersey, Channel Islands is a special case as it is both an organisation and a trust. It is member of the South West Interest Group Paediatric Epilepsy. It has no other organisational hierarchies
+
 """
 Steps to update organisation in the console once created in the admin
 from django.contrib.gis.geos import Point
