@@ -25,6 +25,8 @@ def test_tranfer_centre(
     client,
     e12_case_factory,
     e12_site_factory,
+    seed_groups_fixture,
+    seed_users_fixture,
 ):
     """
     Transfer lead centre to another centre
