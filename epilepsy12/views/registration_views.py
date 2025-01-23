@@ -432,8 +432,9 @@ def update_lead_site(request, registration_id, site_id, update):
         )
 
         # update KPI reference to new organisation
-        registration.kpi.organisation = new_organisation
-        registration.kpi.save(update_fields=["organisation"])
+        KPI.objects.filter(registration=registration).update(
+            organisation=new_organisation
+        )
 
         """
         Update complete
