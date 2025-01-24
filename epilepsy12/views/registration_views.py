@@ -431,6 +431,11 @@ def update_lead_site(request, registration_id, site_id, update):
             ]
         )
 
+        # update KPI reference to new organisation
+        KPI.objects.filter(registration=registration).update(
+            organisation=new_organisation
+        )
+
         """
         Update complete
         Send emails to lead clinicians +/- E12
