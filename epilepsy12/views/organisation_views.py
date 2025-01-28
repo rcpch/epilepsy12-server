@@ -215,7 +215,7 @@ def selected_organisation_summary(request, organisation_id):
         or request.user.is_rcpch_staff
     ):
         # select any organisations except currently selected organisation
-        organisation_list = Organisation.objects.all().order_by("name")
+        organisation_list = Organisation.objects.filter(active=True).order_by("name")
     else:
         if selected_organisation.country.boundary_identifier == "W92000004":  # Wales
             organisation_list = Organisation.objects.filter(
@@ -405,7 +405,7 @@ def selected_trust_kpis(request, organisation_id, access):
         "kpis": kpi_instance,
         "kpi_names_list": kpi_names_list,
         "open": access == "open",
-        "organisation_list": Organisation.objects.all().order_by(
+        "organisation_list": Organisation.objects.filter(active=True).order_by(
             "name"
         ),  # for public view dropdown
         "last_published_date": last_published_date,

@@ -108,7 +108,7 @@ def register(request, case_id):
     else:
         registration = Registration.objects.filter(case=case).get()
 
-    organisation_list = Organisation.objects.order_by("name")
+    organisation_list = Organisation.objects.filter(active=True).order_by("name")
 
     previously_registered = 0
 
@@ -233,7 +233,7 @@ def allocate_lead_site(request, registration_id):
 
     # get the new
 
-    organisation_list = Organisation.objects.order_by("name")
+    organisation_list = Organisation.objects.filter(active=True).order_by("name")
 
     context = {
         "organisation_list": organisation_list,
@@ -307,7 +307,7 @@ def transfer_lead_site(request, registration_id, site_id):
 def cancel_lead_site(request, registration_id, site_id):
     registration = Registration.objects.get(pk=registration_id)
     site = Site.objects.get(pk=site_id)
-    organisation_list = Organisation.objects.order_by("name")
+    organisation_list = Organisation.objects.filter(active=True).order_by("name")
 
     context = {
         "registration": registration,

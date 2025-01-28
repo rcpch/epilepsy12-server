@@ -28,7 +28,7 @@ def open_access(request, organisation_id):
     organisation = Organisation.objects.get(pk=organisation_id)
     context = {
         "organisation": organisation,
-        "organisation_list": Organisation.objects.all().order_by("name"),
+        "organisation_list": Organisation.objects.filter(active=True).order_by("name"),
         "individual_kpi_choices": INDIVIDUAL_KPI_MEASURES,
     }
     return render(request, template_name, context=context)
