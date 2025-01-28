@@ -43,8 +43,9 @@ def seed_users_fixture(django_db_setup, django_db_blocker):
             GOSH = Organisation.objects.get(ods_code="RP401", trust__ods_code="RP4")
             KINGS = Organisation.objects.get(ods_code="RJZ01", trust__ods_code="RJZ")
             NOAHS_ARK = Organisation.objects.get(ods_code="7A4H1", local_health_board__ods_code="7A4")
+            JERSEY = Organisation.objects.get(ods_code="RGT1W", trust__ods_code="RGT1W")
 
-            for org in [GOSH, KINGS, NOAHS_ARK]:
+            for org in [GOSH, KINGS, NOAHS_ARK, JERSEY]:
                 is_active = True
                 is_staff = False
                 is_rcpch_audit_team_member = False
