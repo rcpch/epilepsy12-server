@@ -204,3 +204,18 @@ class CaseForm(forms.ModelForm):
             return formatted_nhs_number
         else:
             raise ValidationError(f"{formatted_nhs_number} is not a valid NHS number")
+    
+    def clean_unique_reference_number(self):
+        unique_reference_number = self.cleaned_data["unique_reference_number"]
+
+        organisation = Organisation.objects.get(id=self.organisation_id)
+        if organisation.ods_code == "RGT1W":
+            if not unique_reference_number:
+                raise ValidationError("Missing unique reference number")
+        else:
+            # Ensure we save NULL not the empty string otherwise it stops you adding
+            # more patients (https://github.com/rcpch/rcpch-audit-engine/issues/1190)
+            return None
+        
+
+
