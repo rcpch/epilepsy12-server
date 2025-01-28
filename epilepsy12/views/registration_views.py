@@ -272,7 +272,7 @@ def transfer_lead_site(request, registration_id, site_id):
     # remove the currently selected organisation from the list - should not be able to
     # transfer to the current organisation
     organisation_list = (
-        Organisation.objects.filter()
+        Organisation.objects.filter(active=True)
         .exclude(pk=site.organisation.pk)
         .order_by("name")
         .all()
