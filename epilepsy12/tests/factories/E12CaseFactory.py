@@ -74,18 +74,6 @@ class E12CaseFactory(factory.django.DjangoModelFactory):
         )
 
     @factory.lazy_attribute
-    def unique_reference_number(self):
-        """Returns a unique reference number which has not been used in the db yet."""
-        not_found_unique_ref_num = True
-
-        while not_found_unique_ref_num:
-            candidate_num = f"JEY-{nhs_number_package.generate()[0]}"
-
-            if not Case.objects.filter(unique_reference_number=candidate_num).exists():
-                not_found_unique_ref_num = False
-        return candidate_num
-
-    @factory.lazy_attribute
     def nhs_number(self):
         """Returns a unique NHS number which has not been used in the db yet."""
         not_found_unique_nhs_num = True
