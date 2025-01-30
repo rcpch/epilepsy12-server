@@ -209,9 +209,12 @@ class CaseForm(forms.ModelForm):
         unique_reference_number = self.cleaned_data["unique_reference_number"]
 
         organisation = Organisation.objects.get(id=self.organisation_id)
+
         if organisation.ods_code == "RGT1W":
             if not unique_reference_number:
                 raise ValidationError("Missing unique reference number")
+            
+            return unique_reference_number
         else:
             # Ensure we save NULL not the empty string otherwise it stops you adding
             # more patients (https://github.com/rcpch/rcpch-audit-engine/issues/1190)
