@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 
 from django.forms.fields import TypedChoiceField
@@ -11,6 +13,10 @@ from .models import (
 )
 
 from .forms_folder import OrganisationalAuditSubmissionForm
+
+
+logger = logging.getLogger(__name__)
+
 
 MULTISELECT_FIELD_MAPPINGS = {
     'S01ESNFunctions': {
@@ -153,14 +159,20 @@ def export_submission_period_as_csv(submission_period):
             'SiteCode': site_code
         }
 
+        logger.info(f"Exporting submission {submission.id} for {site_name} ({site_code})")
+
         for field in OrganisationalAuditSubmissionForm():
             value = getattr(submission, field.name)
 
             if type(field.field) is MultiSelectFormField:
-                selected_choices = list(value)
+                if value is None:
+                    logger.warn(f"No value for MultiSelectFormField {field.name} for {site_name} ({site_code})")
+                    row[field.name] = None
+                else:
+                    selected_choices = list(value)
 
-                for choice, column in MULTISELECT_FIELD_MAPPINGS[field.name].items():
-                    row[column] = "1" if choice in selected_choices else "2"
+                    for choice, column in MULTISELECT_FIELD_MAPPINGS[field.name].items():
+                        row[column] = "1" if choice in selected_choices else "2"
             else:
                 row[field.name] = value
 
