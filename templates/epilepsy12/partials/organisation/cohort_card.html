@@ -1,106 +1,39 @@
-<div>
-  <div class="cohorts_dates_three_grid">
-    
-    <div class="content">
-      <div class="rcpch_summary_stats">
-        <div class="ui centered header cohort_card_header">
-          <h3>COHORT</h3>
-        </div>
+<div class="rcpch_summary_stats">
+  <div class="rcpch_summary_stats_row">
+    <h1>COHORT {{cohort.cohort}}</h1>
+  </div>
 
-        <div class="rcpch_summary_stats_row">
-          <h1 {% if cohort_data.within_grace_period %} style="color: var(--rcpch_pink)"{% endif %}>{{cohort_data.grace_cohort.cohort}}</h1>
-          <h3>
-            {% if cohort_data.grace_cohort.submission_date > cohort_data.today %} 
-            Recruitment closed - data collection ongoing until {{cohort_data.grace_cohort.submission_date}} {% else %} 
-            Recruitment closed - data collection complete
-            {% endif %}
-          </h3>
-          <h4>
-            {{cohort_data.grace_cohort.cohort_start_date}} -
-            {{cohort_data.grace_cohort.cohort_end_date}}
-          </h4>
-        </div>
-
-        {% if cohort_data.grace_cohort.submission_date > cohort_data.today %} 
-          <div class="rcpch_summary_stats_row">
-            <h1 style="color: var(--rcpch_pink)">{{cohort_data.grace_cohort.days_remaining}}</h1>
-            <h2>Days remaining</h2>
-            <h3>until latest submission date</h3>
-            <h4>({{cohort_data.grace_cohort.submission_date}})</h4>
-          </div>
-        {% elif cohort_number != cohort_data.grace_cohort.cohort %}
-          <div class="rcpch_summary_stats_row">
-            <a class="ui rcpch_positive button" href="?cohort={{cohort_data.grace_cohort.cohort}}">View dashboard</a>
-          </div>
-        {% endif %}
+  <div class="rcpch_summary_stats_row">
+    <div class="rcpch_summary_stats_dates">
+      <div class="rcpch_summary_stats_description">
+        CYP with a first paediatric assessment between
       </div>
-    </div>
-
-    <div class="grid_line"></div>
-
-    <div class="content">
-      <div class="rcpch_summary_stats">
-        <div class="ui centered header cohort_card_header">
-          <h3>COHORT</h3>
-        </div>
-
-        <div class="rcpch_summary_stats_row">
-          {% if cohort_data.submitting_cohort_end_date > cohort_data.today %}
-            <h1 style="color: var(--rcpch_pink)">{{cohort_data.submitting_cohort}}</h1>
-          {% else %}
-            <h1>{{cohort_data.submitting_cohort}}</h1>
-          {% endif %}
-          <h3>
-            {% if cohort_data.submitting_cohort_end_date > cohort_data.today %}
-            Actively recruiting and submitting data {% else %} Recruitment
-            closed - data collection ongoing until
-            {{cohort_data.submitting_cohort_submission_date}} {% endif %}
-          </h3>
-          <h4>
-            {{cohort_data.submitting_cohort_start_date}} -
-            {{cohort_data.submitting_cohort_end_date}}
-          </h4>
-        </div>
-
-        <div class="rcpch_summary_stats_row">
-          <h1>{{cohort_data.submitting_cohort_days_remaining}}</h1>
-          <h2>Days remaining</h2>
-          <h3>until latest submission date</h3>
-          <h4>({{cohort_data.submitting_cohort_submission_date}})</h4>
-          {% if cohort_number != cohort_data.submitting_cohort %}
-            <a class="ui rcpch_positive button" href="?cohort={{cohort_data.submitting_cohort}}">View dashboard</a>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    <div class="grid_line"></div>
-
-    <div class="content">
-      <div class="rcpch_summary_stats">
-        <div class="ui centered header cohort_card_header">
-          <h3>COHORT</h3>
-        </div>
-        <div class="rcpch_summary_stats_row">
-          <h1>{{cohort_data.currently_recruiting_cohort}}</h1>
-          <h3>
-            {% if cohort_data.currently_recruiting_cohort_end_date > cohort_data.today %} Actively recruiting {% else %} Recruitment
-            closed - data collection ongoing until
-            {{cohort_data.currently_recruiting_cohort_end_date}} {% endif %}
-          </h3>
-          <h4>
-            {{cohort_data.currently_recruiting_cohort_start_date}} -
-            {{cohort_data.currently_recruiting_cohort_submission_date}}
-          </h4>
-        </div>
-
-        <div class="rcpch_summary_stats_row">
-          <h1>{{cohort_data.currently_recruiting_cohort_days_remaining}}</h1>
-          <h2>Days remaining</h2>
-          <h3>until latest submission date</h3>
-          <h4>({{cohort_data.currently_recruiting_cohort_submission_date}})</h4>
-        </div>
+      <div class="rcpch_summary_stats_date">
+        {{cohort.cohort_start_date}} - {{cohort.cohort_end_date}}
       </div>
     </div>
   </div>
+
+  <div class="rcpch_summary_stats_row">
+    <div class="rcpch_summary_stats_dates" {% if cohort_data.within_grace_period %} style="color: var(--rcpch_pink)"{% endif %}>
+      {% if cohort.submission_date > cohort_data.today %}
+        <div class="rcpch_summary_stats_description">
+          {{cohort.days_remaining}} days until data submission deadline
+        </div>
+        <div class="rcpch_summary_stats_date">
+          {{cohort.submission_date}}
+        </div>
+      {% else %}
+        <div class="rcpch_summary_stats_description">
+          Data submission closed
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if cohort_number != cohort.cohort and cohort.cohort != cohort_data.currently_recruiting_cohort %}
+    <div class="rcpch_summary_stats_row">
+      <a class="ui rcpch_positive button" href="?cohort={{cohort.cohort}}">View dashboard</a>
+    </div>
+  {% endif %}
 </div>

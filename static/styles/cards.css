@@ -52,7 +52,8 @@
 
 .cohorts_dates_three_grid {
   display: grid;
-  grid-template-columns: 30% 5% 30% 5% 30%;
+  grid-template-columns: 32% 2% 32% 2% 32%;
+  width: 100%;
 }
 
 .grid_line {
@@ -65,10 +66,6 @@
     margin-top: 15px;
 }
 
-.ui.centered.header.cohort_card_header {
-  margin-top: 0;
-  border-radius: 0%;
-}
   /* cards for organisation details */
 .organisation_details {
     padding: 0.5em 0.5em;

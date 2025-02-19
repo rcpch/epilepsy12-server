@@ -142,6 +142,7 @@ def cohorts_and_dates(first_paediatric_assessment_date: date):
         "currently_recruiting_cohort_days_remaining": currently_recruiting_cohort.get(
             "days_remaining", None
         ),
+        "currently_recruiting_cohort_dates": dates_for_cohort(currently_recruiting_cohort_number),
         "submitting_cohort": submitting_cohort_number,
         "submitting_cohort_start_date": submitting_cohort.get(
             "cohort_start_date", None
@@ -153,6 +154,7 @@ def cohorts_and_dates(first_paediatric_assessment_date: date):
         "submitting_cohort_days_remaining": submitting_cohort.get(
             "days_remaining", None
         ),
+        "submitting_cohort_dates": dates_for_cohort(submitting_cohort_number),
         "grace_cohort": dates_for_cohort(cohort=submitting_cohort_number - 1),
         "within_grace_period": within_grace_period,
         "today": date.today(),

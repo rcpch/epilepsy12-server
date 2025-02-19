@@ -95,7 +95,13 @@
         </div>
 
         <div class="fluid centered row">
-        {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort_data=cohort_data %}
+            <div class="cohorts_dates_three_grid">
+                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.grace_cohort cohort_data=cohort_data %}
+                <div class="grid_line"></div>
+                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.submitting_cohort_dates cohort_data=cohort_data %}
+                <div class="grid_line"></div>
+                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.currently_recruiting_cohort_dates cohort_data=cohort_data %}
+            </div>
         </div>
 
         <div class='sixteen wide fluid column'>
