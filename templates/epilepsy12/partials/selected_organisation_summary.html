@@ -96,11 +96,11 @@
 
         <div class="fluid centered row">
             <div class="cohorts_dates_three_grid">
-                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.grace_cohort today=cohort_data.today within_grace_period=cohort_data.within_grace_period %}
+                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.grace_cohort cohort_data=cohort_data %}
                 <div class="grid_line"></div>
-                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.submitting_cohort_dates today=cohort_data.today %}
+                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.submitting_cohort_dates cohort_data=cohort_data %}
                 <div class="grid_line"></div>
-                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.currently_recruiting_cohort_dates today=cohort_data.today %}
+                {% include 'epilepsy12/partials/organisation/cohort_card.html' with cohort=cohort_data.currently_recruiting_cohort_dates cohort_data=cohort_data %}
             </div>
         </div>
 

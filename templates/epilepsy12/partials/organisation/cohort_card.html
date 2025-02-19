@@ -16,7 +16,7 @@
 
   <div class="rcpch_summary_stats_row">
     <div class="rcpch_summary_stats_dates">
-      {% if cohort.submission_date > today %}
+      {% if cohort.submission_date > cohort_data.today %}
         <div class="rcpch_summary_stats_description">
           {{cohort.days_remaining}} days until data submission deadline
         </div>
@@ -31,7 +31,7 @@
     </div>
   </div>
 
-  {% if cohort_number != cohort.cohort %}
+  {% if cohort_number != cohort.cohort and cohort.cohort != cohort_data.currently_recruiting_cohort %}
     <div class="rcpch_summary_stats_row">
       <a class="ui rcpch_positive button" href="?cohort={{cohort.cohort}}">View dashboard</a>
     </div>
