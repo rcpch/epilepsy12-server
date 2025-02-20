@@ -30,7 +30,7 @@
                         <!-- Only RCPCH Audit team members and superusers can publish aggregations to the open access page -->
                     <div class="column">
                         <a class="ui rcpch_grey button bold fluid" href="{% url 'epilepsy12_user_list' organisation_id=selected_organisation.pk %}">
-                            View All Epilepsy12 Staff of 
+                            View users of 
                             {% if selected_organisation.trust %}
                                 {% with organisation_name=selected_organisation.trust.name|title %}
                                 {{ organisation_name|capitalise_org_names }} 
@@ -44,7 +44,7 @@
                     </div>
                     <div class="column">
                         <a class="ui rcpch_primary button bold fluid " href="{% url 'cases' organisation_id=selected_organisation.pk %}">
-                            View All Children of
+                            View Clinical Audit entries for
                             {% if selected_organisation.trust %}
                                 {% with organisation_name=selected_organisation.trust.name|title %}
                                 {{ organisation_name|capitalise_org_names }} 
@@ -64,7 +64,7 @@
 
                     <div class="eight wide column">
                         <a class="ui rcpch_grey button bold fluid" href="{% url 'epilepsy12_user_list' organisation_id=selected_organisation.pk %}">
-                            View All Epilepsy12 Staff of
+                            View users of
                             {% if selected_organisation.trust %}
                                 {% with organisation_name=selected_organisation.trust.name|title %}
                                 {{ organisation_name|capitalise_org_names }} 

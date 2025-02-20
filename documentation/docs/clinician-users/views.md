@@ -17,9 +17,7 @@ If you go into the **Individual Measures tab**, you can see visual comparisons o
 
 ### Staff View
 
-To enter the Staff View, click the ‘**View All Epilepsy12 Staff**’ button in the Organisation View.
-
-![View all Epilepsy12 staff button](../_assets/_images/view-all-users.png)
+To enter the Staff View, click the ‘**View users**’ button in the Organisation View.
 
 Here you will see a list of all the platform user accounts for your Trust/Health Board. You will see each user’s name, email address, role, and organisation. A pink tick indicates that the user is active.
 
